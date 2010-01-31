@@ -6,30 +6,41 @@ from dbbpy.flashcards.models import Concept
 from dbbpy.flashcards.models import Asset
 from dbbpy.flashcards.models import AssetType
 
+# import_csv is the main function here.
+# it imports a .csv file into concepts.
+# the first row names the asset type for each column.
+# each subsequent row becomes a concept, with each CSV becoming an asset of the type defined in the first row
 class Blcu():
 
     @staticmethod
-    def find_asset_type_map():
+    def asset_type_map_from_header_row(header_row):
         # Returns a map from (column number in CSV) -> (asset type)
-	result = {
-	    1: AssetType.objects.get(id=5),
-	    2: AssetType.objects.get(id=6),
-	    3: AssetType.objects.get(id=4),
-	    4: AssetType.objects.get(id=3),
-	    5: AssetType.objects.get(id=1),
-	    6: AssetType.objects.get(id=2),
-	    7: AssetType.objects.get(id=7),
-	}
+	result = {}
+
+	column_num=1
+	for column in header_row:
+	    candidate_types = AssetType.objects.filter(name= column)
+	    if candidate_types.count() == 0:
+		asset = AssetType(name=column)	
+		asset.save()
+		print "Created new asset type %s" % asset
+	    else:
+	        asset = candidate_types[0]
+	    result[column_num] = asset
+	    column_num += 1
+
 	return result
 
 
     # this method reads a CSV file as exported from hskflashcards
     @staticmethod
     def import_csv(filename):
-	asset_type_map = Blcu.find_asset_type_map()
 
 	print "Reading from %s" % filename
 	reader = csv.reader(open(filename))
+	
+	header_row = reader.next()
+	asset_type_map = Blcu.asset_type_map_from_header_row(header_row)
 
 	for csvrow in reader:
 	    # csv module doesn't deal well with unicode input, so I convert it by hand
