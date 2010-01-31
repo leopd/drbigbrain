@@ -2,23 +2,29 @@ from django.contrib import admin
 from dbbpy.flashcards.models import Asset
 from dbbpy.flashcards.models import AssetType
 from dbbpy.flashcards.models import Concept
+from dbbpy.flashcards.models import Lesson
+from dbbpy.flashcards.models import LessonSequence
 
 class AssetInline(admin.TabularInline):
     model = Asset
-    extra = 3
+    extra = 1
 
 class ConceptAdmin(admin.ModelAdmin):
-    #fields = ['pub_date', 'question']
     fieldsets = [
       (None, {'fields': ['description']}),
       ]
     inlines = [AssetInline]
-    #list_display = ('question', 'pub_date', 'was_published_today')
-    #list_filter = ['pub_date']
-    #search_fields = ['question']
-    #date_hierarchy = 'pub_date'
+
+class LessonSequenceInline(admin.TabularInline):
+    model=LessonSequence
+    extra = 1
+
+class LessonAdmin(admin.ModelAdmin):
+    inlines = [LessonSequenceInline]
 
 admin.site.register(Asset)
 admin.site.register(AssetType)
 admin.site.register(Concept, ConceptAdmin)
+admin.site.register(Lesson, LessonAdmin)
+admin.site.register(LessonSequence)
 

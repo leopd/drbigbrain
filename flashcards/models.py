@@ -34,13 +34,24 @@ class Lesson(models.Model):
     name = models.CharField(max_length=64)
     description = models.CharField(max_length=250)
 
-    # for organization
-    parent = models.ForeignKey('self') # TODO: consider using treebeard or similar
-    sequence = models.IntegerField()
-
-    concepts = models.ManyToManyField(Concept)
-    # see http://docs.djangoproject.com/en/dev/topics/db/models/#intermediary-manytomany
+    # the actual content
+    concepts = models.ManyToManyField(Concept, through='LessonSequence')
 
     def __unicode__(self):
 	return self.name
     
+# many-many join table, with order
+class LessonSequence(models.Model):
+    lesson = models.ForeignKey(Lesson)
+    concept = models.ForeignKey(Concept)
+
+    sequence = models.IntegerField(null = True)
+
+    def __unicode__(self):
+	if self.sequence == None:
+	    #return "lessonseq w/o seq"
+	    return u"Lesson(%s) Seq(-) is %s" % (self.lesson, self.concept)
+	else:
+	    #return "lessonseq w/ seq"
+	    return u"Lesson(%s) Seq(%s) is %s" % (self.lesson, self.sequence, self.concept)
+
