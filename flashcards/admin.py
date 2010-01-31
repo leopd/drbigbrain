@@ -26,5 +26,5 @@ admin.site.register(Asset)
 admin.site.register(AssetType)
 admin.site.register(Concept, ConceptAdmin)
 admin.site.register(Lesson, LessonAdmin)
-admin.site.register(LessonSequence)
+#admin.site.register(LessonSequence) # only needed for debugging
 
