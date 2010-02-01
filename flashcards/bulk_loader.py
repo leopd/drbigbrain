@@ -71,7 +71,7 @@ class BulkCsv():
 	    for item in csvrow:
 	       unicoderow.append( unicode( item, 'utf-8' ))
 	    # TODO: make this more general
-	    concept_name = "%s / %s / %s" % ( unicoderow[5],unicoderow[3],unicoderow[4])
+	    concept_name = u"%s / %s / %s" % ( unicoderow[5],unicoderow[3],unicoderow[4])
 	    concept = Concept()
 	    concept.description = concept_name
 	    concept.save()
