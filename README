@@ -1,0 +1,7 @@
+Note, your mysql database must have a reasonable character set.
+
+in mysql shell, type "STATUS" command to tell.
+if it's latin1, try drop dbbpy and then
+create database dbbpy character set = ucs2;
+
+
