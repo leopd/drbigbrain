@@ -4,4 +4,6 @@ in mysql shell, type "STATUS" command to tell.
 if it's latin1, try drop dbbpy and then
 create database dbbpy character set = ucs2;
 
+To load all BLCU content, run:
+ python flashcards/bulk_loader.py content/vocab-all-blcu.csv
 
