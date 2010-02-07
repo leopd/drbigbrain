@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 37
+/svn/!svn/ver/246/trunk/dojango/forms
+END
+__init__.py
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/111/trunk/dojango/forms/__init__.py
+END
+formsets.py
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/219/trunk/dojango/forms/formsets.py
+END
+models.py
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/!svn/ver/214/trunk/dojango/forms/models.py
+END
+fields.py
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/!svn/ver/202/trunk/dojango/forms/fields.py
+END
+widgets.py
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/246/trunk/dojango/forms/widgets.py
+END

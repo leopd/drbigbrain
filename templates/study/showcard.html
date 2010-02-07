@@ -1,0 +1,84 @@
+{% extends "dojango/base.html" %}
+
+{# setting the <title> attribute #}
+{% block dojango_page_title %}Dr. Bigbrain Online Studying{% endblock %}
+{% block dojango_header_extra %}
+<style type="text/css">
+    .box {
+        margin-top: 10px;
+        color: #292929;
+        width: 300px;
+        border: 1px solid #BABABA;
+        background-color: #ddd;
+        padding-left: 10px;
+        padding-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 1em;
+        -o-border-radius: 10px;
+        -moz-border-radius: 12px;
+        -webkit-border-radius: 10px;
+        -webkit-box-shadow: 0px 3px 7px #adadad;
+        border-radius: 10px;
+        -moz-box-sizing: border-box;
+        -opera-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        -khtml-box-sizing: border-box;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+</style>
+<script type="text/javascript">
+    // load the modules you need on the page!
+    dojo.require("dijit.form.Button");
+    dojo.require("dijit.Dialog");
+    dojo.require("dojo.parser");
+    var revealAnswer;
+    var dialog;
+    // just access your dom after everything is loaded!
+    dojo.addOnLoad(function(){
+        // defining some animations
+        growAnswer = dojo.animateProperty(
+            {node: "answerDiv",
+            duration: 1000,
+            properties: {fontSize: {end: 25, unit: "px"}}
+        });
+
+	dojo.parser.parse();
+
+    });
+
+    function revealAnswer()
+    {
+	dojo.byId("answerDiv").style.display="block";
+	//dialog.show();
+    }
+
+    function submitAnswer(yesno)
+    {
+	alert(yesno);
+	// some XHR here.
+    }
+
+</script>
+{% endblock %}
+{% block dojango_content %}
+<div dojoType="dijit.Dialog" title="yo wassup" id="somethig"></div>
+<div id="questionDiv" class="box">
+What does this mean?
+
+<div id="questionContents" class="box">
+nihao
+</div>
+</div>
+<button dojoType="dijit.form.Button" onClick="javascript:revealAnswer();">Reveal Answer</button>
+<div id="answerDiv" class="box" style="display:none" >
+<div id="answerContents" class="box" >
+hello
+</div>
+Did you get it right?
+<button dojoType="dijit.form.Button" onClick="submitAnswer('yes');">Yes</button>
+<button dojoType="dijit.form.Button" onClick="submitAnswer('no');">No</button>
+</div>
+{% endblock %}
+
+

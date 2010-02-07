@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 31
+/svn/!svn/ver/248/trunk/dojango
+END
+views.py
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/!svn/ver/212/trunk/dojango/views.py
+END
+middleware.py
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/!svn/ver/184/trunk/dojango/middleware.py
+END
+__init__.py
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/!svn/ver/224/trunk/dojango/__init__.py
+END
+models.py
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/2/trunk/dojango/models.py
+END
+decorators.py
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/!svn/ver/177/trunk/dojango/decorators.py
+END
+urls.py
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/204/trunk/dojango/urls.py
+END
+context_processors.py
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/2/trunk/dojango/context_processors.py
+END
