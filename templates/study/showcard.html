@@ -30,11 +30,27 @@
 <script type="text/javascript">
     // load the modules you need on the page!
     dojo.require("dijit.form.Button");
-    dojo.require("dijit.Dialog");
     dojo.require("dojo.parser");
     var revealAnswer;
-    var dialog;
     // just access your dom after everything is loaded!
+
+
+    function fetchQA() {
+	console.dir("fetching");
+	dojo.xhrGet( {
+	    url: "/getqa",
+	    handleAs: "json",
+	    load: function(responseObject, ioArgs) {
+		console.dir("fetched");
+		console.dir(responseObject);
+		console.dir(responseObject.question);
+		dojo.byId("questionContents").innerHTML= responseObject.question;
+		dojo.byId("answerContents").innerHTML= responseObject.answer;
+	    }
+	});
+    }
+
+
     dojo.addOnLoad(function(){
         // defining some animations
         growAnswer = dojo.animateProperty(
@@ -42,15 +58,13 @@
             duration: 1000,
             properties: {fontSize: {end: 25, unit: "px"}}
         });
-
-	dojo.parser.parse();
+	fetchQA();
 
     });
 
     function revealAnswer()
     {
 	dojo.byId("answerDiv").style.display="block";
-	//dialog.show();
     }
 
     function submitAnswer(yesno)
@@ -62,18 +76,17 @@
 </script>
 {% endblock %}
 {% block dojango_content %}
-<div dojoType="dijit.Dialog" title="yo wassup" id="somethig"></div>
 <div id="questionDiv" class="box">
 What does this mean?
 
 <div id="questionContents" class="box">
-nihao
+<i>loading...</i>
 </div>
 </div>
 <button dojoType="dijit.form.Button" onClick="javascript:revealAnswer();">Reveal Answer</button>
 <div id="answerDiv" class="box" style="display:none" >
 <div id="answerContents" class="box" >
-hello
+<i>loading...</i>
 </div>
 Did you get it right?
 <button dojoType="dijit.form.Button" onClick="submitAnswer('yes');">Yes</button>
