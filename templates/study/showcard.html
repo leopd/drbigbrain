@@ -34,30 +34,25 @@
     var revealAnswer;
     // just access your dom after everything is loaded!
 
+    function showQA(q,a) {
+	dojo.byId("questionContents").innerHTML= q;
+	dojo.byId("answerContents").innerHTML= a;
+    }
+
 
     function fetchQA() {
-	console.dir("fetching");
 	dojo.xhrGet( {
-	    url: "/getqa",
+	    url: "/study/getqa",
 	    handleAs: "json",
 	    load: function(responseObject, ioArgs) {
-		console.dir("fetched");
-		console.dir(responseObject);
-		console.dir(responseObject.question);
-		dojo.byId("questionContents").innerHTML= responseObject.question;
-		dojo.byId("answerContents").innerHTML= responseObject.answer;
+		showQA(responseObject.question, responseObject.answer);
+		// TODO: put card # in a form to be resubmitted
 	    }
 	});
     }
 
 
     dojo.addOnLoad(function(){
-        // defining some animations
-        growAnswer = dojo.animateProperty(
-            {node: "answerDiv",
-            duration: 1000,
-            properties: {fontSize: {end: 25, unit: "px"}}
-        });
 	fetchQA();
 
     });
@@ -66,11 +61,31 @@
     {
 	dojo.byId("answerDiv").style.display="block";
     }
+    function hideAnswer()
+    {
+	dojo.byId("answerDiv").style.display="none";
+    }
 
     function submitAnswer(yesno)
     {
-	alert(yesno);
+	//alert(yesno);
+	var xhrArgs = {
+	    url: "/study/impression",
+	    postData: yesno,
+	    handleAs: "text",
+	    load: function(data) {
+		console.dir("impression "+yesno+" posted");
+		console.dir(data);
+	    },
+	    error: function(error) {
+		console.dir("error: "+error);
+	    }
+	};
+	dojo.xhrPost(xhrArgs);
 	// some XHR here.
+	showQA("...","...");
+	hideAnswer();
+	fetchQA();
     }
 
 </script>
