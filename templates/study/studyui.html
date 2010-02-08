@@ -26,6 +26,13 @@
         box-sizing: border-box;
         overflow: hidden;
     }
+
+    .qacard {
+	font-size: 30px;
+        border: 1px solid #BABABA;
+	margin: 10px;
+	padding: 5px;
+    }
 </style>
 <script type="text/javascript">
     // load the modules you need on the page!
@@ -94,13 +101,13 @@
 <div id="questionDiv" class="box">
 What does this mean?
 
-<div id="questionContents" class="box">
+<div id="questionContents" class="qacard">
 <i>loading...</i>
 </div>
 </div>
 <button dojoType="dijit.form.Button" onClick="javascript:revealAnswer();">Reveal Answer</button>
 <div id="answerDiv" class="box" style="display:none" >
-<div id="answerContents" class="box" >
+<div id="answerContents" class="qacard" >
 <i>loading...</i>
 </div>
 Did you get it right?
