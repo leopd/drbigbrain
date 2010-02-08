@@ -80,10 +80,10 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
-    'dojango',
+    #'dojango', # trouble at dreamhost with this
     'dbbpy.flashcards',
     'dbbpy.study',
 )
 
-DOJANGO_DOJO_PROFILE = "google"
+#DOJANGO_DOJO_PROFILE = "google"
 #DOJANGO_DOJO_VERSION = "1.4.0"
