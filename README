@@ -29,9 +29,9 @@ current state:
 
 TODOÉ
 *Basic studying
--better ui for login
-	-create account + login on same page
-	-create account logs you in too.
+X-better ui for login
+	X-create account + login on same page
+	X-create account logs you in too.
 -keyboard shortcuts on studyui
 -abstract out learningmodel
 -encapsulation of login/logout from urls.py

@@ -6,6 +6,8 @@
 <p>Your username and password didn't match. Please try again.</p>
 {% endif %}
 
+<h2>Returning users: sign in</h2>
+
 <form method="post" action="{% url django.contrib.auth.views.login %}">
 {# csrf_token #}
 <table>
@@ -23,6 +25,16 @@
 <input type="hidden" name="next" value="{{ next }}" />
 </form>
 
-(or <a href="/accounts/register/">Register</a>.)
+<hr>
+<h2>New users: Create an account</h2>
+    <form action="/accounts/register/" method="post">
+<p><label for="id_username">Username:</label> <input id="id_username" type="text" name="username" maxlength="30" /> Required. 30 characters or fewer. Alphanumeric characters only (letters, digits and underscores).</p>
+<p><label for="id_password1">Password:</label> <input type="password" name="password1" id="id_password1" /></p>
+<p><label for="id_password2">Password confirmation:</label> <input type="password" name="password2" id="id_password2" /></p>
+
+    <input type="hidden" name="next" value="{{ next }}" />
+    <input type="submit" value="Create the account" />
+  </form>
+
 
 {% endblock %}

@@ -33,7 +33,10 @@ def register(request):
 		return HttpResponseRedirect("/loginfail")
 		
 	    #TODO: better redirect after creating user
-            return HttpResponseRedirect("/")
+	    if request.POST['next']:
+		return HttpResponseRedirect(request.POST['next'])
+	    else:
+		return HttpResponseRedirect("/")
 
     return render_to_response("welcome/register.html", {
         'form' : form.as_p(),
