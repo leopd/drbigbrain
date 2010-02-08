@@ -21,25 +21,29 @@ to passenger_wsgi.py near top to get it to run my python.
 ** DEVELOPMENT NOTES:
 
 current state: 
--very close to having a usable BLCU trainer on mini.
+-barely usable BLCU trainer.
+-login UI is really rough.
 -needs an algorithm better than "randomcard"
 
 
 
 TODOÉ
 *Basic studying
-(using dojo for client-side. -- in dojango branch in git)
-X -Study UI
-X -Impression table
-X -user, login integration
+-better ui for login
+	-create account + login on same page
+	-create account logs you in too.
 -keyboard shortcuts on studyui
-X -active lesson chooser ui
-X -randomcard algorithm
 -abstract out learningmodel
 -encapsulation of login/logout from urls.py
 -deck of cards algorithm
 -guest login
 -ert algoritm
+
+
+*Studying improvements
+-generalize which assets to show
+-"card" concept for which types of assets
+-hints
 
 
 *Better tools for adding content

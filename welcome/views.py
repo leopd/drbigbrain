@@ -1,10 +1,11 @@
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-#from django import oldforms as forms
 from django import forms
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+from django.contrib.auth import authenticate
 from dbbpy.flashcards.models import Lesson
 
 def homepage(request):
@@ -21,7 +22,16 @@ def register(request):
 
     if request.method == 'POST':
 	if form.is_valid():
+	    # create the new user
             new_user = form.save(data)
+
+	    # now log them in
+	    user = authenticate(username=data['username'], password=data['password1'] )
+	    if user is not None: 
+		login(request,user)
+	    else:
+		return HttpResponseRedirect("/loginfail")
+		
 	    #TODO: better redirect after creating user
             return HttpResponseRedirect("/")
 
