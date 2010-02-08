@@ -29,10 +29,8 @@ current state:
 
 TODOÉ
 *Basic studying
-X-better ui for login
-	X-create account + login on same page
-	X-create account logs you in too.
 -keyboard shortcuts on studyui
+X-link back to list of lessons
 -abstract out learningmodel
 -encapsulation of login/logout from urls.py
 -deck of cards algorithm
