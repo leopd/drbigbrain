@@ -1,3 +1,4 @@
+** INSTALL NOTES:
 Note, your mysql database must have a reasonable character set.
 
 in mysql shell, type "STATUS" command to tell.
@@ -6,4 +7,50 @@ create database dbbpy character set = ucs2;
 
 To load all BLCU content, run:
  python flashcards/bulk_loader.py content/vocab-all-blcu.csv
+
+
+** DREAMHOST NOTES:
+dojango in installed_apps in settings.py causes "Premature end of script headers."
+
+need to add line
+	if sys.version < "2.6": os.execl("/home/xanaguy/opt/bin/python", "python", *sys.argv)
+to passenger_wsgi.py near top to get it to run my python.
+
+
+
+** DEVELOPMENT NOTES:
+
+current state: 
+-very close to having a usable BLCU trainer on mini.
+-needs an algorithm better than "randomcard"
+
+
+
+TODOÉ
+*Basic studying
+(using dojo for client-side. -- in dojango branch in git)
+X -Study UI
+X -Impression table
+X -user, login integration
+-keyboard shortcuts on studyui
+X -active lesson chooser ui
+X -randomcard algorithm
+-abstract out learningmodel
+-encapsulation of login/logout from urls.py
+-deck of cards algorithm
+-guest login
+-ert algoritm
+
+
+*Better tools for adding content
+-custom widget to choose concepts in a lessonseq
+-lesson grouping into topics
+
+
+
+*CLIENT-FRAMEWORK
+using dojo for now.
+more notes at see http://docs.google.com/Doc?docid=0AWdh6eB5WPBFZGdxNDl6M25fODJmOWt4OTZnbg&hl=en
+jquery seems reasonable
+
 
