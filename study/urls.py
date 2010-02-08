@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('dbbpy.study.views',
-    (r'^$', 'showcard'),
+    (r'^$', 'studyui'),
     (r'^getqa$', 'getqa'),
     (r'^impression$', 'impression'),
     #(r'^(?P<poll_id>\d+)/$', 'detail'),
