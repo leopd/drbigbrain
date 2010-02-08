@@ -35,11 +35,13 @@
     }
 </style>
 <script type="text/javascript">
-    // load the modules you need on the page!
+    // load required modules
     dojo.require("dijit.form.Button");
     dojo.require("dojo.parser");
+
+    // vars
     var revealAnswer;
-    // just access your dom after everything is loaded!
+    var conceptNum;
 
     function showQA(q,a) {
 	dojo.byId("questionContents").innerHTML= q;
@@ -53,7 +55,7 @@
 	    handleAs: "json",
 	    load: function(responseObject, ioArgs) {
 		showQA(responseObject.question, responseObject.answer);
-		// TODO: put card # in a form to be resubmitted
+		conceptNum = responseObject.concept;
 	    }
 	});
     }
@@ -75,10 +77,10 @@
 
     function submitAnswer(yesno)
     {
-	//alert(yesno);
+	//TODO: more general way to create postdata
 	var xhrArgs = {
 	    url: "/study/impression",
-	    postData: "answer=" + yesno,
+	    postData: "answer=" + yesno + "&concept=" + conceptNum,
 	    handleAs: "text",
 	    load: function(data) {
 		console.dir("impression "+yesno+" posted");
