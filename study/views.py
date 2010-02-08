@@ -5,6 +5,7 @@ from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 from django.template import loader, Context, RequestContext
 from dbbpy.flashcards.models import Concept
+from dbbpy.study.models import Impression
 
 def studyui(request):
     return render_to_response("study/studyui.html", context_instance=RequestContext(request))
@@ -31,4 +32,8 @@ def getqa(request):
 
 def impression(request):
     # put this into a database table...
-    return render_to_response("study/impression.html", context_instance=RequestContext(request))
+    i = Impression()
+    print request.POST
+    i.answer = request.POST['answer']
+    i.save()
+    return HttpResponse("OK", mimetype='text/plain')

@@ -78,7 +78,7 @@
 	//alert(yesno);
 	var xhrArgs = {
 	    url: "/study/impression",
-	    postData: yesno,
+	    postData: "answer=" + yesno,
 	    handleAs: "text",
 	    load: function(data) {
 		console.dir("impression "+yesno+" posted");

@@ -79,9 +79,10 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'dbbpy.flashcards',
     'django.contrib.admin',
     'dojango',
+    'dbbpy.flashcards',
+    'dbbpy.study',
 )
 
 DOJANGO_DOJO_PROFILE = "google"
