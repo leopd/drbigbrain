@@ -1,0 +1,11 @@
+{% if lessons %}
+    Pick a lesson:
+    <ul>
+    {% for lesson in lessons %}
+	<li><a href="/study/lesson/{{lesson.id}}/">{{ lesson.name }}</a></li>
+    {% endfor %}
+    </ul>
+
+{% else %}
+    <p>No lessons</p>
+{% endif %}
