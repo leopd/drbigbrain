@@ -16,4 +16,5 @@ urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
     (r'^dojango/', include('dojango.urls')),
     (r'^study/', include('study.urls')),
+    (r'', include('dbbpy.welcome.urls')),
 )
