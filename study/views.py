@@ -1,9 +1,10 @@
 import json
 import random
-from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.shortcuts import get_object_or_404
 from django.template import loader, Context, RequestContext
+from django.contrib.auth.decorators import login_required
 from dbbpy.flashcards.models import Concept
 from dbbpy.study.models import Impression
 
@@ -38,3 +39,8 @@ def impression(request):
     i.concept_id = request.POST['concept']
     i.save()
     return HttpResponse("OK", mimetype='text/plain')
+
+@login_required
+def setlesson(request,lesson_id):
+    return HttpResponseRedirect("/study/")
+    

@@ -16,5 +16,8 @@ urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
     (r'^dojango/', include('dojango.urls')),
     (r'^study/', include('study.urls')),
+    (r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'welcome/login.html'}),
+    (r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'template_name': 'welcome/logout.html'}),
+    (r'^accounts/register/$', 'dbbpy.welcome.views.register'), 
     (r'', include('dbbpy.welcome.urls')),
 )

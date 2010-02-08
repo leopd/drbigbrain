@@ -1,3 +1,6 @@
+{% extends "base.html" %}
+
+{% block content %}
 {% if lessons %}
     Pick a lesson:
     <ul>
@@ -9,3 +12,5 @@
 {% else %}
     <p>No lessons</p>
 {% endif %}
+
+{% endblock %}

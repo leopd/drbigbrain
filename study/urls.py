@@ -4,7 +4,5 @@ urlpatterns = patterns('dbbpy.study.views',
     (r'^$', 'studyui'),
     (r'^getqa$', 'getqa'),
     (r'^impression$', 'impression'),
-    #(r'^(?P<poll_id>\d+)/$', 'detail'),
-    #(r'^(?P<poll_id>\d+)/results/$', 'results'),
-    #(r'^(?P<poll_id>\d+)/vote/$', 'vote'),
+    (r'^lesson/(?P<lesson_id>\d+)/$', 'setlesson'),
 )
