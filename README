@@ -38,10 +38,10 @@ current state:
 -needs a CSS makeover.
 
 
-TODOÉ
+TODO...
 *Basic studying
 -add keyboard shortcuts on studyui
--put pinyin in the display
+X-put pinyin in the display
 -generalize which assettypes to display
 -use lessonsequence in learningmodel to derive order
 -encapsulation of login/logout from urls.py
@@ -51,11 +51,16 @@ TODOÉ
 -generalize which assets to show
 -"card" concept for which types of assets
 -hints in studyui
+-show name of lesson you're working on in studyui.
+-bug whereby it sometimes shows the same thing twice in a row
+-javascript log when impression recording doesn't work
+-pre-load next card in studyui
 
 
 *Better tools for adding content
 -custom widget to choose concepts in a lessonseq
 -lesson grouping into topics
+
 
 
 *Tests

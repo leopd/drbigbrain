@@ -26,7 +26,10 @@ def getqa(request):
 
     # TODO: generalize this for any lesson type
     q = concept.asset_set.get(asset_type=2).content
-    a = concept.asset_set.get(asset_type=4).content
+    a = u"<i>%s</i><br/>%s" % (
+	    concept.asset_set.get(asset_type=3).content,
+	    concept.asset_set.get(asset_type=4).content
+	    )
     data = { "question": q, "answer": a, "concept": concept.id }
     return HttpResponse(
 		    json.dumps(data),
