@@ -40,12 +40,11 @@ current state:
 
 TODO...
 *Basic studying
--add timer to studyui, impression table
+!-pre-load next card in studyui
+!-add timers to studyui, impression table
 -hints in studyui
 -show name of lesson you're working on in studyui.
 -bug whereby it sometimes shows the same thing twice in a row
-!-javascript log when impression recording doesn't work
-!-pre-load next card in studyui
 
 *cleanup
 -generalize which assettypes to display
@@ -58,6 +57,10 @@ TODO...
 -encapsulation of login/logout from urls.py
 -guest login
 -add "about" page
+
+*Content
+-amharic alphabet
+-Organize lessons into a tree
 
 
 *Better tools for adding content

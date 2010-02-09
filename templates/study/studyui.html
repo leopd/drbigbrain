@@ -113,10 +113,9 @@
 	    handleAs: "text",
 	    load: function(data) {
 		console.dir("impression "+yesno+" posted");
-		console.dir(data);
 	    },
 	    error: function(error) {
-		console.dir("error: "+error);
+		console.dir("error submitting impression: "+error);
 	    }
 	};
 	dojo.xhrPost(xhrArgs);
