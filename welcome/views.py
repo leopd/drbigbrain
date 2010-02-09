@@ -32,7 +32,6 @@ def register(request):
 	    else:
 		return HttpResponseRedirect("/loginfail")
 		
-	    #TODO: better redirect after creating user
 	    if request.POST['next']:
 		return HttpResponseRedirect(request.POST['next'])
 	    else:

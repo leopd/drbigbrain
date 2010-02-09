@@ -1,3 +1,14 @@
+** What is DrBigBrain?
+
+DrBigBrain is an open flashcard studying tool.
+
+It is live at http://www.drbigbrain.com/ with a set of lessons for learning to read Chinese.  I hope to incorporate many other lessons as time goes on, and provide tools by which it's easy to add your own lessons. 
+
+The code is django/python with some dojo on the client.  I welcome contributions.
+The "learning model" which figures out which card to show the user based on what they've learned so far, is abstracted out of the UI, making it easy to improve.  Currently the only learning models are fairly simple.
+
+
+
 ** INSTALL NOTES:
 Note, your mysql database must have a reasonable character set.
 
@@ -10,42 +21,36 @@ To load all BLCU content, run:
 
 
 ** DREAMHOST NOTES:
+The production system is running on Dreamhost.
 Pay attention to settings.py on production.
 dojango in installed_apps in settings.py causes "Premature end of script headers."
 
 need to add line
-	if sys.version < "2.6": os.execl("/home/xanaguy/opt/bin/python", "python", *sys.argv)
+	if sys.version < "2.6": os.execl("/home/username/opt/bin/python", "python", *sys.argv)
 to passenger_wsgi.py near top to get it to run my python.
 
 
 
-** DEVELOPMENT NOTES:
+** DEVELOPMENT NOTES, TODO ROADMAP:
 
 current state: 
--barely usable BLCU trainer.
--needs an algorithm better than "randomcard"
+-approaching a useful study tool?
 -needs a CSS makeover.
 
 
 TODOÉ
 *Basic studying
--keyboard shortcuts on studyui
-X-link back to list of lessons
-X -abstract out learningmodel
+-add keyboard shortcuts on studyui
+-put pinyin in the display
+-generalize which assettypes to display
 -use lessonsequence in learningmodel to derive order
 -encapsulation of login/logout from urls.py
-X -deck of cards algorithm
-X -feed impression data back into model
-X -smarter deck model that considers if you got it right or not
 -guest login
 -ert algoritm
 -add timer to studyui, impression table
-
-
-*Studying improvements
 -generalize which assets to show
 -"card" concept for which types of assets
--hints
+-hints in studyui
 
 
 *Better tools for adding content
@@ -53,10 +58,6 @@ X -smarter deck model that considers if you got it right or not
 -lesson grouping into topics
 
 
-
-*CLIENT-FRAMEWORK
-using dojo for now.
-more notes at see http://docs.google.com/Doc?docid=0AWdh6eB5WPBFZGdxNDl6M25fODJmOWt4OTZnbg&hl=en
-jquery seems reasonable
-
+*Tests
+-Add some tests!
 

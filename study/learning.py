@@ -63,6 +63,8 @@ class SimpleDeckModel(LearningModelBase):
 	return concept
 
 
+# If you get a card right, put it at the back of the deck.
+# If you get a card wrong, put it fairly close to the front
 class BetterDeckModel(SimpleDeckModel):
 
     # where to put the card if the user gets it wrong
