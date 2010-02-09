@@ -10,6 +10,7 @@ To load all BLCU content, run:
 
 
 ** DREAMHOST NOTES:
+Pay attention to settings.py on production.
 dojango in installed_apps in settings.py causes "Premature end of script headers."
 
 need to add line
@@ -22,20 +23,21 @@ to passenger_wsgi.py near top to get it to run my python.
 
 current state: 
 -barely usable BLCU trainer.
--login UI is really rough.
 -needs an algorithm better than "randomcard"
-
+-needs a CSS makeover.
 
 
 TODOÉ
 *Basic studying
 -keyboard shortcuts on studyui
 X-link back to list of lessons
--abstract out learningmodel
+X -abstract out learningmodel
+-use lessonsequence in learningmodel to derive order
 -encapsulation of login/logout from urls.py
--deck of cards algorithm
+X -deck of cards algorithm
 -guest login
 -ert algoritm
+-add timer to studyui, impression table
 
 
 *Studying improvements

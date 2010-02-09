@@ -10,6 +10,7 @@ from dbbpy.flashcards.models import Concept
 from dbbpy.flashcards.models import Lesson
 from dbbpy.study.models import Impression
 from dbbpy.study.learning import RandomLearningModel
+from dbbpy.study.learning import SimpleDeckModel
 
 @login_required
 def studyui(request):
@@ -20,6 +21,7 @@ def getqa(request):
     # call the model to pick the next card to show
     model = request.session['learning_model']
     concept = model.choose_card()
+    request.session['learning_model'] = model
 
     # TODO: generalize this for any lesson type
     q = concept.asset_set.get(asset_type=2).content
@@ -42,7 +44,8 @@ def impression(request):
 
 @login_required
 def setlesson(request,lesson_id):
-    model = RandomLearningModel()
+    #model = RandomLearningModel()
+    model = SimpleDeckModel()
     model.set_active_lesson(lesson_id)
     request.session['learning_model'] = model
     return HttpResponseRedirect("/study/")
