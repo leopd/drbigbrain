@@ -1,5 +1,6 @@
-<html>
-<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Dr. Bigbrain Online Studying</title><style type="text/css"> 
+{% extends "base.html" %}
+{% block extrahead %}
+<style type="text/css"> 
 		@import "http://ajax.googleapis.com/ajax/libs/dojo/1.4.0/dojo/resources/dojo.css";
 		@import "http://ajax.googleapis.com/ajax/libs/dojo/1.4.0/dijit/themes/tundra/tundra.css";
 	    </style><script type="text/javascript"> 
@@ -17,16 +18,11 @@
 		};
 	    
 	</script><script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/dojo/1.4.0/dojo/dojo.xd.js"></script>
-{% block dojango_header_extra %}
+    {% block dj_header_extra %}
+    {% endblock %}
 {% endblock %}
-</head>
-
-<body id="bodytag">
 
 {% block content %}
-{% endblock %}
-{% block dojango_content %}
-{% endblock %}
 
 
 <hr>
@@ -34,5 +30,4 @@
 <a href="/">Home</a>
 <a href="/accounts/logout/">Logout</a>
 </font>
-</body>
-</html>
+{% endblock %}

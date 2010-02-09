@@ -1,8 +1,6 @@
 {% extends "djbase.html" %}
 
-{# setting the <title> attribute #}
-{% block dojango_page_title %}Dr. Bigbrain Online Studying{% endblock %}
-{% block dojango_header_extra %}
+{% block dj_header_extra %}
 <style type="text/css">
     .box {
         margin-top: 10px;
@@ -130,7 +128,7 @@
 
 </script>
 {% endblock %}
-{% block dojango_content %}
+{% block content %}
 <div id="questionDiv" class="box">
 What does this mean?
 
