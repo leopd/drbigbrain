@@ -61,6 +61,7 @@
 	    load: function(responseObject, ioArgs) {
 		showQA(responseObject.question, responseObject.answer);
 		conceptNum = responseObject.concept;
+		dojo.byId("revealButton").focus();
 	    }
 	});
     }
@@ -98,6 +99,7 @@
     function revealAnswer()
     {
 	dojo.byId("answerDiv").style.display="block";
+	dojo.byId("revealButton").blur();
     }
     function hideAnswer()
     {
@@ -136,18 +138,18 @@ What does this mean?
 <i>loading...</i>
 </div>
 </div>
-<button onClick="javascript:revealAnswer();">Reveal Answer</button>
+<button id="revealButton" onClick="javascript:revealAnswer();">Reveal Answer</button>
 <div id="answerDiv" class="box" style="display:none" >
 <div id="answerContents" class="qacard" >
 <i>loading...</i>
 </div>
 Did you know this one?
-<button onClick="submitAnswer('yes');">Yes</button>
-<button onClick="submitAnswer('no');">No</button>
+<button id="yesButton" onClick="submitAnswer('yes');">Yes</button>
+<button id="noButton" onClick="submitAnswer('no');">No</button>
 </div>
 
 <div class="uihints">
-Hints:
+Hint:
 Try pressing R, N, and Y keys.
 </div>
 {% endblock %}
