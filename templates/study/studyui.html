@@ -33,10 +33,15 @@
 	margin: 10px;
 	padding: 5px;
     }
+
+    .uihints {
+	margin-top: 20px;
+	font-size: 8px;
+    }
+
 </style>
 <script type="text/javascript">
     // load required modules
-    dojo.require("dijit.form.Button");
     dojo.require("dojo.parser");
 
     // vars
@@ -61,10 +66,34 @@
     }
 
 
-    dojo.addOnLoad(function(){
-	fetchQA();
 
+    dojo.addOnLoad(function(){
+	var node = dojo.byId("bodytag");
+	dojo.connect(node, "onkeypress", function(e){
+	    switch(e.charOrCode){
+		case 'r':
+		case 'R':
+		    revealAnswer();
+		    break;
+		case 'n':
+		case 'N':
+		    submitAnswer('no');
+		    break;
+		case 'y':
+		case 'Y':
+		    submitAnswer('yes');
+		    break;
+	    }
+	    // dojo.stopEvent(e);
+	});
+		    
+		
+	startUI();
     });
+
+    function startUI() {
+	fetchQA();
+    }
 
     function revealAnswer()
     {
@@ -107,14 +136,19 @@ What does this mean?
 <i>loading...</i>
 </div>
 </div>
-<button dojoType="dijit.form.Button" onClick="javascript:revealAnswer();">Reveal Answer</button>
+<button onClick="javascript:revealAnswer();">Reveal Answer</button>
 <div id="answerDiv" class="box" style="display:none" >
 <div id="answerContents" class="qacard" >
 <i>loading...</i>
 </div>
-Did you get it right?
-<button dojoType="dijit.form.Button" onClick="submitAnswer('yes');">Yes</button>
-<button dojoType="dijit.form.Button" onClick="submitAnswer('no');">No</button>
+Did you know this one?
+<button onClick="submitAnswer('yes');">Yes</button>
+<button onClick="submitAnswer('no');">No</button>
+</div>
+
+<div class="uihints">
+Hints:
+Try pressing R, N, and Y keys.
 </div>
 {% endblock %}
 

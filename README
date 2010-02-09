@@ -40,19 +40,20 @@ current state:
 
 TODO...
 *Basic studying
--add keyboard shortcuts on studyui
-X-put pinyin in the display
--generalize which assettypes to display
--use lessonsequence in learningmodel to derive order
--ert algoritm
+* -add keyboard shortcuts on studyui
 -add timer to studyui, impression table
--generalize which assets to show
--"card" concept for which types of assets
 -hints in studyui
 -show name of lesson you're working on in studyui.
 -bug whereby it sometimes shows the same thing twice in a row
--javascript log when impression recording doesn't work
--pre-load next card in studyui
+!-javascript log when impression recording doesn't work
+!-pre-load next card in studyui
+
+*cleanup
+-generalize which assettypes to display
+-use lessonsequence in learningmodel to derive order
+-ert algoritm
+-"card" concept for which types of assets
+
 
 *Login, frame UI
 -encapsulation of login/logout from urls.py
