@@ -44,8 +44,6 @@ TODO...
 X-put pinyin in the display
 -generalize which assettypes to display
 -use lessonsequence in learningmodel to derive order
--encapsulation of login/logout from urls.py
--guest login
 -ert algoritm
 -add timer to studyui, impression table
 -generalize which assets to show
@@ -55,6 +53,11 @@ X-put pinyin in the display
 -bug whereby it sometimes shows the same thing twice in a row
 -javascript log when impression recording doesn't work
 -pre-load next card in studyui
+
+*Login, frame UI
+-encapsulation of login/logout from urls.py
+-guest login
+-add "about" page
 
 
 *Better tools for adding content
