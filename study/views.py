@@ -11,6 +11,7 @@ from dbbpy.flashcards.models import Lesson
 from dbbpy.study.models import Impression
 from dbbpy.study.learning import RandomLearningModel
 from dbbpy.study.learning import SimpleDeckModel
+from dbbpy.study.learning import BetterDeckModel
 
 @login_required
 def studyui(request):
@@ -35,18 +36,30 @@ def getqa(request):
 def impression(request):
     # put this into a database table...
     i = Impression()
-    print request.POST
+    #print request.POST
     i.answer = request.POST['answer']
-    i.concept_id = request.POST['concept']
+    i.concept_id = long(request.POST['concept'])
     i.user = request.user
     i.save()
+
+    # tell the learning model about the impression
+    model = request.session['learning_model']
+    concept = model.log_impression(i)
+    request.session['learning_model'] = model
+
+    # return a simple HTTP response
     return HttpResponse("OK", mimetype='text/plain')
 
 @login_required
 def setlesson(request,lesson_id):
     #model = RandomLearningModel()
-    model = SimpleDeckModel()
+    model = BetterDeckModel()
     model.set_active_lesson(lesson_id)
     request.session['learning_model'] = model
     return HttpResponseRedirect("/study/")
+    
+# print out the model state
+def debugmodel(request):
+    model = request.session['learning_model']
+    return HttpResponse(model.__unicode__(), mimetype='text/plain')
     

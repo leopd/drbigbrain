@@ -9,3 +9,6 @@ class Impression(models.Model):
     answered_date = models.DateTimeField(auto_now_add=True)
     answer = models.CharField(max_length=10)
 
+    def __unicode__(self):
+	return u"Impression on %s '%s'" % (self.concept,self.answer)
+

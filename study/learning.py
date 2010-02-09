@@ -2,6 +2,7 @@ import random
 from django.shortcuts import get_object_or_404
 from dbbpy.flashcards.models import Concept
 from dbbpy.flashcards.models import Lesson
+from dbbpy.study.models import Impression
 
 
 
@@ -21,10 +22,19 @@ class LearningModelBase():
 	self.active_concepts.reverse()
 	    
 
-    def choose_card():
+    # this method is required
+    def choose_card(self):
 	raise NotImplementedError()
     
 
+    def log_impression(self,impression):
+	# simple models might not use this fact, so they don't need
+	# to override this method.
+	#print "default logimpression does nothing"
+	pass
+
+    def __unicode__(self):
+	return u"%s: %s" % (self.__class__, self.active_concepts)
 
 # this just picks a random card from the deck, with no concept of state
 # (beyond the 
@@ -51,4 +61,26 @@ class SimpleDeckModel(LearningModelBase):
 	self.active_concepts.append(concept_id)
 
 	return concept
+
+
+class BetterDeckModel(SimpleDeckModel):
+
+    # where to put the card if the user gets it wrong
+    HOW_FAR_BACK_WHEN_WRONG=5
+
+    def log_impression(self,impression):
+	#print u"better decklogging %s" % impression
+	# if they got it right, do nothing
+	if impression.answer == "yes":
+	    return
+
+	# if they got it wrong, move that card near the front of the deck
+	try:
+	    self.active_concepts.remove(impression.concept_id)
+	except ValueError:
+	    #print "Couldn't find %s in active list" % impression.concept_id
+	    pass
+	self.active_concepts.insert(self.HOW_FAR_BACK_WHEN_WRONG,impression.concept_id)
+
+	#print u"now list is %s" % self.active_concepts
 

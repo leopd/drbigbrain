@@ -35,6 +35,8 @@ X -abstract out learningmodel
 -use lessonsequence in learningmodel to derive order
 -encapsulation of login/logout from urls.py
 X -deck of cards algorithm
+X -feed impression data back into model
+X -smarter deck model that considers if you got it right or not
 -guest login
 -ert algoritm
 -add timer to studyui, impression table

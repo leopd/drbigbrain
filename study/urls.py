@@ -5,4 +5,5 @@ urlpatterns = patterns('dbbpy.study.views',
     (r'^getqa$', 'getqa'),
     (r'^impression$', 'impression'),
     (r'^lesson/(?P<lesson_id>\d+)/$', 'setlesson'),
+    (r'^debug$', 'debugmodel'),
 )
