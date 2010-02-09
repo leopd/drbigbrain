@@ -9,29 +9,18 @@ from django.contrib.auth.decorators import login_required
 from dbbpy.flashcards.models import Concept
 from dbbpy.flashcards.models import Lesson
 from dbbpy.study.models import Impression
+from dbbpy.study.learning import RandomLearningModel
 
 @login_required
 def studyui(request):
     return render_to_response("study/studyui.html", context_instance=RequestContext(request))
 
-def pick_concept(request):
-    lesson = get_object_or_404(Lesson, pk=request.session['lesson'])
-    num = lesson.concepts.count()
-    which = random.randint(1,num)
-
-    # note: this loads the entire lesson, which is unnecessarily slow.
-    for concept in lesson.concepts.all():
-	which = which-1
-	if which==0:
-	    return concept
-
-    print "assertion fail. Should never get here in dbbpy.study.views.pick_concept"
-    return None
-
 
 def getqa(request):
-    # pick a random card to show...
-    concept = pick_concept(request)
+    # call the model to pick the next card to show
+    model = request.session['learning_model']
+    concept = model.choose_card()
+
     # TODO: generalize this for any lesson type
     q = concept.asset_set.get(asset_type=2).content
     a = concept.asset_set.get(asset_type=4).content
@@ -53,6 +42,8 @@ def impression(request):
 
 @login_required
 def setlesson(request,lesson_id):
-    request.session['lesson'] = lesson_id
+    model = RandomLearningModel()
+    model.set_active_lesson(lesson_id)
+    request.session['learning_model'] = model
     return HttpResponseRedirect("/study/")
     
