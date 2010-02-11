@@ -1,0 +1,11 @@
+<html><body>
+<font size="-2">
+{% if is_logged_in %}
+    Welcome back, {{ user.username }}!
+    (<a href="/accounts/logout/" target="_top">log out</a>)
+{% else %}
+    <a href="/accounts/login/?next=/" target="_top">Log in</a>
+{% endif %}
+</font>
+</body>
+</html>

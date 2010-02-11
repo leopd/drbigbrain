@@ -34,7 +34,14 @@ class LearningModelBase():
 	pass
 
     def __unicode__(self):
-	return u"%s: %s" % (self.__class__, self.active_concepts)
+	str = u"%s: {\n" % self.__class__
+	place=0
+	for id in self.active_concepts:
+	    concept = get_object_or_404(Concept, pk=id)
+	    place += 1
+	    str += u"%s) %s\n" % (place, concept)
+	str += "}"
+	return str
 
 # this just picks a random card from the deck, with no concept of state
 # (beyond the 

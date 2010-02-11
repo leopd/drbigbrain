@@ -41,3 +41,9 @@ def register(request):
         'form' : form.as_p(),
     })
 
+def ajaxloginlink(request):
+    return render_to_response("welcome/ajaxloginlink.html", {
+	'is_logged_in': request.user.is_authenticated(),
+        'user' : request.user,
+    })
+    
