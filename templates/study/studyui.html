@@ -113,16 +113,19 @@
 	    handleAs: "text",
 	    load: function(data) {
 		console.dir("impression "+yesno+" posted");
+		showQA("....","....");
+		// We have to serialize these to avoid races on the server 
+		// which overwrite the session.
+		fetchQA();
 	    },
 	    error: function(error) {
 		console.dir("error submitting impression: "+error);
+		showQA("-e-","-e-");
 	    }
 	};
 	dojo.xhrPost(xhrArgs);
-	// some XHR here.
 	showQA("...","...");
 	hideAnswer();
-	fetchQA();
     }
 
 </script>
