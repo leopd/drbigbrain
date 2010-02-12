@@ -21,6 +21,13 @@ class LearningModelBase():
 	#TODO: Replace this with proper sequences from LessonSequence table
 	self.active_concepts.reverse()
 	    
+    def remove_concept_from_deck(self,id):
+	try:
+	    self.active_concepts.remove(id)
+	except ValueError:
+	    #print "Couldn't find %s in active list" % id
+	    pass
+
 
     # this method is required
     def choose_card(self):
@@ -39,7 +46,7 @@ class LearningModelBase():
 	for id in self.active_concepts:
 	    concept = get_object_or_404(Concept, pk=id)
 	    place += 1
-	    str += u"%s) %s\n" % (place, concept)
+	    str += u"%s. (%s) %s\n" % (place, id, concept)
 	str += "}"
 	return str
 
@@ -75,21 +82,25 @@ class SimpleDeckModel(LearningModelBase):
 class BetterDeckModel(SimpleDeckModel):
 
     # where to put the card if the user gets it wrong
-    HOW_FAR_BACK_WHEN_WRONG=5
-
+    def how_far_back_when_wrong(self):
+	return int(random.uniform(3,7))
+	
     def log_impression(self,impression):
 	#print u"better decklogging %s" % impression
 	# if they got it right, do nothing
 	if impression.answer == "yes":
+	    #TODO: if impression time was long, move it up some
 	    return
 
-	# if they got it wrong, move that card near the front of the deck
-	try:
-	    self.active_concepts.remove(impression.concept_id)
-	except ValueError:
-	    #print "Couldn't find %s in active list" % impression.concept_id
-	    pass
-	self.active_concepts.insert(self.HOW_FAR_BACK_WHEN_WRONG,impression.concept_id)
+	if impression.answer == "discard":
+	    self.remove_concept_from_deck(impression.concept_id)
+	    return
+	    
+	if impression.answer == "no":
+	    # if they got it wrong, move that card near the front of the deck
+	    self.remove_concept_from_deck(impression.concept_id)
+
+	    self.active_concepts.insert(self.how_far_back_when_wrong(),impression.concept_id)
 
 	#print u"now list is %s" % self.active_concepts
 

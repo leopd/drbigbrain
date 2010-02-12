@@ -40,17 +40,27 @@ current state:
 
 TODO...
 *Basic studying
+-continue where you left off. session mgmt.
+-deck mgmt -- add new cards, keep the old
+-model understands hard cards
 !-pre-load next card in studyui
 !-add timers to studyui, impression table
 -hints in studyui
 -show name of lesson you're working on in studyui.
 -bug whereby it sometimes shows the same thing twice in a row
+-optimize impression/nextcard
 
 *cleanup
 -generalize which assettypes to display
 -use lessonsequence in learningmodel to derive order
 -ert algoritm
 -"card" concept for which types of assets
+-move served cards into special deck rather than just moving to the back
+X-use post for /getqa
+
+*optimize
+-move studyui.html to static media
+-move .js and .css out of studyui.
 
 
 *Login, frame UI
@@ -61,7 +71,8 @@ TODO...
 *Content
 -amharic alphabet
 -Organize lessons into a tree
-
+-import cedict
+-audio support
 
 *Better tools for adding content
 -custom widget to choose concepts in a lessonseq

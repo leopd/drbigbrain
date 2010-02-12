@@ -15,6 +15,7 @@ from dbbpy.study.learning import BetterDeckModel
 
 @login_required
 def studyui(request):
+    #TODO: move this to static media
     return render_to_response("study/studyui.html", context_instance=RequestContext(request))
 
 
@@ -64,5 +65,5 @@ def setlesson(request,lesson_id):
 # print out the model state
 def debugmodel(request):
     model = request.session['learning_model']
-    return HttpResponse(model.__unicode__(), mimetype='text/plain')
+    return render_to_response("study/debug.html", { 'debugstring': model } )
     
