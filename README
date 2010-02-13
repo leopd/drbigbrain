@@ -57,6 +57,21 @@ TODO...
 -"card" concept for which types of assets
 -move served cards into special deck rather than just moving to the back
 X-use post for /getqa
+-studyui only shows buttons that current model is configured for
+-base learning model checks that you're only using the card sets that are configured for that class
+-rename "set" to "pile" in model
+
+
+*deck manager
+-allow saving of active/discard back to server
+-radio-button the selections.  only highlight one total.  not highlight one per column
+-Don't gray the before/after of the drop target
+
+*better model
+-history looks up actual impressions
+-calculate real no_count
+-sort by ERT in learning, review piles
+
 
 *optimize
 -move studyui.html to static media

@@ -52,7 +52,7 @@
 
     // vars
     var showAnswer;
-    var conceptNum;
+    var cardid;
 
     function showQA(q,a) {
 	dojo.byId("questionContents").innerHTML= q;
@@ -66,7 +66,7 @@
 	    handleAs: "json",
 	    load: function(responseObject, ioArgs) {
 		showQA(responseObject.question, responseObject.answer);
-		conceptNum = responseObject.concept;
+		cardid = responseObject.id;
 		dojo.byId("showButton").focus();
 	    }
 	});
@@ -84,15 +84,19 @@
 		    break;
 		case 'n':
 		case 'N':
-		    submitAnswer('no');
+		    submitAnswer('No');
 		    break;
 		case 'y':
 		case 'Y':
-		    submitAnswer('yes');
+		    submitAnswer('Yes');
 		    break;
 		case 'd':
 		case 'D':
-		    submitAnswer('discard');
+		    submitAnswer('Discard');
+		    break;
+		case 'k':
+		case 'K':
+		    submitAnswer('Kinda');
 		    break;
 	    }
 	    // dojo.stopEvent(e);
@@ -123,7 +127,7 @@
 	//TODO: more general way to create postdata
 	var xhrArgs = {
 	    url: "/study/impression",
-	    postData: "answer=" + yesno + "&concept=" + conceptNum,
+	    postData: "answer=" + yesno + "&id=" + cardid,
 	    handleAs: "text",
 	    load: function(data) {
 		console.dir("impression "+yesno+" posted");
@@ -159,14 +163,17 @@ What does this mean?
 <i>loading...</i>
 </div>
 Did you know this one?<br/>
-<button id="yesButton" class="answerbutton" onClick="submitAnswer('yes');">Yes</button>
-<button id="noButton" class="answerbutton" onClick="submitAnswer('no');">No</button>
-<button id="discardButton" class="answerbutton" onClick="submitAnswer('discard');">Discard</button>
+<button id="yesButton" class="answerbutton" onClick="submitAnswer('Yes');">Yes</button>
+<button id="noButton" class="answerbutton" onClick="submitAnswer('No');">No</button>
+<button id="discardButton" class="answerbutton" onClick="submitAnswer('Discard');">Discard</button>
+<button id="kindaButton" class="answerbutton" onClick="submitAnswer('Kinda');">Kinda</button>
 </div>
 
 <div class="uihints">
 Hint:
-Try pressing S, N, Y keys.
+Try pressing S, N, Y, D, K keys.
+<br/>
+<a href="deck">See all your cards</a>
 </div>
 {% endblock %}
 

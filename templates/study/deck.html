@@ -1,0 +1,195 @@
+{% extends "djbase.html" %}
+
+{% block dj_header_extra %}
+    <style type="text/css"> 
+
+	.dojoDndAvatar		{font-size: 75%; color: black;}
+	.dojoDndAvatarHeader td	{padding-left: 20px; padding-right: 4px;}
+	.dojoDndAvatarHeader	{background: #ccc;}
+	.dojoDndAvatarItem	{background: #eee;}
+	.dojoDndMove .dojoDndAvatarHeader   {background-image: url(images/dndNoMove.png); background-repeat: no-repeat;}
+	.dojoDndCopy .dojoDndAvatarHeader   {background-image: url(images/dndNoCopy.png); background-repeat: no-repeat;}
+	.dojoDndMove .dojoDndAvatarCanDrop .dojoDndAvatarHeader	{background-image: url(images/dndMove.png); background-repeat: no-repeat;}
+	.dojoDndCopy .dojoDndAvatarCanDrop .dojoDndAvatarHeader	{background-image: url(images/dndCopy.png); background-repeat: no-repeat;}
+	.dojoDndHandle {cursor: move;}
+	.dojoDndIgnore {cursor: default;}
+	.dijit_a11y .dojoDndAvatar { font-size: 1em; font-weight:bold;}
+	.dijit_a11y .dojoDndAvatarHeader td {padding-left:2px !important;}
+	.dijit_a11y .dojoDndAvatarHeader td span {padding-right: 5px;}
+
+	.container {
+	    border: 3px solid #ccc;
+	    padding: 1em 3em; 
+	    cursor: default;
+	    radius: 8pt;
+	    background: #fff;
+	    -moz-border-radius: 8pt 8pt;
+	}
+	.dojoDndContainerOver {
+	    
+	    border: 3px solid #aaa;
+	}
+	.dojoDndTargetDisabled {
+	    background: #eee;
+	}
+	.dojoDndItem { 
+	    padding: 3px;
+	}
+	.dj_ff2 .dojoDndItem {
+	    -moz-user-select: none; 
+	} 
+	.dojoDndItemOver {
+	    background: #ededed;
+	    cursor: pointer;
+	}
+	.dojoDndItemSelected {
+	    background: #ccf; color: #444;
+	}
+	.dojoDndItemAnchor {
+	    background: #ccf; color: black;
+	}
+	.dojoDndItemOver .dojoDndItemSelected {
+	    background: #ededed;
+	}
+	.dojoDndItemOver .dojoDndItemAnchor {
+	    background: #ededed;
+	}
+	.dojoDndItemBefore {
+	    border-top: 2px solid #369;
+	}
+	.dojoDndItemAfter {
+	    border-bottom: 2px solid #369;
+	}
+	.dojoDndAvatar {
+	    border: 2px solid #ccc;
+	    font-size: 75%;
+	    -moz-border-radius: 8pt 8pt;
+	    radius: 8pt;
+	}
+	    
+	.dojoDndAvatarHeader {
+	    background: #aaa;
+	}
+	.dojoDndAvatarItem {
+	    background: #fff;
+	    border-bottom: 1px solid #666;
+	}
+
+	body {
+	    padding: 1em;
+	    background: #ededed;
+	}
+ 
+	.container {
+	    width: 100px;
+	    display: block;
+	}
+ 
+	.clear {
+	    clear: both;
+	}
+    </style> 
+ 
+ 
+    <script type="text/javascript"> 
+	// based on http://archive.dojotoolkit.org/nightly/dojotoolkit/dojo/tests/dnd/test_dnd.html
+	// docs at http://docs.dojocampus.org/dojo/dnd
+	dojo.require("dojo.parser");
+	dojo.require("dojo.dnd.Source");
+ 
+	var c1;
+ 
+	function init(){
+	    // example subscribe to events
+	    dojo.subscribe("/dnd/start", function(source){
+		console.debug("Starting the drop", source);
+	    });
+	    dojo.subscribe("/dnd/drop/before", function(source, nodes, copy, target){
+		//if(target == c1){
+		    console.debug(copy ? "Copying from" : "Moving from", source, "to", target, "before", target.before);
+		//}
+	    });
+	    dojo.subscribe("/dnd/drop", function(source, nodes, copy, target){
+		//if(target == c1){
+		    console.debug(copy ? "Copying from" : "Moving from", source, "to", target, "before", target.before);
+		//}
+	    });
+
+	    dojo.xhrPost( {
+		url: "/study/jsondeck",
+		handleAs: "json",
+		load: function(responseObject, ioArgs) {
+		    load_deck(responseObject);
+		}
+	    })
+	};
+
+
+	function load_cardset(container, cards) {
+	    console.debug(container);
+	    console.debug(cards);
+	    for(i=0; i< cards.length; i++) {
+		card = cards[i];
+		container.insertNodes( null,[ card.summary ] );
+	    }
+	}
+
+	function load_deck(deck){
+	    console.debug("loaddeck");
+
+	    load_cardset(containerDiscard, deck.Discard);
+	    load_cardset(containerUnseen, deck.Unseen);
+	    load_cardset(containerSolid, deck.Solid);
+	    load_cardset(containerLearning, deck.Learning);
+	    load_cardset(containerReview, deck.Review);
+	}
+ 
+	dojo.addOnLoad(init);
+ 
+</script>
+
+{% endblock %}
+{% block content %}
+<p>
+<B>In your deck:</b>
+</p>
+
+
+    <div id="dragLists"> 
+	<div style="float: left; margin: 5px;"> 
+	    <h3>Unseen cards</h3> 
+	    <div dojoType="dojo.dnd.Source" jsId="containerUnseen" class="container"> 
+	    </div> 
+	</div> 
+	<div style="float: left; margin: 5px;"> 
+	    <h3>Discards</h3> 
+	    <div dojoType="dojo.dnd.Source" jsId="containerDiscard" class="container"> 
+	    </div> 
+	</div> 
+	<div style="float: left; margin: 5px;"> 
+	    <h3>Learning</h3> 
+	    <div dojoType="dojo.dnd.Source" jsId="containerLearning" class="container"> 
+	    </div> 
+	</div> 
+	<div style="float: left; margin: 5px;"> 
+	    <h3>Review</h3> 
+	    <div dojoType="dojo.dnd.Source" jsId="containerReview" class="container"> 
+	    </div> 
+	</div> 
+	<div style="float: left; margin: 5px;"> 
+	    <h3>Solid</h3> 
+	    <div dojoType="dojo.dnd.Source" jsId="containerSolid" class="container"> 
+	    </div> 
+	</div> 
+	<div class="clear"></div> 
+    </div> 
+
+    <p>
+	<a href="/study/resetdeck">Reset deck</a>
+	<br/>
+	<i>(Note manipulation of deck here currentyl has no effect.)</i>
+    </p>
+ 
+	
+
+{% endblock %}

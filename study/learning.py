@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 from dbbpy.flashcards.models import Concept
 from dbbpy.flashcards.models import Lesson
 from dbbpy.study.models import Impression
+from dbbpy.study.card import Card
 
 
 
@@ -10,29 +11,51 @@ from dbbpy.study.models import Impression
 # these must be pickleable
 class LearningModelBase():
 
+    def __init__(self):
+	# cards is a hashtable of lists of Card objects
+	self.piles={}
+	for pile in self.supported_piles():
+	    print "creating pile %s" % pile
+	    self.piles[pile] = []
+
+	# this provides a way to look up the card objects 
+	self.cards_by_id={}
+
     # given a lesson id, it stores the id's of all the concepts in that lesson
-    # in a list called active_concepts
+    # in the "Active" card pile
     def set_active_lesson(self,lesson_id):
 	lesson = get_object_or_404(Lesson, pk=lesson_id)
-	self.active_concepts = []
+
+	# reset Active
+	self.piles['Active'] = []
+
 	for concept in lesson.concepts.all():
-	    self.active_concepts.append(concept.id)
+	    card = Card(concept)
+	    self.move_card_to_pile(card,'Active')
+	    #self.piles['Active'].append(card)
 
 	#TODO: Replace this with proper sequences from LessonSequence table
-	self.active_concepts.reverse()
-	    
-    def remove_concept_from_deck(self,id):
-	try:
-	    self.active_concepts.remove(id)
-	except ValueError:
-	    #print "Couldn't find %s in active list" % id
-	    pass
+	#self.piles['Active'].reverse()
+
+    # returns a list of the kinds of piles this model understands
+    def supported_piles(self):
+	return ['Active']
+    
+    # returns a list of the kinds of actions this model understands
+    # these are the buttons that will be displayed in the study ui
+    def supported_actions(self):
+	return ['Next']
+    
 
 
-    # this method is required
+    # this method is required.  subclasses must implement this.
     def choose_card(self):
 	raise NotImplementedError()
     
+
+    def choose_concept(self):
+	card = self.choose_card()
+	return card.concept()
 
     def log_impression(self,impression):
 	# simple models might not use this fact, so they don't need
@@ -41,66 +64,253 @@ class LearningModelBase():
 	pass
 
     def __unicode__(self):
-	str = u"%s: {\n" % self.__class__
-	place=0
-	for id in self.active_concepts:
-	    concept = get_object_or_404(Concept, pk=id)
-	    place += 1
-	    str += u"%s. (%s) %s\n" % (place, id, concept)
-	str += "}"
+	str = u"%s:\n" % self.__class__
+	for pile in self.supported_piles():
+	    str += u"%s pile: " % pile
+	    if self.piles.get(pile) is None:
+		str += u"missing\n"
+	    else:
+		str += u"{\n"
+		place=0
+		for card in self.piles[pile]:
+		    place += 1
+		    str += u"    %s. (%s) %s\n" % (place, card.id, card)
+		str += u"}\n"
 	return str
 
-# this just picks a random card from the deck, with no concept of state
-# (beyond the 
+    # returns a list of cards in the given pile
+    def cards_in_pile(self, pile):
+	return self.piles[pile]
+
+    def remove_card_from_pile(self,id,pile):
+	if pile is None:
+	    return
+	try:
+	    self.piles[pile].remove(id)
+	except ValueError:
+	    #print "Couldn't find %s in %s list" % (id, pile)
+	    pass
+
+    # defaults to back of pile
+    def move_card_to_pile(self,card,pile,where=-1):
+	self.remove_card_from_pile(card, self.which_pile(card) )
+	if where < 0:
+	    self.piles[pile].append(card)
+	else:
+	    self.piles[pile].insert(where,card)
+
+	# make sure we can look it up
+	self.cards_by_id[card.id] = card
+
+    # find a card object by its id
+    def lookup_card(self,id):
+	return self.cards_by_id[id]
+	
+
+    def front_of_pile(self,pile):
+	if len(self.piles[pile]) == 0:
+	    return None
+	return self.piles[pile][0]
+
+    def which_pile(self,card):
+	#TODO: this is slow. catching lots of exceptions make it faster.
+	for pile in self.supported_piles():
+	    try:
+		self.piles[pile].index(card)
+		return pile
+	    except ValueError:
+		pass
+	return None    
+	
+
+
+# this just picks a random card from the deck, with no ideas of state
 class RandomLearningModel(LearningModelBase):
 
     def choose_card(self):
-	num = len(self.active_concepts)
+	num = len(self.piles['Active'])
 	which = random.randint(0,num-1)
 
-	concept_id = self.active_concepts[which]
-	concept = get_object_or_404(Concept, pk=concept_id)
-	return concept
+	card = self.piles['Active'][which]
+	return card
 
 
 # Just goes through the cards in order.
 class SimpleDeckModel(LearningModelBase):
 
     def choose_card(self):
-	concept_id = self.active_concepts[0]
-	concept = get_object_or_404(Concept, pk=concept_id)
+	card = self.piles['Active'][0]
 
 	# rotate the deck
-	self.active_concepts = self.active_concepts[1:]
-	self.active_concepts.append(concept_id)
+	self.move_card_to_pile(card,'Active')
+	#self.piles['Active'] = self.piles['Active'][1:]
+	#self.piles['Active'].append(card)
 
-	return concept
+	return card
 
 
 # If you get a card right, put it at the back of the deck.
 # If you get a card wrong, put it fairly close to the front
 class BetterDeckModel(SimpleDeckModel):
 
+    def supported_actions(self):
+	return ['Yes','No','Discard']
+
+    def supported_piles(self):
+	return ['Active','Discard']
+    
     # where to put the card if the user gets it wrong
     def how_far_back_when_wrong(self):
 	return int(random.uniform(3,7))
 	
     def log_impression(self,impression):
 	#print u"better decklogging %s" % impression
+	card = self.lookup_card(impression.concept_id)
+
 	# if they got it right, do nothing
-	if impression.answer == "yes":
+	if impression.answer == "Yes":
 	    #TODO: if impression time was long, move it up some
 	    return
 
-	if impression.answer == "discard":
-	    self.remove_concept_from_deck(impression.concept_id)
+	if impression.answer == "Discard":
+	    self.move_card_to_pile(card,'Discard')
 	    return
 	    
-	if impression.answer == "no":
+	if impression.answer == "No":
 	    # if they got it wrong, move that card near the front of the deck
-	    self.remove_concept_from_deck(impression.concept_id)
+	    self.move_card_to_pile(card,'Active', self.how_far_back_when_wrong())
 
-	    self.active_concepts.insert(self.how_far_back_when_wrong(),impression.concept_id)
+	#print u"now list is %s" % self.piles['Active']
 
-	#print u"now list is %s" % self.active_concepts
 
+
+# Considers the history 
+class HistoryModel(SimpleDeckModel):
+
+    def __init__(self):
+	SimpleDeckModel.__init__(self)
+	self.model_seq=0
+	self.soonest={}
+
+    def supported_actions(self):
+	return ['Yes','No','Discard','Kinda']
+
+    def supported_piles(self):
+	return ['Unseen','Discard','Solid','Learning','Review']
+
+    
+    def choose_card(self):
+	self.model_seq += 1
+	print "model seq up to %s" % self.model_seq
+
+	card = self.front_of_pile('Learning')
+	if (card != None ) and (not self.too_soon(card)):
+	    print "from learning pile"
+	    return card
+	print "Nothing good in learning pile"
+	
+	card = self.front_of_pile('Review')
+	if (card != None ) and (not self.too_soon(card)):
+	    print "from review pile"
+	    return card
+	print "Nothing good in review pile"
+	
+	card = self.front_of_pile('Unseen')
+	if (card != None ):
+	    print "from new pile"
+	    return card
+	print "Nothing at all in unseen pile"
+
+	
+	card = self.front_of_pile('Learning')
+	if (card != None ):
+	    print "backup from learning pile"
+	    return card
+	print "Nothing at all in learning pile"
+	
+	card = self.front_of_pile('Review')
+	if (card != None ):
+	    print "backup from review pile"
+	    return card
+	print "Nothing at all in review pile"
+	
+	raise NotImplementedError("can't find any more to do in deck")
+
+
+    def log_impression(self,impression):
+	card = self.lookup_card(impression.concept_id)
+	next_status = self.get_next_card_status(card,impression.answer)
+	self.move_card_to_pile(card,next_status)
+	self.calculate_soonest(card)
+    
+	card.log_impression(impression)
+
+
+    def get_next_card_status(self,card,answer):
+	history = card.history()
+	previous_answer = history.previous_answer()
+	previous_status = self.which_pile(card)
+
+	if answer == "Discard":
+	    return 'Discard'
+
+	if answer == "Yes":
+	    if previous_status == 'Unseen':
+		return 'Solid'
+	    if previous_answer == 'No':
+		return 'Learning'
+	    if previous_answer == 'Kinda':
+		return 'Learning'
+	    if previous_answer == 'Yes':
+		if previous_status == 'Review':
+		    if history.no_count() <= 1:
+			return 'Solid'
+		return 'Review'
+	    # shouldn't get here.
+	    return None
+
+	if answer == "No":
+	    return 'Learning'
+
+	if answer == "Kinda":
+	    if previous_answer == 'Yes':
+		return 'Review'
+	    if previous_status == 'Unseen':
+		return 'Review'
+	    return 'Learning'
+
+	# shouldn't get here.
+	return None
+
+
+    # figures out how long we should wait before showing this card again
+    def calculate_soonest(self,card):
+	status = self.which_pile(card)
+	if status == 'Learning':
+	    #TODO: make this vary with history
+	    delay = random.uniform(3,7)
+	elif status == 'Review':
+	    #TODO: make this vary with history
+	    delay = random.uniform(10,30)
+	else:
+	    delay = 100
+	self.soonest[card.id] = self.model_seq + delay
+
+
+    # Checks if it's too soon to use a particular card
+    def too_soon(self,card):
+	soonest = self.soonest.get(card.id)
+	if soonest is None:
+	    # it's new.  must be fine.
+	    return False
+
+	print u"Card too soon? %s < %s (%s)" % (self.model_seq, soonest, card)
+	return self.model_seq < soonest
+
+    def set_active_lesson(self,lesson_id):
+	#TODO: make this less hacky
+	LearningModelBase.set_active_lesson(self,lesson_id)
+	for card in self.piles['Active']:
+	    self.piles['Unseen'].append(card)
+	del self.piles['Active']
+	
