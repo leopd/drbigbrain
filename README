@@ -36,7 +36,8 @@ to passenger_wsgi.py near top to get it to run correct version of python.
 
 TODO...
 *Most important
-!-continue where you left off. session mgmt.
+X-continue where you left off. session mgmt.
+!-pick up studying where you left off UI
 !-pre-load next card in studyui
 -use static media files
 -new simpler deck manager

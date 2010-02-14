@@ -23,11 +23,15 @@ def get_model(request):
 
     deckstate_id = request.session.get('deckstate_id')
     if deckstate_id is None:
-	#TODO: look for one associated with this user from a different
-	# session.
-	return None
+	alldecks = DeckState.objects.filter(user = request.user)
+	if len(alldecks) == 0:
+	    return None
+	# Arbitrarily picking the first one here
+	deckstate = alldecks[0]
+    else:
+	deckstate = get_object_or_404(DeckState, pk=deckstate_id)
 
-    deckstate = get_object_or_404(DeckState, pk=deckstate_id)
+    # Now we have a deckstate.  pull out the model
     p = deckstate.pickled_model
 
     # having problems with unicode pickling!
