@@ -3,6 +3,10 @@ from django.contrib.auth.models import User
 from dbbpy.flashcards.models import Concept
 
 class Impression(models.Model):
+    """Records an Impression of a card on a user.
+    That is, it records what card the user saw, when and their response.
+    """
+
     user = models.ForeignKey(User)
     concept = models.ForeignKey(Concept)
     #TODO: add card instead of (as well as?) concept
@@ -14,4 +18,3 @@ class Impression(models.Model):
 
     def __unicode__(self):
 	return u"Impression on %s '%s'" % (self.concept,self.answer)
-

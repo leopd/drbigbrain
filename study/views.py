@@ -15,28 +15,44 @@ from dbbpy.study.learning import BetterDeckModel
 from dbbpy.study.learninghistory import HistoryModel
 
 def get_model(request):
+    """Returns the learningmodel object which is currently active.
+    """
+
     return request.session['learning_model']
     
 
 def save_model(request, model):
+    """Saves the learningmodel object back from whence it came
+    """
+
     request.session['learning_model'] = model
     
 
 
 @login_required
 def studyui(request):
+    """SHows the UI which presents cards and solicits the responses.
+    This UI is all ajaxy and doesn't need any server-side data.
     #TODO: move this to static media
+    """
+
     return render_to_response("study/studyui.html", context_instance=RequestContext(request))
 
 
 # UI to manage the active deck
 def deckview(request):
+    """Shows UI to manually manipulate the state of the deck
+    """
+
     return render_to_response("study/deck.html")
     
 
 def card_as_json(concept):
-    # TODO: generalize this for any lesson type
-    # move this into Card class
+    """Renders a single card as json
+    TODO: generalize this for any lesson type
+    # move this logic for picking assettypes into Card class
+    """
+
     q = concept.asset_set.get(asset_type=2).content
     a = u"<i>%s</i><br/>%s" % (
 	    concept.asset_set.get(asset_type=3).content,
@@ -50,7 +66,12 @@ def card_as_json(concept):
 	}
     return data
 
+
 def jsoncard(request, card_id):
+    """Renders JSON for a single card
+    TODO: HTTP-cache these, since they're immutable
+    """
+
     concept = get_object_or_404(Concept, pk=card_id)
     data = card_as_json(concept)
     return HttpResponse(
@@ -59,6 +80,9 @@ def jsoncard(request, card_id):
 		    )
 
 def jsondeck(request):
+    """Renders the entire deck in JSON for use with the deckview
+    """
+
     model = get_model(request)
     data = {}
     for pile in model.supported_piles():
@@ -73,6 +97,10 @@ def jsondeck(request):
 		    )
 
 def getqa(request):
+    """Returns the next card to display to the user.
+    This is called frequently by the studyui
+    """
+
     # call the model to pick the next card to show
     model = get_model(request)
     concept = model.choose_concept()
@@ -85,6 +113,11 @@ def getqa(request):
 		    )
 
 def impression(request):
+    """Logs that the user had an impression of a card.
+    This is called frequently by the studyui.
+    Turns user action into an Impression object.
+    """
+
     # put this into a database table...
     i = Impression()
     #print request.POST
@@ -108,6 +141,11 @@ def impression(request):
 
 # print out the model state
 def debugmodel(request):
+    """Dumps out the model in human-readable form.
+    Also displays a form for allowing the debugger to post an impression and see
+    any error message
+    """
+
     model = get_model(request)
     str = u"%s" % model
     return render_to_response("study/debug.html", { 'debugstring': str } )
@@ -115,6 +153,9 @@ def debugmodel(request):
 
 @login_required
 def setlesson(request,lesson_id):
+    """Adds this lesson to the active deck.
+    """
+
     model = get_model(request)
     if model is None:
 	self.resetdeck(request)
@@ -124,6 +165,9 @@ def setlesson(request,lesson_id):
     
 
 def resetdeck(request):
+    """Clears the active deck.
+    """
+
     #TODO: make this configurable
     #model = RandomLearningModel()
     #model = BetterDeckModel()

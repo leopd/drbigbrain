@@ -3,12 +3,14 @@ from dbbpy.flashcards.models import Concept
 from dbbpy.study.models import Impression
 
 
-# must be pickleable, which means no django objects
-# note this is an instance of a card being studied,
-# not a generic data type.  
-# the difference is that it's specific to a user.
-#TODO: use this more completely in study/views.py
 class Card():
+    """Abstraction between Concept model and what the user actually studies.
+    must be pickleable, which means no django objects
+    note this is an instance of a card being studied,
+    not a generic data type.  
+    the difference is that it's specific to a user.
+    use this more completely in study/views.py
+    """
 
     def __init__(self,concept):
 	self.id = concept.id
@@ -46,9 +48,11 @@ class Card():
     def __unicode__(self):
 	return unicode(self.concept())
 
-# represents the study history for a card
-# must be pickleable, which means no django objects
 class History():
+    """Helper for Card that keeps track of a user's history for the card.
+    represents the study history for a card
+    must be pickleable, which means no django objects
+    """
 
     def __init__(self,id):
 	self.id = id

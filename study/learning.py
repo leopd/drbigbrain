@@ -7,9 +7,10 @@ from dbbpy.study.card import Card
 
 
 
-# base class for learning models
-# these must be pickleable
 class LearningModelBase():
+    """base class for learning models
+    these must be pickleable
+    """
 
     def __init__(self):
 	# cards is a hashtable of lists of Card objects
@@ -124,8 +125,9 @@ class LearningModelBase():
 	
 
 
-# this just picks a random card from the deck, with no ideas of state
 class RandomLearningModel(LearningModelBase):
+    """this just picks a random card from the deck, with no ideas of state
+    """
 
     def choose_card(self):
 	num = len(self.piles['Active'])
@@ -135,8 +137,8 @@ class RandomLearningModel(LearningModelBase):
 	return card
 
 
-# Just goes through the cards in order.
 class SimpleDeckModel(LearningModelBase):
+    """Just goes through the cards in order."""
 
     def choose_card(self):
 	card = self.piles['Active'][0]
@@ -149,9 +151,11 @@ class SimpleDeckModel(LearningModelBase):
 	return card
 
 
-# If you get a card right, put it at the back of the deck.
-# If you get a card wrong, put it fairly close to the front
 class BetterDeckModel(SimpleDeckModel):
+    """A reasonably useful deck model.
+    If you get a card right, put it at the back of the deck.
+    If you get a card wrong, put it fairly close to the front
+    """
 
     def supported_actions(self):
 	return ['Yes','No','Discard']

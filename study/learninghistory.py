@@ -4,8 +4,15 @@ from dbbpy.study.learning import LearningModelBase
 
 
 
-# Considers the history 
 class HistoryModel(SimpleDeckModel):
+    """A sophisticated learning model which considers your history of answers.
+    Has multiple piles within the deck: unseen, learning, review, solid.
+    Cards start in unseen (moved from 'Active' where they start from a lesson)
+    Learning is for cards that need frequent reinforcement
+    Review is for cards that need infrequent reinforcement, but you don't completely know
+    Solid is for cards that don't need to be asked about ever again.
+    Discard pile is there as well.
+    """
 
     def __init__(self):
 	SimpleDeckModel.__init__(self)
