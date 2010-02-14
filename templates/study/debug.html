@@ -1,7 +1,25 @@
 {% extends "base.html" %}
 
 {% block content %}
+<h2>Model:</h2>
 <pre>
 {{ debugstring }}
 </pre>
+<hr>
+<h2>Simulate impression submission:</h2>
+<body>
+<form action="/study/impression" method="POST">
+
+answer:
+<input type="text" name="answer">
+<br/> <br/>
+
+concept id:
+<input type="text" name="id">
+<br/> <br/>
+
+<input type="submit">
+
+</form>
+</body>
 {% endblock %}

@@ -40,15 +40,15 @@ current state:
 
 TODO...
 *Basic studying
--continue where you left off. session mgmt.
--deck mgmt -- add new cards, keep the old
--model understands hard cards
+!-continue where you left off. session mgmt.
+X-deck mgmt -- add new cards, keep the old
+X-model understands hard cards
 !-pre-load next card in studyui
 !-add timers to studyui, impression table
 -hints in studyui
 -show name of lesson you're working on in studyui.
--bug whereby it sometimes shows the same thing twice in a row
--optimize impression/nextcard
+X-bug whereby it sometimes shows the same thing twice in a row
+(?)-optimize impression/nextcard
 
 *cleanup
 -generalize which assettypes to display

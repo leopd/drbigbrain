@@ -12,7 +12,7 @@ from dbbpy.study.models import Impression
 from dbbpy.study.learning import RandomLearningModel
 from dbbpy.study.learning import SimpleDeckModel
 from dbbpy.study.learning import BetterDeckModel
-from dbbpy.study.learning import HistoryModel
+from dbbpy.study.learninghistory import HistoryModel
 
 def get_model(request):
     return request.session['learning_model']
