@@ -60,8 +60,7 @@ class History():
 
 
     def no_count(self):
-	print "not calculating no-count properly"
-	return 0;
+	raise NotImplmentedError()
 
 
     def previous_answer(self):
