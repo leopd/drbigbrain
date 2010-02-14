@@ -27,55 +27,48 @@ dojango in installed_apps in settings.py causes "Premature end of script headers
 
 need to add line
 	if sys.version < "2.6": os.execl("/home/username/opt/bin/python", "python", *sys.argv)
-to passenger_wsgi.py near top to get it to run my python.
+to passenger_wsgi.py near top to get it to run correct version ofpython.
 
 
 
 ** DEVELOPMENT NOTES, TODO ROADMAP:
 
-current state: 
--approaching a useful study tool?
--needs a CSS makeover.
-
 
 TODO...
-*Basic studying
+*Most important
 !-continue where you left off. session mgmt.
-X-deck mgmt -- add new cards, keep the old
-X-model understands hard cards
-!-pre-load next card in studyui
 !-add timers to studyui, impression table
--hints in studyui
--show name of lesson you're working on in studyui.
-X-bug whereby it sometimes shows the same thing twice in a row
-(?)-optimize impression/nextcard
+
+
 
 *cleanup
--generalize which assettypes to display
--use lessonsequence in learningmodel to derive order
--ert algoritm
--"card" concept for which types of assets
 -move served cards into special deck rather than just moving to the back
-X-use post for /getqa
 -studyui only shows buttons that current model is configured for
 -base learning model checks that you're only using the card sets that are configured for that class
--rename "set" to "pile" in model
+X-rename "set" to "pile" in model
 
 
-*deck manager
--allow saving of active/discard back to server
--radio-button the selections.  only highlight one total.  not highlight one per column
--Don't gray the before/after of the drop target
+*new deck manager
+-Just show question, not answer
+-Show only last ## cards displayed, along with drop-down for state
+
 
 *better model
 -history looks up actual impressions
 -calculate real no_count
--sort by ERT in learning, review piles
+-uses timer
+X-sort by ERT in learning, review piles
+
+
+* UI cleanup
+-show name of lesson you're working on in studyui.
+-sensible flow of picking which decks
 
 
 *optimize
 -move studyui.html to static media
 -move .js and .css out of studyui.
+!-pre-load next card in studyui
 
 
 *Login, frame UI
@@ -83,15 +76,24 @@ X-use post for /getqa
 -guest login
 -add "about" page
 
-*Content
+
+*More Content
 -amharic alphabet
 -Organize lessons into a tree
 -import cedict
 -audio support
-
-*Better tools for adding content
 -custom widget to choose concepts in a lessonseq
 -lesson grouping into topics
+-generalize which assettypes to display
+-use lessonsequence in learningmodel to derive order
+-"card" concept for which types of assets
+-hints in studyui
+
+
+*DnD deck manager
+-allow saving of active/discard back to server
+-radio-button the selections.  only highlight one total.  not highlight one per column
+-Don't gray the before/after of the drop target
 
 
 
