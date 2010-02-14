@@ -9,6 +9,9 @@ class Impression(models.Model):
     answered_date = models.DateTimeField(auto_now_add=True)
     answer = models.CharField(max_length=10)
 
+    timer_show = models.IntegerField(null = True)
+    timer_submit = models.IntegerField(null = True)
+
     def __unicode__(self):
 	return u"Impression on %s '%s'" % (self.concept,self.answer)
 

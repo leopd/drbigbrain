@@ -91,7 +91,11 @@ def impression(request):
     i.answer = request.POST['answer']
     i.concept_id = long(request.POST['id'])
     i.user = request.user
+    i.timer_show = request.POST['showtimer']
+    i.timer_submit = request.POST['submittimer']
     i.save()
+
+    #print "times: %s,%s ms" % (request.POST['showtime'], request.POST['submittime'])
 
     # tell the learning model about the impression
     model = get_model(request)

@@ -8,6 +8,11 @@ The code is django/python with some dojo on the client.  I welcome contributions
 The "learning model" which figures out which card to show the user based on what they've learned so far, is abstracted out of the UI, making it easy to improve.  Currently the only learning models are fairly simple.
 
 
+** DB MIGRATIONS:
+To add the timer columns:
+alter table study_impression add timer_show int(11) NULL;
+alter table study_impression add timer_submit int(11) NULL;
+
 
 ** INSTALL NOTES:
 Note, your mysql database must have a reasonable character set.
@@ -38,15 +43,13 @@ to passenger_wsgi.py near top to get it to run correct version of python.
 TODO...
 *Most important
 !-continue where you left off. session mgmt.
-!-add timers to studyui, impression table
+X-add timers to studyui, impression table
 !-pre-load next card in studyui
 
 
 
-*cleanup
--move served cards into special deck rather than just moving to the back
+*code cleanup
 -studyui only shows buttons that current model is configured for
--base learning model checks that you're only using the card sets that are configured for that class
 
 
 *new deck manager

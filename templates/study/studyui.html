@@ -65,16 +65,40 @@
 	    url: "/study/getqa",
 	    handleAs: "json",
 	    load: function(responseObject, ioArgs) {
-		showQA(responseObject.question, responseObject.answer);
-		cardid = responseObject.id;
-		dojo.byId("showButton").focus();
+		startQuestion(responseObject.id, responseObject.question, responseObject.answer);
 	    }
 	});
+    }
+
+    // Shows the question, and resets the UI
+    function startQuestion(id,q,a) {
+	showQA(q, a);
+	cardid = id;
+	dojo.byId("showButton").focus();
+	start_timer();
+    }
+
+    
+    var start_time_ms;
+    function start_timer() {
+	var d = new Date();
+	start_time_ms = d.getTime(); // ms since 1970
+    }
+
+    function time_elapsed_ms() {
+	var d = new Date();
+	return d.getTime() - start_time_ms;
     }
 
 
 
     dojo.addOnLoad(function(){
+	wireKeyboardEvents();
+		
+	startUI();
+    });
+
+    function wireKeyboardEvents() {
 	var node = dojo.byId("bodytag");
 	dojo.connect(node, "onkeypress", function(e){
 	    switch(e.charOrCode){
@@ -99,23 +123,26 @@
 		    submitAnswer('Kinda');
 		    break;
 	    }
+	    // if you want to cancel default processing...
 	    // dojo.stopEvent(e);
 	});
+    }
 		    
-		
-	startUI();
-    });
-
     function startUI() {
 	fetchQA();
     }
 
+
+    var showtimer_ms=-1;
     function showAnswer()
     {
+	showtimer_ms= time_elapsed_ms();
 	dojo.byId("answerDiv").style.display="block";
 	dojo.byId("showButton").blur();
 	dojo.byId("showButton").style.display="none";
     }
+
+
     function hideAnswer()
     {
 	dojo.byId("answerDiv").style.display="none";
@@ -124,10 +151,17 @@
 
     function submitAnswer(yesno)
     {
+	var submittimer_ms = time_elapsed_ms() - showtimer_ms;
+
 	//TODO: more general way to create postdata
+	data = "";
+	data += "answer=" + yesno;
+	data += "&id=" + cardid;
+	data += "&showtimer=" + showtimer_ms;
+	data += "&submittimer=" + submittimer_ms;
 	var xhrArgs = {
 	    url: "/study/impression",
-	    postData: "answer=" + yesno + "&id=" + cardid,
+	    postData: data,
 	    handleAs: "text",
 	    load: function(data) {
 		console.dir("impression "+yesno+" posted");
