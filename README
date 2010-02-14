@@ -27,7 +27,8 @@ dojango in installed_apps in settings.py causes "Premature end of script headers
 
 need to add line
 	if sys.version < "2.6": os.execl("/home/username/opt/bin/python", "python", *sys.argv)
-to passenger_wsgi.py near top to get it to run correct version ofpython.
+to passenger_wsgi.py near top to get it to run correct version of python.
+(Needs at least 2.4 or something)
 
 
 
@@ -38,6 +39,7 @@ TODO...
 *Most important
 !-continue where you left off. session mgmt.
 !-add timers to studyui, impression table
+!-pre-load next card in studyui
 
 
 
@@ -45,7 +47,6 @@ TODO...
 -move served cards into special deck rather than just moving to the back
 -studyui only shows buttons that current model is configured for
 -base learning model checks that you're only using the card sets that are configured for that class
-X-rename "set" to "pile" in model
 
 
 *new deck manager
@@ -57,7 +58,6 @@ X-rename "set" to "pile" in model
 -history looks up actual impressions
 -calculate real no_count
 -uses timer
-X-sort by ERT in learning, review piles
 
 
 * UI cleanup
@@ -68,7 +68,6 @@ X-sort by ERT in learning, review piles
 *optimize
 -move studyui.html to static media
 -move .js and .css out of studyui.
-!-pre-load next card in studyui
 
 
 *Login, frame UI
