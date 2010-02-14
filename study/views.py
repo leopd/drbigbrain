@@ -1,5 +1,6 @@
 import json
 import random
+import cPickle as pickle
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -9,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from dbbpy.flashcards.models import Concept
 from dbbpy.flashcards.models import Lesson
 from dbbpy.study.models import Impression
+from dbbpy.study.models import DeckState
 from dbbpy.study.learning import RandomLearningModel
 from dbbpy.study.learning import SimpleDeckModel
 from dbbpy.study.learning import BetterDeckModel
@@ -16,16 +18,43 @@ from dbbpy.study.learninghistory import HistoryModel
 
 def get_model(request):
     """Returns the learningmodel object which is currently active.
+    Returns None if there isn't one assicated with this user or session.
     """
 
-    return request.session['learning_model']
+    deckstate_id = request.session.get('deckstate_id')
+    if deckstate_id is None:
+	#TODO: look for one associated with this user from a different
+	# session.
+	return None
+
+    deckstate = get_object_or_404(DeckState, pk=deckstate_id)
+    p = deckstate.pickled_model
+
+    # having problems with unicode pickling!
+    # error -- KeyError: '\x00'
+    p=str(p) # this seems to fix it
+    #print "loading model from state %d pickled = %s" % (deckstate_id, p[0:50])
+    model = pickle.loads(p)
+    return model
     
 
 def save_model(request, model):
     """Saves the learningmodel object back from whence it came
     """
 
-    request.session['learning_model'] = model
+    deckstate_id = request.session.get('deckstate_id')
+    if deckstate_id is None:
+	# Create new deckstate object.
+	deckstate = DeckState()
+	deckstate.user = request.user
+	deckstate.save() # to get the id
+	request.session['deckstate_id']= deckstate.id
+    else:
+	# load the deckstate object
+	deckstate = get_object_or_404(DeckState, pk=deckstate_id)
+
+    deckstate.pickled_model = pickle.dumps(model)
+    deckstate.save()
     
 
 
@@ -158,7 +187,8 @@ def setlesson(request,lesson_id):
 
     model = get_model(request)
     if model is None:
-	self.resetdeck(request)
+	resetdeck(request)
+	model = get_model(request)
     model.set_active_lesson(lesson_id)
     save_model(request, model)
     return HttpResponseRedirect("/study/")

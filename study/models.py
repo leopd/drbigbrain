@@ -18,3 +18,15 @@ class Impression(models.Model):
 
     def __unicode__(self):
 	return u"Impression on %s '%s'" % (self.concept,self.answer)
+
+
+class DeckState(models.Model):
+    """Stores state of studying for a user.
+    This is similar to django_session, but works across browsers.
+    A user might have several of these simultaneously.
+    """
+
+    user = models.ForeignKey(User)
+    description = models.CharField(max_length=100, null=True)
+    pickled_model = models.TextField()
+    last_accessed = models.DateTimeField(auto_now=True)
