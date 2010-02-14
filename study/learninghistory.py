@@ -107,8 +107,9 @@ class HistoryModel(SimpleDeckModel):
 		return 'Review'
 	    if previous_answer == 'Yes':
 		if previous_status == 'Review':
-		    if history.no_count() <= 1:
-			return 'Solid'
+		    #TODO: consider if they've had problems with it to keep
+		    # it in review for a while longer
+		    return 'Solid'
 		return 'Review'
 	    # should only get here if previous answer was "discard"
 	    return 'Review'
@@ -132,10 +133,10 @@ class HistoryModel(SimpleDeckModel):
 	status = self.which_pile(card)
 	if status == 'Learning':
 	    #TODO: make this vary with history
-	    delay = random.uniform(5,10)
+	    delay = random.uniform(6,12)
 	elif status == 'Review':
 	    #TODO: make this vary with history
-	    delay = random.uniform(10,30)
+	    delay = random.uniform(20,40)
 	else:
 	    delay = 100
 	self.soonest[card.id] = self.model_seq + delay
