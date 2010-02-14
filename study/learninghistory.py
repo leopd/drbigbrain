@@ -45,7 +45,7 @@ class HistoryModel(SimpleDeckModel):
     
     def choose_card(self):
 	self.model_seq += 1
-	print "model seq up to %s" % self.model_seq
+	#print "model seq up to %s" % self.model_seq
 
 	card = self.front_of_pile('Learning')
 	if (card != None ) and (not self.too_soon(card)):
@@ -161,7 +161,7 @@ class HistoryModel(SimpleDeckModel):
 	    # it's new.  must be fine.
 	    return False
 
-	print u"Card too soon? %s < %s (%s)" % (self.model_seq, soonest, card)
+	#print u"Card too soon? %s < %s (%s)" % (self.model_seq, soonest, card)
 	return self.model_seq < soonest
 
     def set_active_lesson(self,lesson_id):

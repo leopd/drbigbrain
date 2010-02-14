@@ -15,7 +15,7 @@ class LearningModelBase():
 	# cards is a hashtable of lists of Card objects
 	self.piles={}
 	for pile in self.supported_piles():
-	    print "creating pile %s" % pile
+	    #print "creating pile %s" % pile
 	    self.piles[pile] = []
 
 	# this provides a way to look up the card objects 

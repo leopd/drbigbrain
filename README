@@ -43,13 +43,14 @@ to passenger_wsgi.py near top to get it to run correct version of python.
 TODO...
 *Most important
 !-continue where you left off. session mgmt.
-X-add timers to studyui, impression table
 !-pre-load next card in studyui
-
+-use static media files
+-new simpler deck manager
 
 
 *code cleanup
 -studyui only shows buttons that current model is configured for
+-break studyui.js into sections or separate files
 
 
 *new deck manager
