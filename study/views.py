@@ -23,12 +23,18 @@ def get_model(request):
 
     deckstate_id = request.session.get('deckstate_id')
     if deckstate_id is None:
+	# Nothing in the session.  See if we can find one for this user.
 	alldecks = DeckState.objects.filter(user = request.user)
 	if len(alldecks) == 0:
 	    return None
 	# Arbitrarily picking the first one here
 	deckstate = alldecks[0]
+
+	# put the id back in the session.
+	request.session['deckstate_id'] = deckstate.id
+
     else:
+	#print "get_model: deckstate_id in session is %s" % deckstate_id
 	deckstate = get_object_or_404(DeckState, pk=deckstate_id)
 
     # Now we have a deckstate.  pull out the model
