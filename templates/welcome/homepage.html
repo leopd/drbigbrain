@@ -2,11 +2,28 @@
 {% block content %}
 <h1>DrBigBrain online studying</h1>
 
-Learn:
+{% if user.is_authenticated %}
+    <h3>Add some new cards to your deck:</h3>
+{% else %}
+    <h3>Start a new topic:</h3>
+{% endif %}
 <ul>
   <li><a href="/chinese/">Study Chinese</a>
   </li>
+  <li>More to come...
+  </li>
 </ul>
 
+<br/>
+{% if user.is_authenticated %}
+or
+    <h3><a href="/study/">Pick up studying where you left off</a></h3>
+{% else %}
+<h3>Returning users:</h3>
+<ul>
+<a href="/accounts/login/?next=/study/">Log in</a> to continue studying where you left off
+</ul>
+
+{% endif %}
 
 {% endblock %}

@@ -36,16 +36,17 @@ to passenger_wsgi.py near top to get it to run correct version of python.
 
 TODO...
 *Most important
-X-continue where you left off. session mgmt.
-!-pick up studying where you left off UI
-!-pre-load next card in studyui
+X-pick up studying where you left off UI
 -use static media files
 -new simpler deck manager
+!-pre-load next card in studyui
+-warn user when the deck is running short and time for more cards
 
 
 *code cleanup
 -studyui only shows buttons that current model is configured for
 -break studyui.js into sections or separate files
+-encapsulation of login/logout from urls.py
 
 
 *new deck manager
@@ -70,7 +71,6 @@ X-continue where you left off. session mgmt.
 
 
 *Login, frame UI
--encapsulation of login/logout from urls.py
 -guest login
 -add "about" page
 
