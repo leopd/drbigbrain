@@ -32,7 +32,7 @@ def register(request):
 	    else:
 		return HttpResponseRedirect("/loginfail")
 		
-	    if request.POST['next']:
+	    if request.POST.get('next'):
 		return HttpResponseRedirect(request.POST['next'])
 	    else:
 		return HttpResponseRedirect("/")
