@@ -22,11 +22,32 @@ class Card():
 
 
     def question(self):
-	raise NotImplmentedError()
+	q = self.concept().asset_set.get(asset_type=2).content
+	return q
 
 
     def answer(self):
-	raise NotImplmentedError()
+	c = self.concept()
+	a = u"<i>%s</i><br/>%s" % (
+	    c.asset_set.get(asset_type=3).content,
+	    c.asset_set.get(asset_type=4).content
+	    )
+	return a
+
+
+    def json(self):
+	"""Returns a python object that can be rendered as json
+	"""
+
+	q = self.question()
+	a = self.answer()
+	data = { 
+	    "question": q, 
+	    "answer": a, 
+	    "id": self.id,
+	    "summary": unicode(self.concept()),
+	    }
+	return data
 
 
     def history(self):

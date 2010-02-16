@@ -61,8 +61,17 @@
 
 
     function fetchQA() {
+	posturl = "/study/getqa"
+	if( location.hash ) {
+	    // Remove the hash character
+	    cardnum = location.hash.substring(1);
+	    // This is not terribly robust since if the fragment
+	    // is not a number, this will fail to return
+	    posturl = "/study/jsoncard/"+cardnum;
+	    location.hash="";
+	}
 	dojo.xhrPost( {
-	    url: "/study/getqa",
+	    url: posturl,
 	    handleAs: "json",
 	    load: function(responseObject, ioArgs) {
 		startQuestion(responseObject.id, responseObject.question, responseObject.answer);
@@ -207,7 +216,7 @@ Did you know this one?<br/>
 Hint:
 Try pressing S, N, Y, D, K keys.
 <br/>
-<a href="deck">See all your cards</a>
+<a href="deck">Manage your deck</a>
 </div>
 {% endblock %}
 

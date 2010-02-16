@@ -3,6 +3,7 @@ from django.conf.urls.defaults import *
 urlpatterns = patterns('dbbpy.study.views',
     (r'^$', 'studyui'),
     (r'^deck$', 'deckview'),
+    (r'^dnddeck$', 'dnddeckview'),
     (r'^getqa$', 'getqa'),
     (r'^impression$', 'impression'),
     (r'^lesson/(?P<lesson_id>\d+)/$', 'setlesson'),

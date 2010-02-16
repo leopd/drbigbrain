@@ -78,48 +78,69 @@ def studyui(request):
     return render_to_response("study/studyui.html", context_instance=RequestContext(request))
 
 
-# UI to manage the active deck
 def deckview(request):
-    """Shows UI to manually manipulate the state of the deck
+    """Shows you a list of recent cards.
     """
 
-    return render_to_response("study/deck.html")
-    
+    # first, fetch the recent impressions
+    recent_impressions = Impression.objects.order_by('-answered_date').filter(user=request.user)
+    # limit to last 100 impressions
+    recent_impressions = recent_impressions[0:99]
 
-def card_as_json(concept):
-    """Renders a single card as json
-    TODO: generalize this for any lesson type
-    # move this logic for picking assettypes into Card class
-    """
+    # now build a list of card Q's, with the pile for each card. 
+    # eliminating redundant cards
+    model = get_model(request)
+    cards_seen={}
+    recent_cards = []
+    for impression in recent_impressions:
+	print "id %s" % impression.concept.id
+	card = model.lookup_card(impression.concept.id)
 
-    q = concept.asset_set.get(asset_type=2).content
-    a = u"<i>%s</i><br/>%s" % (
-	    concept.asset_set.get(asset_type=3).content,
-	    concept.asset_set.get(asset_type=4).content
-	    )
-    data = { 
-	"question": q, 
-	"answer": a, 
-	"id": concept.id,
-	"summary": unicode(concept),
+	# remove redundant
+	if not cards_seen.get(card.id):
+	    cards_seen[card.id] = True
+	    pile = model.which_pile(card)
+	    recent_cards.append( (card.question(), pile, card) )
+    # limit to most recent 30
+    recent_cards = recent_cards[0:29]
+
+    #
+    # fetch counts for each pile
+    #
+    pilecount = []
+    for pile in model.supported_piles():
+	pilecount.append( (pile, len( model.cards_in_pile(pile) ) ) )
+
+    templatevars = {
+	'recent_cards': recent_cards,
+	'pilecount': pilecount,
 	}
-    return data
+
+    return render_to_response("study/deck.html", templatevars)
+    
+def dnddeckview(request):
+    """Shows the old drag-n-drop deck view which doesn't do much
+    """
+
+    return render_to_response("study/dnddeck.html", context_instance=RequestContext(request))
 
 
 def jsoncard(request, card_id):
     """Renders JSON for a single card
     TODO: HTTP-cache these, since they're immutable
+    (THis is not actually used...)
     """
 
-    concept = get_object_or_404(Concept, pk=card_id)
-    data = card_as_json(concept)
+    model = get_model(request)
+    card = model.lookup_card(card_id)
+    data = card.json()
     return HttpResponse(
 		    json.dumps(data),
                     mimetype='text/plain'
 		    )
 
 def jsondeck(request):
-    """Renders the entire deck in JSON for use with the deckview
+    """Renders the entire deck in JSON for use with the dnd deckview
     """
 
     model = get_model(request)
@@ -127,8 +148,7 @@ def jsondeck(request):
     for pile in model.supported_piles():
 	data[pile]=[]
 	for card in model.cards_in_pile(pile):
-	    concept = card.concept()
-	    data[pile].append( card_as_json(concept) )
+	    data[pile].append( card.json() )
 
     return HttpResponse(
 		    json.dumps(data),
@@ -142,10 +162,10 @@ def getqa(request):
 
     # call the model to pick the next card to show
     model = get_model(request)
-    concept = model.choose_concept()
+    card = model.choose_card()
     save_model(request, model)
 
-    data = card_as_json(concept)
+    data = card.json()
     return HttpResponse(
 		    json.dumps(data),
                     mimetype='text/plain'

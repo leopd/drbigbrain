@@ -12,6 +12,7 @@ class LearningModelBase():
     these must be pickleable
     """
 
+
     def __init__(self):
 	# cards is a hashtable of lists of Card objects
 	self.piles={}
@@ -22,6 +23,8 @@ class LearningModelBase():
 	# this provides a way to look up the card objects 
 	self.cards_by_id={}
 
+
+
     # given a lesson id, it stores the id's of all the concepts in that lesson
     # in the "Active" card pile
     def set_active_lesson(self,lesson_id):
@@ -31,7 +34,7 @@ class LearningModelBase():
 	self.piles['Active'] = []
 
 	for concept in lesson.concepts.all():
-	    card = Card(concept)
+	    card = self.new_card(concept)
 	    self.move_card_to_pile(card,'Active')
 	    #self.piles['Active'].append(card)
 
@@ -100,13 +103,27 @@ class LearningModelBase():
 	else:
 	    self.piles[pile].insert(where,card)
 
+
+    #TODO: this logic and the cards_by_id lookup is a mess.
+    # encapsulate this better somewhere else!
+    def new_card(self,concept):
+	card = Card(concept)
+
 	# make sure we can look it up
 	self.cards_by_id[card.id] = card
+	return card
+
 
     # find a card object by its id
     def lookup_card(self,id):
-	return self.cards_by_id[id]
-	
+	card = self.cards_by_id.get(id)
+	if card:
+	    return card
+
+	# otherwise create a new Card
+	concept = get_object_or_404(Concept, pk=id)
+	return self.new_card(concept)
+
 
     def front_of_pile(self,pile):
 	if len(self.piles[pile]) == 0:

@@ -36,11 +36,12 @@ to passenger_wsgi.py near top to get it to run correct version of python.
 
 TODO...
 *Most important
-X-pick up studying where you left off UI
 -use static media files
--new simpler deck manager
+X-new simpler deck manager
 !-pre-load next card in studyui
 -warn user when the deck is running short and time for more cards
+-Show me how far I've gotten on each lesson
+-let me review the old stuff that i might have forgotten
 
 
 *code cleanup
