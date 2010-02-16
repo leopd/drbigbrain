@@ -36,44 +36,49 @@ to passenger_wsgi.py near top to get it to run correct version of python.
 
 TODO...
 *Most important
--use static media files
-X-new simpler deck manager
 !-pre-load next card in studyui
 -warn user when the deck is running short and time for more cards
--Show me how far I've gotten on each lesson
--let me review the old stuff that i might have forgotten
+-Put name/description on deck.
+-include names of lessons added to deck.
+-Show me how far I've gotten on each lesson.  (# in each state)
+-use static media files
+
+
+* UX flow
+-guest login
+-add "about" page
+-properly sort bloc lessons
+-link to definitions
+
 
 
 *code cleanup
 -studyui only shows buttons that current model is configured for
 -break studyui.js into sections or separate files
--encapsulation of login/logout from urls.py
+-encapsulation of login/logout from root urls.py
 
 
 *new deck manager
--Just show question, not answer
--Show only last ## cards displayed, along with drop-down for state
+-reset option per card (revisit does that?)
+-support multiple decks and switching between them
+-option to load more than 30 recent cards
+-show which lessons are in this deck
+-create a new kind of deck -- quiz / review
 
 
 *better model
 -history looks up actual impressions
--calculate real no_count
--uses timer
+-model uses timer
+-limit timer to 5 minutes.  then ask "you still there?"
 
-
-* UI cleanup
--show name of lesson you're working on in studyui.
--sensible flow of picking which decks
 
 
 *optimize
 -move studyui.html to static media
 -move .js and .css out of studyui.
+-preload dojo, css on homepage
 
 
-*Login, frame UI
--guest login
--add "about" page
 
 
 *More Content
@@ -91,9 +96,9 @@ X-new simpler deck manager
 
 *DnD deck manager
 -allow saving of active/discard back to server
--radio-button the selections.  only highlight one total.  not highlight one per column
+-radio-button the selections.  only highlight one total.  not highlight one per column like it does now.
 -Don't gray the before/after of the drop target
-
+-break out static .css and .js
 
 
 *Tests
