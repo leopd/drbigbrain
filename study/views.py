@@ -16,9 +16,15 @@ from dbbpy.study.learning import SimpleDeckModel
 from dbbpy.study.learning import BetterDeckModel
 from dbbpy.study.learninghistory import HistoryModel
 
-def get_model(request):
-    """Returns the learningmodel object which is currently active.
-    Returns None if there isn't one assicated with this user or session.
+
+
+def get_deckstate(request, create_new=True):
+    """Looks up the current deckstate.
+    It tries to load it from the session first.
+    If not there, it looks for one associated with this user.
+    If none for this user, it might or might not create a new one,
+    based on the input flag.
+    If create_new is false, it will return None rather than create a new one 
     """
 
     deckstate_id = request.session.get('deckstate_id')
@@ -26,9 +32,17 @@ def get_model(request):
 	# Nothing in the session.  See if we can find one for this user.
 	alldecks = DeckState.objects.filter(user = request.user)
 	if len(alldecks) == 0:
-	    return None
-	# Arbitrarily picking the first one here
-	deckstate = alldecks[0]
+	    # No deckstates for this user
+	    if not create_new:
+		return None
+	    else:
+		deckstate = DeckState()
+		deckstate.user = request.user
+		deckstate.save() # to get the id
+	else:
+	    # Found deckstate(s) for this user from other sessions.
+	    # Arbitrarily picking the first one here
+	    deckstate = alldecks[0]
 
 	# put the id back in the session.
 	request.session['deckstate_id'] = deckstate.id
@@ -36,6 +50,18 @@ def get_model(request):
     else:
 	#print "get_model: deckstate_id in session is %s" % deckstate_id
 	deckstate = get_object_or_404(DeckState, pk=deckstate_id)
+
+    return deckstate
+
+
+def get_model(request):
+    """Returns the learningmodel object which is currently active.
+    Returns None if there isn't one assicated with this user or session.
+    """
+
+    deckstate = get_deckstate(request,False)
+    if deckstate is None:
+	return None
 
     # Now we have a deckstate.  pull out the model
     p = deckstate.pickled_model
@@ -52,17 +78,7 @@ def save_model(request, model):
     """Saves the learningmodel object back from whence it came
     """
 
-    deckstate_id = request.session.get('deckstate_id')
-    if deckstate_id is None:
-	# Create new deckstate object.
-	deckstate = DeckState()
-	deckstate.user = request.user
-	deckstate.save() # to get the id
-	request.session['deckstate_id']= deckstate.id
-    else:
-	# load the deckstate object
-	deckstate = get_object_or_404(DeckState, pk=deckstate_id)
-
+    deckstate = get_deckstate(request,True)
     deckstate.pickled_model = pickle.dumps(model)
     deckstate.save()
     
