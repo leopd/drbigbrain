@@ -142,19 +142,52 @@ def jsondeck(request):
 
 def getqa(request):
     """Returns the next card to display to the user.
-    This is called frequently by the studyui
+    This is called frequently by the studyui.
+    Guaranteed not to modify the model state -- it won't be saved!
     """
 
     # call the model to pick the next card to show
     model = get_model(request)
     card = model.choose_card()
-    save_model(request, model)
+
+    # Note: I'm changing the contract here.
+    # Models aren't allowed to change their state when picking a card.
+    # Picking a card has no side-effects.
+    # This is not a big burden on the model, but greatly simplifies
+    # the client.
+    #save_model(request, model)
 
     data = card.json()
     return HttpResponse(
 		    json.dumps(data),
                     mimetype='text/plain'
 		    )
+
+
+def get_many_qa(request,numcards):
+    """Fetches the next 'numcard' cards to be displayed
+    Similar to getqa.
+    Allows smart client to pre-fetch multiple cards to minimize user latency.
+    Guaranteed not to modify the model state -- it won't be saved!
+    """
+
+    # manually casting seems to avoid unicode wierdness
+    numcards = int(numcards)
+
+    # call the model to pick the next card to show
+    model = get_model(request)
+    cards = model.choose_many_cards(numcards)
+
+    data = []
+    for card in cards:
+	data.append( card.json() )
+
+    return HttpResponse(
+		    json.dumps(data),
+                    mimetype='text/plain'
+		    )
+
+
 
 def impression(request):
     """Logs that the user had an impression of a card.

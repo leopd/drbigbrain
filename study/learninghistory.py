@@ -88,6 +88,25 @@ class HistoryModel(SimpleDeckModel):
 	raise NotImplementedError("can't find any more to do in deck")
 
 
+    def choose_many_cards(self,num):
+	"""Overriding the default method here in the base class
+	because I want to trash the cards in between calls
+	to choose_card since we don't 'rotate the deck' in this model.
+	"""
+
+	cards = []
+	for i in range(num):
+	    newcard = self.choose_card()
+	    cards.append(newcard)
+
+	    # Simulate discarding it so that we are sure to 
+	    # pick a different card the next time around in the loop
+	    self.move_card_to_pile(newcard,'Discard')
+
+	return cards
+
+
+
     def log_impression(self,impression):
 	card = self.lookup_card(impression.concept_id)
 	next_status = self.get_next_card_status(card,impression.answer)

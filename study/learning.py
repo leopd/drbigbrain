@@ -28,9 +28,10 @@ class LearningModelBase():
 
 
 
-    # given a lesson id, it stores the id's of all the concepts in that lesson
-    # in the "Active" card pile
     def set_active_lesson(self,lesson_id):
+	"""given a lesson id, it stores the id's of all the concepts in that lesson
+	in the "Active" card pile
+	"""
 	lesson = get_object_or_404(Lesson, pk=lesson_id)
 
 	# add to the description
@@ -49,21 +50,46 @@ class LearningModelBase():
 	#TODO: Replace this with proper sequences from LessonSequence table
 	#self.piles['Active'].reverse()
 
-    # returns a list of the kinds of piles this model understands
     def supported_piles(self):
+	"""returns a list of the kinds of piles this model understands
+	"""
 	return ['Active']
     
-    # returns a list of the kinds of actions this model understands
-    # these are the buttons that will be displayed in the study ui
     def supported_actions(self):
+	"""Returns a list of the kinds of actions this model understands
+	   these are the buttons that will be displayed in the study ui
+	"""
 	return ['Next']
     
 
 
-    # this method is required.  subclasses must implement this.
     def choose_card(self):
+	"""Returns a Card which should be the next card displayed
+	to the user.
+	This method is required.  subclasses must implement this.
+
+	Note that the view's behavior is not to save any changes to the 
+	model object that result from this.  This can be useful
+	when implementing choose_many_cards, because the model can
+	just pretend to discard each of the cards that it presents to the
+	user to be able to pick the next one.
+	"""
 	raise NotImplementedError()
     
+
+    def choose_many_cards(self,num):
+	"""Returns a list of the next NUM cards that should be shown to the user.
+	Default implementation just calls choose_card multiple times,
+	assuming it will get a sensibly different answer each time.
+	"""
+
+	cards = []
+	for i in range(num):
+	    cards.append(self.choose_card())
+
+	return cards
+
+
 
     def choose_concept(self):
 	card = self.choose_card()
@@ -164,18 +190,27 @@ class RandomLearningModel(LearningModelBase):
 
 
 class SimpleDeckModel(LearningModelBase):
-    """Just goes through the cards in order."""
+    """Just goes through the cards in order.
+    """
 
     def choose_card(self):
+	# Just choose the front card from the Active pile
 	card = self.piles['Active'][0]
 
 	# rotate the deck
+	# This supports choose_many_cards, but doesn't actually ensure rotation.
 	self.move_card_to_pile(card,'Active')
 	#self.piles['Active'] = self.piles['Active'][1:]
 	#self.piles['Active'].append(card)
 
 	return card
 
+    def log_impression(self,impression):
+	# here we need to actually rotate the card to the back.
+	card = self.lookup_card(impression.concept_id)
+	self.move_card_to_pile(card,'Active')
+
+	
 
 class BetterDeckModel(SimpleDeckModel):
     """A reasonably useful deck model.

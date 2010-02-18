@@ -100,11 +100,31 @@
 	start_timer();
     }
 
+    /////////////////////////////////////////////////////////
+    //
+    // Communicating with the server
+    //
+    // The session-state on the server is not thread-safe.
+    // If we send multiple overlapping requests, it will 
+    // lose data since each request loads the sesison state
+    // from the database into memory and then writes it back.
+    // So we need to serialize the requests that will modify the
+    // learning model's state.
+    // The server guarantees that fetchQA requests will not
+    // modify the model's state, so we don't need to serialize
+    // those against the impression logging.
+    // But we do need to serialize the impression logging
+    // since the user might be able to answer faster than the
+    // server can accept the answers.  Hopefully this will
+    // just be in bursts, and not sustained, cuz otherwise
+    // we've got a problem.
+    //
+    /////////////////////////////////////////////////////////
 
 
     /////////////////////////////////////////////////////////
     //
-    // asking the server for content
+    // asking the server for content (un-serialized)
     //
     /////////////////////////////////////////////////////////
 
@@ -132,7 +152,6 @@
     // Submitting the impression
     //
     /////////////////////////////////////////////////////////
-
 
     // Puts together the impression and sends it up.
     function submitAnswer(yesno)
