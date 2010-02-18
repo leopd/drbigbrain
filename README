@@ -36,8 +36,10 @@ to passenger_wsgi.py near top to get it to run correct version of python.
 
 TODO...
 *Most important
-!-pre-load next card in studyui
--warn user when the deck is running short and time for more cards
+!!! Serialize impression posts (on client or server)
+!! clean up status messages
+X-pre-load next card in studyui
+-warn user when the deck is running short of unseen cards and time for more cards
 -Show me how far I've gotten on each lesson.  (# in each state)
 -use static media files
 

@@ -31,7 +31,7 @@ def get_model(request):
     # having problems with unicode pickling!
     # error -- KeyError: '\x00'
     p=str(p) # this seems to fix it
-    print "loading model from state %d pickled = %s" % (deckstate.id, p[0:50])
+    #print "loading model from state %d pickled = %s" % (deckstate.id, p[0:50])
     model = pickle.loads(p)
     return model
     

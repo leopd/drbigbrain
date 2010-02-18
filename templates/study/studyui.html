@@ -38,6 +38,11 @@
 	font-size: 8px;
     }
 
+    .statusbar {
+	margin-top: 20px;
+	background-color: #eed;
+    }
+
     .answerbutton {
 	width: 100px;
 	height: 25px;
@@ -83,7 +88,7 @@
 
 
 
-    var cardid; // id of the currently displayed card to be sent back with the current impression
+    var cardId; // id of the currently displayed card to be sent back with the current impression
 
     // just updates the q and a divs in the display.
     // nothing else.
@@ -93,43 +98,107 @@
     }
 
     // Shows the question, and resets the UI
-    function startQuestion(id,q,a) {
+    function startQuestion(qaobj) {
+	// Unpack the JSON object from the server
+	q = qaobj.question;
+	a = qaobj.answer;
+	id = qaobj.id;
+
+	// Use it.
 	showQA(q, a);
-	cardid = id;
+	cardId = id;
 	dojo.byId("showButton").focus();
 	start_timer();
+    }
+
+
+    function showStatus(msg) {
+	msg += "<br/>cache="+QACache.length;
+	console.dir("status:"+msg);
+	dojo.byId("statusbar").innerHTML = msg;
     }
 
     /////////////////////////////////////////////////////////
     //
     // Communicating with the server
     //
-    // The session-state on the server is not thread-safe.
-    // If we send multiple overlapping requests, it will 
-    // lose data since each request loads the sesison state
-    // from the database into memory and then writes it back.
-    // So we need to serialize the requests that will modify the
-    // learning model's state.
-    // The server guarantees that fetchQA requests will not
-    // modify the model's state, so we don't need to serialize
-    // those against the impression logging.
-    // But we do need to serialize the impression logging
-    // since the user might be able to answer faster than the
-    // server can accept the answers.  Hopefully this will
-    // just be in bursts, and not sustained, cuz otherwise
-    // we've got a problem.
+    // Two parts: READING & WRITING
     //
     /////////////////////////////////////////////////////////
 
 
     /////////////////////////////////////////////////////////
     //
-    // asking the server for content (un-serialized)
+    // READING: asking the server for content 
     //
+    // Keeps a local cache of Question & Answer objects.
+    // Serves them up to the user as they're needed.
+    // Uses a low-water mark method to know when it needs to
+    // fetch more.
+    //
+    // We don't need to serialize this because these requests
+    // are guaranteed by the server not to have any side-effects.
+    //
+    // The external interface here is just nextQA() which says
+    // put up a new card, however you need to do it.
+    // It tries to do it right away, else it sets it up to happen
+    // async.  It also takes the opportunity to refresh the cache
+    // if needed.
     /////////////////////////////////////////////////////////
 
-    function fetchQA() {
-	posturl = "/study/getqa"
+    // configuration parameters
+    var numQAToFetch = 5;
+    var minQABeforeFetch = 3; // the low water mark when we fetch again
+
+    // Global state about the QA Cache and the display
+    var fetchingMore=false; // True if there's an outstanding request.
+    var userWaitingForQuestion=true; // so we can show it
+
+    // the local cache of QA objects.  It's an array of json objects
+    var QACache = []; 
+
+    // This is called whenever it's time to display a new QA.
+    // It takes care of making that happen.  
+    // It will happen synchronously if possible, else async.
+    function nextQA() {
+	// See if we can handle the request from local cache
+	if( QACache.length > 0 ) {
+	    // Handle locally
+	    console.dir("Using local");
+	    var qa = QACache.shift();
+	    startQuestion(qa);
+	    displayUpdated=true;
+	    userWaitingForQuestion=false;
+	} else {
+	    // Not enough locally.  Show waiting status.
+	    // Don't need to kick off a request here.
+	    // That happens below.
+	    showQA("...","...");
+	    showStatus("Loading card");
+	    userWaitingForQuestion=true;
+	}
+
+	if( QACache.length < minQABeforeFetch) {
+	    // Stack is below threshhold so we need to trigger a fetch.
+	    fetchMoreQA();
+	    // don't worry about de-duping requests.  
+	    // fetchmoreqa will do that.
+	}
+    }
+
+    // Asks the server for more QA data.
+    // if needToUpdateUI is true then it will push the results
+    // on the screen as soon as they're back.
+    function fetchMoreQA() {
+	// Check global state variable to de-dupe these requests
+	if( fetchingMore ) {
+	    // Just wait for the last one to finish.
+	    return;
+	}
+	fetchingMore = true;
+        posturl = "/study/getqa-" + numQAToFetch;
+
+	// Check for the "revisit" hack
 	if( location.hash ) {
 	    // Remove the hash character
 	    cardnum = location.hash.substring(1);
@@ -138,19 +207,48 @@
 	    posturl = "/study/jsoncard/"+cardnum;
 	    location.hash="";
 	}
+
+	console.dir("Fetching QA from "+posturl);
+
+	// Kick off the request
 	dojo.xhrPost( {
 	    url: posturl,
 	    handleAs: "json",
 	    load: function(responseObject, ioArgs) {
-		startQuestion(responseObject.id, responseObject.question, responseObject.answer);
+		// When it comes back, just replace the old stack
+		QACache = responseObject;
+		console.dir("got more");
+
+		// reset global state.
+		fetchingMore = false;
+
+		// Cycle back to nextQA if the user is waiting
+		if( userWaitingForQuestion ) {
+		    nextQA();
+		    // That will clear the userWaiting flag
+		}
 	    }
 	});
     }
 
     /////////////////////////////////////////////////////////
     //
-    // Submitting the impression
+    // WRITING: Submitting the impression
     //
+    // The session-state on the server is not thread-safe.
+    // If we send multiple overlapping requests, it will 
+    // lose data since each request loads the sesison state
+    // from the database into memory and then writes it back.
+    // So we need to serialize the requests that will modify the
+    // learning model's state.
+    // The server guarantees that fetchMoreQA requests will not
+    // modify the model's state, so we don't need to serialize
+    // those against the impression logging.
+    // But we do need to serialize the impression logging
+    // since the user might be able to answer faster than the
+    // server can accept the answers.  Hopefully this will
+    // just be in bursts, and not sustained, cuz otherwise
+    // we've got a problem.
     /////////////////////////////////////////////////////////
 
     // Puts together the impression and sends it up.
@@ -158,31 +256,31 @@
     {
 	var submittimer_ms = time_elapsed_ms() - showtimer_ms;
 
-	//TODO: more general way to create postdata
+	//Should find a cleaner way to assemble the postdata
 	data = "";
 	data += "answer=" + yesno;
-	data += "&id=" + cardid;
+	data += "&id=" + cardId;
 	data += "&showtimer=" + showtimer_ms;
 	data += "&submittimer=" + submittimer_ms;
+	// TODO: serialize these posts
 	var xhrArgs = {
 	    url: "/study/impression",
 	    postData: data,
 	    handleAs: "text",
 	    load: function(data) {
 		console.dir("impression "+yesno+" posted");
-		showQA("....","....");
-		// We have to serialize these to avoid races on the server 
-		// which overwrite the session.
-		fetchQA();
+		showStatus("");
 	    },
 	    error: function(error) {
 		console.dir("error submitting impression: "+error);
-		showQA("-error-","-error-");
+		showStatus("Error posting");
+		// TODO: retry to submit this impression
 	    }
 	};
 	dojo.xhrPost(xhrArgs);
-	showQA("...","...");
+	showStatus("submitting...");
 	hideAnswer();
+	nextQA();
     }
     
     /////////////////////////////////////////////////////////
@@ -231,7 +329,7 @@
     }
 		    
     function startUI() {
-	fetchQA();
+	nextQA();
     }
 
 
@@ -264,6 +362,9 @@ Hint:
 Try pressing S, N, Y, D, K keys.
 <br/>
 <a href="deck">Manage your deck</a>
+</div>
+<div id="statusbar" class="statusbar">
+Loading...
 </div>
 {% endblock %}
 
