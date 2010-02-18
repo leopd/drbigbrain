@@ -23,12 +23,20 @@ class LearningModelBase():
 	# this provides a way to look up the card objects 
 	self.cards_by_id={}
 
+	# a string to describe the lessons contained
+	self.description=""
+
 
 
     # given a lesson id, it stores the id's of all the concepts in that lesson
     # in the "Active" card pile
     def set_active_lesson(self,lesson_id):
 	lesson = get_object_or_404(Lesson, pk=lesson_id)
+
+	# add to the description
+	if self.description != "":
+	    self.description += ", "
+	self.description += lesson.name
 
 	# reset Active
 	self.piles['Active'] = []
@@ -69,6 +77,7 @@ class LearningModelBase():
 
     def __unicode__(self):
 	str = u"%s:\n" % self.__class__
+	str += u"(%s)\n" % self.description
 	for pile in self.supported_piles():
 	    str += u"%s pile: " % pile
 	    if self.piles.get(pile) is None:

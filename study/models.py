@@ -30,3 +30,4 @@ class DeckState(models.Model):
     description = models.CharField(max_length=100, null=True)
     pickled_model = models.TextField()
     last_accessed = models.DateTimeField(auto_now=True)
+

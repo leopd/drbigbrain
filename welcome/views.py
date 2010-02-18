@@ -7,9 +7,12 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib.auth import authenticate
 from dbbpy.flashcards.models import Lesson
+from dbbpy.study.views import get_deckstate
 
 def homepage(request):
-    return render_to_response("welcome/homepage.html", context_instance=RequestContext(request))
+    #TODO: move get_deckstate somewhere better.  like maybe the deckstate class
+    deckstate = get_deckstate(request)
+    return render_to_response("welcome/homepage.html", {'deckstate': deckstate}, context_instance=RequestContext(request))
 
 def chinese(request):
     lesson_list = Lesson.objects.all().order_by('name')

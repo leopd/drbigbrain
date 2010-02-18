@@ -17,7 +17,7 @@
 <br/>
 {% if user.is_authenticated %}
 or
-    <h3><a href="/study/">Pick up studying where you left off</a></h3>
+    <h3><a href="/study/">Pick up studying where you left off with {{deckstate.description}}</a></h3>
 {% else %}
 <h3>Returning users:</h3>
 <ul>

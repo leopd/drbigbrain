@@ -15,7 +15,7 @@ from dbbpy.study.learning import RandomLearningModel
 from dbbpy.study.learning import SimpleDeckModel
 from dbbpy.study.learning import BetterDeckModel
 from dbbpy.study.learninghistory import HistoryModel
-
+from django.contrib.auth.models import AnonymousUser
 
 
 def get_deckstate(request, create_new=True):
@@ -36,6 +36,9 @@ def get_deckstate(request, create_new=True):
 	    if not create_new:
 		return None
 	    else:
+		if request.user.__class__ == AnonymousUser:
+		    #TODO: someday we'll be able to just store it in session
+		    return None
 		deckstate = DeckState()
 		deckstate.user = request.user
 		deckstate.save() # to get the id
@@ -80,6 +83,9 @@ def save_model(request, model):
 
     deckstate = get_deckstate(request,True)
     deckstate.pickled_model = pickle.dumps(model)
+
+    # copy the model's description up to the deckstate
+    deckstate.description = model.description
     deckstate.save()
     
 
@@ -127,9 +133,13 @@ def deckview(request):
     for pile in model.supported_piles():
 	pilecount.append( (pile, len( model.cards_in_pile(pile) ) ) )
 
+    # and the description
+    description = model.description
+
     templatevars = {
 	'recent_cards': recent_cards,
 	'pilecount': pilecount,
+	'description': description,
 	}
 
     return render_to_response("study/deck.html", templatevars)
@@ -231,17 +241,21 @@ def setlesson(request,lesson_id):
     """Adds this lesson to the active deck.
     """
 
+    # put this lesson into the model
     model = get_model(request)
     if model is None:
 	resetdeck(request)
 	model = get_model(request)
     model.set_active_lesson(lesson_id)
     save_model(request, model)
+
+    # send them off to study
     return HttpResponseRedirect("/study/")
     
 
 def resetdeck(request):
-    """Clears the active deck.
+    """Creates a new model object and saves it.
+    This wipes out anything in the previous model.
     """
 
     #TODO: make this configurable
