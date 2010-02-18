@@ -47,16 +47,44 @@
 
 
 <script type="text/javascript">
-    // load required modules
-    dojo.require("dojo.parser");
+    /////////////////////////////////////////////////////////
+    //
+    // timer functions
+    //
+    /////////////////////////////////////////////////////////
+    var start_time_ms;
+    function start_timer() {
+	var d = new Date();
+	start_time_ms = d.getTime(); // ms since 1970
+    }
 
-    // vars
-    var showAnswer;
-    var cardid;
+    function time_elapsed_ms() {
+	var d = new Date();
+	return d.getTime() - start_time_ms;
+    }
 
+
+    /////////////////////////////////////////////////////////
+    //
+    // Stuff to display the question and answer
+    //
+    /////////////////////////////////////////////////////////
+
+    var cardid; // id of the currently displayed card to be sent back with the current impression
+
+    // just updates the q and a divs in the display.
+    // nothing else.
     function showQA(q,a) {
 	dojo.byId("questionContents").innerHTML= q;
 	dojo.byId("answerContents").innerHTML= a;
+    }
+
+    // Shows the question, and resets the UI
+    function startQuestion(id,q,a) {
+	showQA(q, a);
+	cardid = id;
+	dojo.byId("showButton").focus();
+	start_timer();
     }
 
 
@@ -79,70 +107,15 @@
 	});
     }
 
-    // Shows the question, and resets the UI
-    function startQuestion(id,q,a) {
-	showQA(q, a);
-	cardid = id;
-	dojo.byId("showButton").focus();
-	start_timer();
-    }
+    /////////////////////////////////////////////////////////
+    //
+    // Submitting the impression
+    //
+    /////////////////////////////////////////////////////////
 
-    
-    var start_time_ms;
-    function start_timer() {
-	var d = new Date();
-	start_time_ms = d.getTime(); // ms since 1970
-    }
+    // remembers how long between card display and show button being pressed
+    var showtimer_ms=-1; 
 
-    function time_elapsed_ms() {
-	var d = new Date();
-	return d.getTime() - start_time_ms;
-    }
-
-
-
-    dojo.addOnLoad(function(){
-	wireKeyboardEvents();
-		
-	startUI();
-    });
-
-    function wireKeyboardEvents() {
-	var node = dojo.byId("bodytag");
-	dojo.connect(node, "onkeypress", function(e){
-	    switch(e.charOrCode){
-		case 's':
-		case 'S':
-		    showAnswer();
-		    break;
-		case 'n':
-		case 'N':
-		    submitAnswer('No');
-		    break;
-		case 'y':
-		case 'Y':
-		    submitAnswer('Yes');
-		    break;
-		case 'd':
-		case 'D':
-		    submitAnswer('Discard');
-		    break;
-		case 'k':
-		case 'K':
-		    submitAnswer('Kinda');
-		    break;
-	    }
-	    // if you want to cancel default processing...
-	    // dojo.stopEvent(e);
-	});
-    }
-		    
-    function startUI() {
-	fetchQA();
-    }
-
-
-    var showtimer_ms=-1;
     function showAnswer()
     {
 	showtimer_ms= time_elapsed_ms();
@@ -188,6 +161,57 @@
 	showQA("...","...");
 	hideAnswer();
     }
+    
+    /////////////////////////////////////////////////////////
+    //
+    // Dojo startup stuff
+    //
+    /////////////////////////////////////////////////////////
+
+    // load required modules
+    dojo.require("dojo.parser");
+
+    dojo.addOnLoad(function(){
+	wireKeyboardEvents();
+		
+	startUI();
+    });
+
+    function wireKeyboardEvents() {
+	var node = dojo.byId("bodytag");
+	dojo.connect(node, "onkeypress", function(e){
+	    switch(e.charOrCode){
+		case 's':
+		case 'S':
+		    showAnswer();
+		    break;
+		case 'n':
+		case 'N':
+		    submitAnswer('No');
+		    break;
+		case 'y':
+		case 'Y':
+		    submitAnswer('Yes');
+		    break;
+		case 'd':
+		case 'D':
+		    submitAnswer('Discard');
+		    break;
+		case 'k':
+		case 'K':
+		    submitAnswer('Kinda');
+		    break;
+	    }
+	    // if you want to cancel default processing...
+	    // dojo.stopEvent(e);
+	});
+    }
+		    
+    function startUI() {
+	fetchQA();
+    }
+
+
 
 </script>
 
