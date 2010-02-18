@@ -163,6 +163,7 @@ def getqa(request):
                     mimetype='text/plain'
 		    )
 
+import time
 
 def get_many_qa(request,numcards):
     """Fetches the next 'numcard' cards to be displayed
@@ -170,6 +171,8 @@ def get_many_qa(request,numcards):
     Allows smart client to pre-fetch multiple cards to minimize user latency.
     Guaranteed not to modify the model state -- it won't be saved!
     """
+
+    #time.sleep(5)
 
     # manually casting seems to avoid unicode wierdness
     numcards = int(numcards)
@@ -194,6 +197,8 @@ def impression(request):
     This is called frequently by the studyui.
     Turns user action into an Impression object.
     """
+
+    #time.sleep(1)
 
     # put this into a database table...
     i = Impression()

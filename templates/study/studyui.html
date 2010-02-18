@@ -113,7 +113,6 @@
 
 
     function showStatus(msg) {
-	msg += "<br/>cache="+QACache.length;
 	console.dir("status:"+msg);
 	dojo.byId("statusbar").innerHTML = msg;
     }
@@ -174,7 +173,6 @@
 	    // Don't need to kick off a request here.
 	    // That happens below.
 	    showQA("...","...");
-	    showStatus("Loading card");
 	    userWaitingForQuestion=true;
 	}
 
@@ -184,6 +182,19 @@
 	    // don't worry about de-duping requests.  
 	    // fetchmoreqa will do that.
 	}
+	debugCache(QACache);
+    }
+
+    function debugCache(cache) {
+	str = "<ul>";
+	for(var i=0; i<cache.length; i++) {
+	    obj = cache[i];
+	    str += "<li>";
+	    str += obj.question+" ("+obj.id+")"
+	    str += "</li>";
+	}
+	str += "</ul>";
+	dojo.byId("debugcache").innerHTML = str;
     }
 
     // Asks the server for more QA data.
@@ -217,6 +228,7 @@
 	    load: function(responseObject, ioArgs) {
 		// When it comes back, just replace the old stack
 		QACache = responseObject;
+		debugCache(QACache);
 		console.dir("got more");
 
 		// reset global state.
@@ -364,7 +376,9 @@ Try pressing S, N, Y, D, K keys.
 <a href="deck">Manage your deck</a>
 </div>
 <div id="statusbar" class="statusbar">
-Loading...
 </div>
+<div id="debugcache" class="statusbar">
+emtpy cache
+</dIV>
 {% endblock %}
 
