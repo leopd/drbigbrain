@@ -38,7 +38,6 @@ TODO...
 *Most important
 !-pre-load next card in studyui
 -warn user when the deck is running short and time for more cards
--include names of lessons added to deck.
 -Show me how far I've gotten on each lesson.  (# in each state)
 -use static media files
 
@@ -63,7 +62,6 @@ TODO...
 -reset option per card (revisit does that?)
 -support multiple decks and switching between them
 -option to load more than 30 recent cards
--show which lessons are in this deck
 -create a new kind of deck -- quiz / review
 
 
@@ -71,7 +69,8 @@ TODO...
 -history looks up actual impressions
 -model uses timer
 -limit timer to 5 minutes.  then ask "you still there?"
-
+-split learning (# of cards to wait) and review (# minutes to wait)
+-state machine logic can give hints about how far back
 
 
 *optimize
