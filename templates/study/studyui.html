@@ -182,11 +182,12 @@
 	    // don't worry about de-duping requests.  
 	    // fetchmoreqa will do that.
 	}
-	debugCache(QACache);
+	debugCache();
     }
 
-    function debugCache(cache) {
-	str = "<ul>";
+    function debugCache() {
+	var cache = QACache;
+	str = "<B>Cache State:</B><ul>";
 	for(var i=0; i<cache.length; i++) {
 	    obj = cache[i];
 	    str += "<li>";
@@ -194,6 +195,12 @@
 	    str += "</li>";
 	}
 	str += "</ul>";
+	if( userWaitingForQuestion ) {
+	    str += "<B>USER WAITING</B><br/>";
+	}
+	if( fetchingMore ) {
+	    str += "<B>FETCHING...</B><br/>";
+	}
 	dojo.byId("debugcache").innerHTML = str;
     }
 
@@ -228,7 +235,6 @@
 	    load: function(responseObject, ioArgs) {
 		// When it comes back, just replace the old stack
 		QACache = responseObject;
-		debugCache(QACache);
 		console.dir("got more");
 
 		// reset global state.
@@ -239,6 +245,7 @@
 		    nextQA();
 		    // That will clear the userWaiting flag
 		}
+		debugCache();
 	    }
 	});
     }
