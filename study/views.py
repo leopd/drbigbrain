@@ -21,7 +21,7 @@ def get_model(request):
     Returns None if there isn't one assicated with this user or session.
     """
 
-    deckstate = Deckstate.for_request(request,False)
+    deckstate = DeckState.for_request(request,False)
     if deckstate is None:
 	return None
 
@@ -31,7 +31,7 @@ def get_model(request):
     # having problems with unicode pickling!
     # error -- KeyError: '\x00'
     p=str(p) # this seems to fix it
-    #print "loading model from state %d pickled = %s" % (deckstate_id, p[0:50])
+    print "loading model from state %d pickled = %s" % (deckstate.id, p[0:50])
     model = pickle.loads(p)
     return model
     
@@ -40,7 +40,7 @@ def save_model(request, model):
     """Saves the learningmodel object back from whence it came
     """
 
-    deckstate = Deckstate.for_request(request,True)
+    deckstate = DeckState.for_request(request,True)
     deckstate.pickled_model = pickle.dumps(model)
 
     # copy the model's description up to the deckstate
