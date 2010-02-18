@@ -15,7 +15,7 @@ def homepage(request):
     return render_to_response("welcome/homepage.html", {'deckstate': deckstate}, context_instance=RequestContext(request))
 
 def chinese(request):
-    lesson_list = Lesson.objects.all().order_by('name')
+    lesson_list = Lesson.objects.all().order_by('id')
     return render_to_response("welcome/lessonlist.html", {'lessons': lesson_list} )
 
    

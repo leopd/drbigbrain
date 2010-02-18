@@ -38,10 +38,8 @@ TODO...
 *Most important
 !!!refactor get_deckstate(request) into Deckstate.get_by_request(request).
 similar for learning model.
-X-Don't rely on deckstate's description -- use it in the model.
 !-pre-load next card in studyui
 -warn user when the deck is running short and time for more cards
--Put name/description on deck.
 -include names of lessons added to deck.
 -Show me how far I've gotten on each lesson.  (# in each state)
 -use static media files
@@ -50,7 +48,7 @@ X-Don't rely on deckstate's description -- use it in the model.
 * UX flow
 -guest login
 -add "about" page
--properly sort bloc lessons
+(sorta)-properly sort bloc lessons
 -link to definitions
 -note about what happens to new cards and the active deck on lesson picker view
 -explain how to install chinese fonts
