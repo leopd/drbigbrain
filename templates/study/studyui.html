@@ -49,7 +49,7 @@
 <script type="text/javascript">
     /////////////////////////////////////////////////////////
     //
-    // timer functions
+    // timer, Q&A UI, buttons
     //
     /////////////////////////////////////////////////////////
     var start_time_ms;
@@ -64,11 +64,24 @@
     }
 
 
-    /////////////////////////////////////////////////////////
-    //
-    // Stuff to display the question and answer
-    //
-    /////////////////////////////////////////////////////////
+    // remembers how long btx card display and show button being pressed
+    var showtimer_ms=-1; 
+
+    function showAnswer()
+    {
+	showtimer_ms= time_elapsed_ms();
+	dojo.byId("answerDiv").style.display="block";
+	dojo.byId("showButton").blur();
+	dojo.byId("showButton").style.display="none";
+    }
+
+    function hideAnswer()
+    {
+	dojo.byId("answerDiv").style.display="none";
+	dojo.byId("showButton").style.display="block";
+    }
+
+
 
     var cardid; // id of the currently displayed card to be sent back with the current impression
 
@@ -87,6 +100,13 @@
 	start_timer();
     }
 
+
+
+    /////////////////////////////////////////////////////////
+    //
+    // asking the server for content
+    //
+    /////////////////////////////////////////////////////////
 
     function fetchQA() {
 	posturl = "/study/getqa"
@@ -113,24 +133,8 @@
     //
     /////////////////////////////////////////////////////////
 
-    // remembers how long between card display and show button being pressed
-    var showtimer_ms=-1; 
 
-    function showAnswer()
-    {
-	showtimer_ms= time_elapsed_ms();
-	dojo.byId("answerDiv").style.display="block";
-	dojo.byId("showButton").blur();
-	dojo.byId("showButton").style.display="none";
-    }
-
-
-    function hideAnswer()
-    {
-	dojo.byId("answerDiv").style.display="none";
-	dojo.byId("showButton").style.display="block";
-    }
-
+    // Puts together the impression and sends it up.
     function submitAnswer(yesno)
     {
 	var submittimer_ms = time_elapsed_ms() - showtimer_ms;
