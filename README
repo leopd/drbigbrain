@@ -34,17 +34,12 @@ to passenger_wsgi.py near top to get it to run correct version of python.
 
 TODO...
 *Most important
-X !!!! Incorporate model_seq into base class, and use it for numbering all served cards.  sync with client.
-X !!! Serialize impression posts (on client or server)
-X !! clean up status messages
-X !! fix "revisit"
-X-pre-load next card in studyui
+! Fix on Android G1 browser -- dojo debug console??
 -warn user when the deck is running short of unseen cards and time for more cards
 -Show me how far I've gotten on each lesson.  (# in each state)
 -use static media files
 -move get_model, save_model into deckstate class
 -black-box tests
-X -debug outputs soonest and model_seq
 
 
 * UX flow
@@ -53,7 +48,6 @@ X -debug outputs soonest and model_seq
 -link to definitions
 -note about what happens to new cards and the active deck on lesson picker view
 -explain how to install chinese fonts
-X-Better behavior if your deck is empty and you try to study
 -warn user if they try to leave with unsubmitted data
 
 
@@ -113,4 +107,8 @@ X-Better behavior if your deck is empty and you try to study
 
 *Tests
 -Add some tests!
+-Black box tests of the whole service, including client
+-Test that if I hit "No" over and over again, that I get the same cards back again before too long
+-Test that if I hit "Kinda" on some cards, they come back after a while.
+-Test that the XHR's from the js client work properly.  (rhino?)
 
