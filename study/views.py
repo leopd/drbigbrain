@@ -27,6 +27,8 @@ def get_model(request):
 
     # Now we have a deckstate.  pull out the model
     p = deckstate.pickled_model
+    if (p is None) or (p==""):
+	return None
 
     # having problems with unicode pickling!
     # error -- KeyError: '\x00'
@@ -56,6 +58,10 @@ def studyui(request):
     #TODO: move this to static media
     """
 
+    if get_model(request) is None:
+	#TODO: generalize this to send you to a 'pick a lesson' page
+	return HttpResponseRedirect("/chinese/")
+
     return render_to_response("study/studyui.html", context_instance=RequestContext(request))
 
 
@@ -65,25 +71,19 @@ def deckview(request):
 
     # first, fetch the recent impressions
     recent_impressions = Impression.objects.order_by('-answered_date').filter(user=request.user)
-    # limit to last 100 impressions
-    recent_impressions = recent_impressions[0:99]
+    # limit to last 30 impressions
+    recent_impressions = recent_impressions[0:29]
 
     # now build a list of card Q's, with the pile for each card. 
-    # eliminating redundant cards
+    # don't eliminate duplicate cards
     model = get_model(request)
-    cards_seen={}
     recent_cards = []
     for impression in recent_impressions:
-	print "id %s" % impression.concept.id
+	#print "id %s" % impression.concept.id
 	card = model.lookup_card(impression.concept.id)
 
-	# remove redundant
-	if not cards_seen.get(card.id):
-	    cards_seen[card.id] = True
-	    pile = model.which_pile(card)
-	    recent_cards.append( (card.question(), pile, card) )
-    # limit to most recent 30
-    recent_cards = recent_cards[0:29]
+	pile = model.which_pile(card)
+	recent_cards.append( (card.question(), pile, card) )
 
     #
     # fetch counts for each pile
@@ -166,22 +166,26 @@ def getqa(request):
 import time
 
 def get_many_qa(request,numcards):
-    """Fetches the next 'numcard' cards to be displayed
-    Similar to getqa.
+    """Fetches the next 'numcard' cards to be displayed. Similar to getqa.
+    Returns a json array, with the first element being the sequence number
+    and each subsequent element being a json card object.
     Allows smart client to pre-fetch multiple cards to minimize user latency.
     Guaranteed not to modify the model state -- it won't be saved!
     """
 
-    #time.sleep(5)
+    #time.sleep(3)
 
     # manually casting seems to avoid unicode wierdness
     numcards = int(numcards)
 
-    # call the model to pick the next card to show
     model = get_model(request)
+
+    # stash the sequence number at the beginning
+    data = [ model.get_sequence() ]
+
+    # ask the model for all the cards to show
     cards = model.choose_many_cards(numcards)
 
-    data = []
     for card in cards:
 	data.append( card.json() )
 
@@ -198,7 +202,7 @@ def impression(request):
     Turns user action into an Impression object.
     """
 
-    #time.sleep(1)
+    #time.sleep(3)
 
     # put this into a database table...
     i = Impression()

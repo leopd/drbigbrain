@@ -16,8 +16,11 @@
 
 <br/>
 {% if user.is_authenticated %}
-or
-    <h3><a href="/study/">Pick up studying where you left off with {{deckstate.description}}</a></h3>
+    {% if deckstate.description %}
+    {# If the deckstate has a description, we assume it's got cards and is ready to go #}
+    or
+	<h3><a href="/study/">Pick up studying where you left off with {{deckstate.description}}</a></h3>
+    {% endif %}
 {% else %}
 <h3>Returning users:</h3>
 <ul>

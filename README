@@ -30,18 +30,21 @@ to passenger_wsgi.py near top to get it to run correct version of python.
 (Needs at least 2.4 or something)
 
 
-
 ** DEVELOPMENT NOTES, TODO ROADMAP:
-
 
 TODO...
 *Most important
-!!! Serialize impression posts (on client or server)
-!! clean up status messages
+X !!!! Incorporate model_seq into base class, and use it for numbering all served cards.  sync with client.
+X !!! Serialize impression posts (on client or server)
+X !! clean up status messages
+X !! fix "revisit"
 X-pre-load next card in studyui
 -warn user when the deck is running short of unseen cards and time for more cards
 -Show me how far I've gotten on each lesson.  (# in each state)
 -use static media files
+-move get_model, save_model into deckstate class
+-black-box tests
+X -debug outputs soonest and model_seq
 
 
 * UX flow
@@ -50,7 +53,8 @@ X-pre-load next card in studyui
 -link to definitions
 -note about what happens to new cards and the active deck on lesson picker view
 -explain how to install chinese fonts
--Better behavior if your deck is empty and you try to study
+X-Better behavior if your deck is empty and you try to study
+-warn user if they try to leave with unsubmitted data
 
 
 *code cleanup
@@ -58,6 +62,9 @@ X-pre-load next card in studyui
 -break studyui.js into sections or separate files
 -encapsulation of login/logout from root urls.py
 -refactor get/set_model out of study/views.py -- into deckstate?
+-create CardCache class in studyui
+-better handling of XHR errors on client. retry, but not forever.
+-Use a proper datestamp when the impression was made, rather than committed to db
 
 
 *new deck manager
@@ -73,6 +80,7 @@ X-pre-load next card in studyui
 -limit timer to 5 minutes.  then ask "you still there?"
 -split learning (# of cards to wait) and review (# minutes to wait)
 -state machine logic can give hints about how far back
+-Ensure that two cards don't show up right next to each other again.  If they're going back in the deck with similar soonest values, then +/- 1.5 to it to make sure there's something else in between
 
 
 *optimize

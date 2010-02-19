@@ -45,6 +45,9 @@ class DeckState(models.Model):
 
 	deckstate_id = request.session.get('deckstate_id')
 	if deckstate_id is None:
+	    if request.user.__class__ == AnonymousUser:
+		#TODO: someday we'll be able to just store it in session
+		return None
 	    # Nothing in the session.  See if we can find one for this user.
 	    alldecks = DeckState.objects.filter(user = request.user)
 	    if len(alldecks) == 0:
@@ -52,9 +55,6 @@ class DeckState(models.Model):
 		if not create_new:
 		    return None
 		else:
-		    if request.user.__class__ == AnonymousUser:
-			#TODO: someday we'll be able to just store it in session
-			return None
 		    deckstate = DeckState()
 		    deckstate.user = request.user
 		    deckstate.save() # to get the id

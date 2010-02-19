@@ -26,6 +26,12 @@ class LearningModelBase():
 	# a string to describe the lessons contained
 	self.description=""
 
+	# Number of cards seen by the user
+	self.model_seq = 0
+
+
+    def get_sequence(self):
+	return self.model_seq
 
 
     def set_active_lesson(self,lesson_id):
@@ -92,17 +98,33 @@ class LearningModelBase():
 
 
     def choose_concept(self):
+	"""Deprecated
+	Returns a Concept object for the user to study.
+	"""
+
 	card = self.choose_card()
 	return card.concept()
 
+
+    def seq_tick(self):
+	"""Updates the internal timer (model_seq)
+	"""
+	self.model_seq += 1;
+
+
     def log_impression(self,impression):
-	# simple models might not use this fact, so they don't need
-	# to override this method.
-	#print "default logimpression does nothing"
-	pass
+	"""Records the fact that the user looked at a card.
+	Updates the model based on their answer.
+	"""
+	# basic thing that needs to happen is to increment the model_seq
+	self.seq_tick()
+
 
     def __unicode__(self):
-	str = u"%s:\n" % self.__class__
+	"""Outputs a debug string with all the piles
+	"""
+
+	str = u"%s (seq=%s):\n" % (self.__class__, self.model_seq)
 	str += u"(%s)\n" % self.description
 	for pile in self.supported_piles():
 	    str += u"%s pile: " % pile
@@ -113,9 +135,17 @@ class LearningModelBase():
 		place=0
 		for card in self.piles[pile]:
 		    place += 1
-		    str += u"    %s. (%s) %s\n" % (place, card.id, card)
+		    str += u"    %s. %s" % (place, self.debug_output_for_card(card) )
 		str += u"}\n"
 	return str
+	
+
+    def debug_output_for_card(self,card):
+	"""Outputs a short (one-line) debug string for the card
+	Allows sub-classes to decorate the output.
+	"""
+	return u"(%s) %s\n" % (card.id, card)
+
 
     # returns a list of cards in the given pile
     def cards_in_pile(self, pile):
@@ -206,6 +236,8 @@ class SimpleDeckModel(LearningModelBase):
 	return card
 
     def log_impression(self,impression):
+	LearningModelBase.log_impression(self,impression)
+
 	# here we need to actually rotate the card to the back.
 	card = self.lookup_card(impression.concept_id)
 	self.move_card_to_pile(card,'Active')
@@ -229,6 +261,8 @@ class BetterDeckModel(SimpleDeckModel):
 	return int(random.uniform(3,7))
 	
     def log_impression(self,impression):
+	LearningModelBase.log_impression(self,impression)
+
 	#print u"better decklogging %s" % impression
 	card = self.lookup_card(impression.concept_id)
 

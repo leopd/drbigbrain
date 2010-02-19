@@ -43,6 +43,13 @@
 	background-color: #eed;
     }
 
+    .debugbar {
+	margin-top: 20px;
+	background-color: #edd;
+	font-size: 9px;
+	display:none;
+    }
+
     .answerbutton {
 	width: 100px;
 	height: 25px;
@@ -145,26 +152,18 @@
     // if needed.
     /////////////////////////////////////////////////////////
 
-    // configuration parameters
-    var numQAToFetch = 5;
-    var minQABeforeFetch = 3; // the low water mark when we fetch again
-
-    // Global state about the QA Cache and the display
-    var fetchingMore=false; // True if there's an outstanding request.
-    var userWaitingForQuestion=true; // so we can show it
-
-    // the local cache of QA objects.  It's an array of json objects
-    var QACache = []; 
 
     // This is called whenever it's time to display a new QA.
     // It takes care of making that happen.  
     // It will happen synchronously if possible, else async.
     function nextQA() {
+	console.dir("nextQA");
 	// See if we can handle the request from local cache
 	if( QACache.length > 0 ) {
 	    // Handle locally
 	    console.dir("Using local");
 	    var qa = QACache.shift();
+	    QACacheSeq += 1;
 	    startQuestion(qa);
 	    displayUpdated=true;
 	    userWaitingForQuestion=false;
@@ -179,19 +178,39 @@
 	if( QACache.length < minQABeforeFetch) {
 	    // Stack is below threshhold so we need to trigger a fetch.
 	    fetchMoreQA();
-	    // don't worry about de-duping requests.  
+	    // dont worry about de-duping requests.  
 	    // fetchmoreqa will do that.
 	}
 	debugCache();
     }
 
-    function debugCache() {
-	var cache = QACache;
-	str = "<B>Cache State:</B><ul>";
+    //
+    // Should make a CardCache class for all that follows
+    // Even without, it should be encapsulated to this section of code.
+    //
+
+    // configuration parameters
+    var numQAToFetch = 6;
+    var minQABeforeFetch = 3; // the low water mark below which we fetch more
+
+    // Global state about the QA Cache and the display
+    var fetchingMore=false; // True if there's an outstanding request.
+    var userWaitingForQuestion=true; // so we can show it
+
+    // the local cache of QA objects.  It's an array of json objects
+    var QACache = []; 
+    // The sequence number of the first object in the cache
+    var QACacheSeq = -1;
+
+    // Renders a cache object for debugging as HTML
+    function renderDebugCache(cache) {
+	var str = "<B>Cache State:</B><br/>";
+	str += "Seq = " + QACacheSeq + "<br/>"
+	str += "<ul>"
 	for(var i=0; i<cache.length; i++) {
 	    obj = cache[i];
 	    str += "<li>";
-	    str += obj.question+" ("+obj.id+")"
+	    str += obj.question+" ("+obj.id+")";
 	    str += "</li>";
 	}
 	str += "</ul>";
@@ -199,8 +218,14 @@
 	    str += "<B>USER WAITING</B><br/>";
 	}
 	if( fetchingMore ) {
-	    str += "<B>FETCHING...</B><br/>";
+	    str += "<i>FETCHING...</i><br/>";
 	}
+	return str;
+    }
+
+    function debugCache() {
+	var cache = QACache;
+	var str = renderDebugCache(cache);
 	dojo.byId("debugcache").innerHTML = str;
     }
 
@@ -234,8 +259,8 @@
 	    handleAs: "json",
 	    load: function(responseObject, ioArgs) {
 		// When it comes back, just replace the old stack
-		QACache = responseObject;
 		console.dir("got more");
+		mergeMoreQAIntoCache(responseObject)
 
 		// reset global state.
 		fetchingMore = false;
@@ -246,8 +271,49 @@
 		    // That will clear the userWaiting flag
 		}
 		debugCache();
+	    },
+	    error: function(error) {
+		console.dir("error fetching cards: "+error);
+		showStatus("Error fetching cards");
+		// TODO: try calling fetchMoreQA again
+		// but use a counter to prevent infinite load
 	    }
 	});
+    }
+
+
+    // Line up sequence number on the response with
+    // the cache's sequence number to avoid showing the
+    // user the same card repeatedly.
+    function mergeMoreQAIntoCache(newdata) {
+	console.dir("merging...");
+
+	if( typeof(newdata.length) == "undefined" ) {
+	    // A single object came back.  
+	    // hash-hack
+	    newseq=-1;
+	    newdata = [newdata];
+	} else {
+	    newseq = newdata.shift();
+	}
+
+	// Render debug output
+	var str = "<b>Incoming...</b><br/>";
+	str += "newseq = " + newseq + "<br/>";
+	str += renderDebugCache(newdata);
+	dojo.byId("debugcache2").innerHTML= str;
+	//alert("what now?");
+
+	// Discard items from the newdata until the sequence
+	// numbers line up
+	while( newseq < QACacheSeq ) {
+	    newdata.shift();
+	    newseq++;
+	}
+
+	// Now we can merge them
+	QACache = newdata;
+	QACacheSeq = newseq; // This has an effect on first load
     }
 
     /////////////////////////////////////////////////////////
@@ -260,17 +326,22 @@
     // from the database into memory and then writes it back.
     // So we need to serialize the requests that will modify the
     // learning model's state.
-    // The server guarantees that fetchMoreQA requests will not
+    //
+    // The server guarantees that card-read requests will not
     // modify the model's state, so we don't need to serialize
     // those against the impression logging.
+    //
     // But we do need to serialize the impression logging
     // since the user might be able to answer faster than the
-    // server can accept the answers.  Hopefully this will
-    // just be in bursts, and not sustained, cuz otherwise
-    // we've got a problem.
+    // server can accept the answers.  
+    //
+    // TODO: Consider batching together multiple impression posts
+    // if the server is having trouble keeping up.  This would minimize
+    // lots of overhead on the server like model read/write.
     /////////////////////////////////////////////////////////
 
-    // Puts together the impression and sends it up.
+    // Outside interface - puts together the impression data.
+    // Sends it up if possible, or else queues it up to go later.
     function submitAnswer(yesno)
     {
 	var submittimer_ms = time_elapsed_ms() - showtimer_ms;
@@ -281,25 +352,70 @@
 	data += "&id=" + cardId;
 	data += "&showtimer=" + showtimer_ms;
 	data += "&submittimer=" + submittimer_ms;
-	// TODO: serialize these posts
+
+	postOrQueueImpression(data);
+
+	// Deal with the rest of the UI
+	hideAnswer();
+	nextQA();
+    }
+
+
+    //
+    // What follows should be encapsulated into a class
+    //
+
+    // The list of impressions waiting to post
+    var postQueue=[];
+    // Are we currently waiting for an impression post to return?
+    var waitingForImpressionPost = false;
+
+    function postOrQueueImpression(data)
+    {
+	postQueue.push(data);
+	console.dir("Pushed post.  queue="+ postQueue.length);
+	launchPostIfAppropriate();
+    }
+
+    // If we have data queued to go, and there isn't an XHR already
+    // outstanding, then we launch a new XHR
+    function launchPostIfAppropriate() {
+	console.dir("launch post? queue="+ postQueue.length);
+	if( waitingForImpressionPost ) {
+	    // Already a post outstanding.
+	    return;
+	}
+
+	if( postQueue.length < 1 ) {
+	    console.dir("Nothing to post");
+	    // Nothing to post
+	    return;
+	}
+	console.dir("yes! launch post!");
+
+	// Set up the XHR
+	data = postQueue.shift();
+
 	var xhrArgs = {
 	    url: "/study/impression",
 	    postData: data,
 	    handleAs: "text",
-	    load: function(data) {
-		console.dir("impression "+yesno+" posted");
+	    load: function(result) {
+		waitingForImpressionPost = false;
+		console.dir("impression posted: "+data);
 		showStatus("");
+		launchPostIfAppropriate();
 	    },
 	    error: function(error) {
-		console.dir("error submitting impression: "+error);
-		showStatus("Error posting");
+		waitingForImpressionPost = false;
+		console.dir("Error submitting impression: "+error);
+		showStatus("Error posting answer");
 		// TODO: retry to submit this impression
 	    }
 	};
+	waitingForImpressionPost = true;
 	dojo.xhrPost(xhrArgs);
-	showStatus("submitting...");
-	hideAnswer();
-	nextQA();
+	showStatus("Submitting answer...");
     }
     
     /////////////////////////////////////////////////////////
@@ -384,8 +500,10 @@ Try pressing S, N, Y, D, K keys.
 </div>
 <div id="statusbar" class="statusbar">
 </div>
-<div id="debugcache" class="statusbar">
+<div id="debugcache" class="debugbar">
 emtpy cache
+</dIV>
+<div id="debugcache2" class="debugbar">
 </dIV>
 {% endblock %}
 

@@ -51,39 +51,41 @@ class HistoryModel(SimpleDeckModel):
 
     
     def choose_card(self):
-	self.model_seq += 1
-	#print "model seq up to %s" % self.model_seq
+	# update the "clock" so we can pick cards that are destined for later.
+	self.seq_tick()
+
+	#print "model seq up to %s" % self.
 
 	card = self.front_of_pile('Learning')
 	if (card != None ) and (not self.too_soon(card)):
-	    print "from learning pile"
+	    #print "from learning pile"
 	    return card
-	print "Nothing good in learning pile"
+	#print "Nothing good in learning pile"
 	
 	card = self.front_of_pile('Review')
 	if (card != None ) and (not self.too_soon(card)):
-	    print "from review pile"
+	    #print "from review pile"
 	    return card
-	print "Nothing good in review pile"
+	#print "Nothing good in review pile"
 	
 	card = self.front_of_pile('Unseen')
 	if (card != None ):
-	    print "from new pile"
+	    #print "from new pile"
 	    return card
-	print "Nothing at all in unseen pile"
+	#print "Nothing at all in unseen pile"
 
 	
 	card = self.front_of_pile('Learning')
 	if (card != None ):
-	    print "backup from learning pile"
+	    #print "backup from learning pile"
 	    return card
-	print "Nothing at all in learning pile"
+	#print "Nothing at all in learning pile"
 	
 	card = self.front_of_pile('Review')
 	if (card != None ):
-	    print "backup from review pile"
+	    #print "backup from review pile"
 	    return card
-	print "Nothing at all in review pile"
+	#print "Nothing at all in review pile"
 	
 	raise NotImplementedError("can't find any more to do in deck")
 
@@ -108,6 +110,10 @@ class HistoryModel(SimpleDeckModel):
 
 
     def log_impression(self,impression):
+	self.seq_tick()
+	# updates model_seq - must do this now since this is when the model gets persisted
+	#TODO: fix encapsulation of seq_tick.  this is handled in base class.
+
 	card = self.lookup_card(impression.concept_id)
 	next_status = self.get_next_card_status(card,impression.answer)
 	self.move_card_to_pile(card,next_status)
@@ -197,3 +203,11 @@ class HistoryModel(SimpleDeckModel):
 	    self.piles['Unseen'].append(card)
 	del self.piles['Active']
 	
+
+    def debug_output_for_card(self,card):
+	""" Decorate with soonest
+	"""
+	soonest = self.lookup_soonest(card)
+	return u"(%s) [@%s] %s\n" % (card.id, soonest, card)
+
+

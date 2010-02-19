@@ -10,6 +10,8 @@ class Card():
     not a generic data type.  
     the difference is that it's specific to a user.
     use this more completely in study/views.py
+
+    This should support things like a rosetta-style card.
     """
 
     def __init__(self,concept):
