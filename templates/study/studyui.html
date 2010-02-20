@@ -64,6 +64,12 @@
     // timer, Q&A UI, buttons
     //
     /////////////////////////////////////////////////////////
+
+    function debugPrint(msg) {
+	// console.dir(msg);
+    }
+
+
     var start_time_ms;
     function start_timer() {
 	var d = new Date();
@@ -120,7 +126,7 @@
 
 
     function showStatus(msg) {
-	console.dir("status:"+msg);
+	debugPrint("status:"+msg);
 	dojo.byId("statusbar").innerHTML = msg;
     }
 
@@ -157,11 +163,11 @@
     // It takes care of making that happen.  
     // It will happen synchronously if possible, else async.
     function nextQA() {
-	console.dir("nextQA");
+	debugPrint("nextQA");
 	// See if we can handle the request from local cache
 	if( QACache.length > 0 ) {
 	    // Handle locally
-	    console.dir("Using local");
+	    debugPrint("Using local");
 	    var qa = QACache.shift();
 	    QACacheSeq += 1;
 	    startQuestion(qa);
@@ -251,7 +257,7 @@
 	    location.hash="";
 	}
 
-	console.dir("Fetching QA from "+posturl);
+	debugPrint("Fetching QA from "+posturl);
 
 	// Kick off the request
 	dojo.xhrPost( {
@@ -259,7 +265,7 @@
 	    handleAs: "json",
 	    load: function(responseObject, ioArgs) {
 		// When it comes back, just replace the old stack
-		console.dir("got more");
+		debugPrint("got more");
 		mergeMoreQAIntoCache(responseObject)
 
 		// reset global state.
@@ -273,7 +279,7 @@
 		debugCache();
 	    },
 	    error: function(error) {
-		console.dir("error fetching cards: "+error);
+		debugPrint("error fetching cards: "+error);
 		showStatus("Error fetching cards");
 		// TODO: try calling fetchMoreQA again
 		// but use a counter to prevent infinite load
@@ -286,7 +292,7 @@
     // the cache's sequence number to avoid showing the
     // user the same card repeatedly.
     function mergeMoreQAIntoCache(newdata) {
-	console.dir("merging...");
+	debugPrint("merging...");
 
 	if( typeof(newdata.length) == "undefined" ) {
 	    // A single object came back.  
@@ -373,25 +379,25 @@
     function postOrQueueImpression(data)
     {
 	postQueue.push(data);
-	console.dir("Pushed post.  queue="+ postQueue.length);
+	debugPrint("Pushed post.  queue="+ postQueue.length);
 	launchPostIfAppropriate();
     }
 
     // If we have data queued to go, and there isn't an XHR already
     // outstanding, then we launch a new XHR
     function launchPostIfAppropriate() {
-	console.dir("launch post? queue="+ postQueue.length);
+	debugPrint("launch post? queue="+ postQueue.length);
 	if( waitingForImpressionPost ) {
 	    // Already a post outstanding.
 	    return;
 	}
 
 	if( postQueue.length < 1 ) {
-	    console.dir("Nothing to post");
+	    debugPrint("Nothing to post");
 	    // Nothing to post
 	    return;
 	}
-	console.dir("yes! launch post!");
+	debugPrint("yes! launch post!");
 
 	// Set up the XHR
 	data = postQueue.shift();
@@ -402,13 +408,13 @@
 	    handleAs: "text",
 	    load: function(result) {
 		waitingForImpressionPost = false;
-		console.dir("impression posted: "+data);
+		debugPrint("impression posted: "+data);
 		showStatus("");
 		launchPostIfAppropriate();
 	    },
 	    error: function(error) {
 		waitingForImpressionPost = false;
-		console.dir("Error submitting impression: "+error);
+		debugPrint("Error submitting impression: "+error);
 		showStatus("Error posting answer");
 		// TODO: retry to submit this impression
 	    }

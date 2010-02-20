@@ -49,7 +49,8 @@ TODO...
 -note about what happens to new cards and the active deck on lesson picker view
 -explain how to install chinese fonts
 -warn user if they try to leave with unsubmitted data
-
+-"Submitting..." status bar shouldn't re-arrange other page elements.
+-UI candy to show the new card gradually over 0.3s or so.  too jarring now. 
 
 *code cleanup
 -studyui only shows buttons that current model is configured for
