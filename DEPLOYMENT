@@ -33,4 +33,4 @@ causing a 503 error to get served.  To workaround, add the following line to
 
 SetEnvIfNoCase Request_URI ^/study/getqa.*$ MODSEC_ENABLE=Off
 
-
+For more info see http://wiki.dreamhost.com/Mod_security
