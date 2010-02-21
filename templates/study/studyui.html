@@ -247,6 +247,7 @@
     }
 
     function debugCache() {
+	//Comment out for better performance on slow browsers
 	//var cache = QACache;
 	//var str = renderDebugCache(cache);
 	//dojo.byId("debugcache").innerHTML = str;
@@ -358,6 +359,18 @@
 	while( newseq < QACacheSeq ) {
 	    newdata.shift();
 	    newseq++;
+	    if( newdata.length == 0 ) {
+		//This is an interesting failure mode.
+		//We got more cards but none of them are new.
+		//If this happens, we'll keep requesting more forever.
+		//This probably happens because the server's model_seq
+		//isn't getting incremented for whatever reason.
+		//In any case, we need to protect the server from DOS.
+		showStatus("error","Error! Can't get any new cards.");
+		if( confirm("Something went wrong fetching cards.  The server might be behind, or you might need to start over with a new deck. Sorry. Reset your deck?") ) {
+		    location.href="/study/resetdeck";
+		}
+	    }
 	}
 
 	// Now we can merge them
