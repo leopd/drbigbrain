@@ -125,9 +125,22 @@
     }
 
 
-    function showStatus(msg) {
-	debugPrint("status:"+msg);
-	dojo.byId("statusbar").innerHTML = msg;
+    var statusMsgs = {};
+    // "type" allows the status bar to display multiple messages
+    // and for a caller to clear one message without clearing the
+    // whole thing
+    function showStatus(type,msg) {
+	statusMsgs[type]=msg;
+	debugPrint("status of "+type+":"+msg);
+	var str="";
+	for(var i in statusMsgs) {
+	    submsg = statusMsgs[i];
+	    if( submsg ) {
+		str += statusMsgs[i];
+		str += "<br/>";
+	    }
+	}
+	dojo.byId("statusbar").innerHTML = str;
     }
 
     /////////////////////////////////////////////////////////
@@ -199,6 +212,10 @@
     var numQAToFetch = 6;
     var minQABeforeFetch = 3; // the low water mark below which we fetch more
 
+    // retry counter
+    var fetchErrorCount = 0;
+
+
     // Global state about the QA Cache and the display
     var fetchingMore=false; // True if there's an outstanding request.
     var userWaitingForQuestion=true; // so we can show it
@@ -266,6 +283,7 @@
 	    load: function(responseObject, ioArgs) {
 		// When it comes back, just replace the old stack
 		debugPrint("got more");
+		showStatus("fetch","");
 		mergeMoreQAIntoCache(responseObject)
 
 		// reset global state.
@@ -277,12 +295,19 @@
 		    // That will clear the userWaiting flag
 		}
 		debugCache();
+
+		fetchErrorCount = 0;
 	    },
 	    error: function(error) {
+		fetchingMore = false;
 		debugPrint("error fetching cards: "+error);
-		showStatus("Error fetching cards");
-		// TODO: try calling fetchMoreQA again
-		// but use a counter to prevent infinite load
+		fetchErrorCount += 1;
+		if( fetchErrorCount < 3 ) {
+		    showStatus("fetch","Error fetching cards. Retrying.");
+		    fetchMoreQA();
+		} else {
+		    showStatus("fetch","Error fetching cards. Giving up.");
+		}
 	    }
 	});
     }
@@ -409,19 +434,19 @@
 	    load: function(result) {
 		waitingForImpressionPost = false;
 		debugPrint("impression posted: "+data);
-		showStatus("");
+		showStatus("post","");
 		launchPostIfAppropriate();
 	    },
 	    error: function(error) {
 		waitingForImpressionPost = false;
 		debugPrint("Error submitting impression: "+error);
-		showStatus("Error posting answer");
+		showStatus("post","Error posting answer");
 		// TODO: retry to submit this impression
 	    }
 	};
 	waitingForImpressionPost = true;
 	dojo.xhrPost(xhrArgs);
-	showStatus("Submitting answer...");
+	showStatus("post","Submitting answer...");
     }
     
     /////////////////////////////////////////////////////////

@@ -173,7 +173,10 @@ def get_many_qa(request,numcards):
     Guaranteed not to modify the model state -- it won't be saved!
     """
 
+    # For testing slow/unreliable server...
     #time.sleep(3)
+    #if random.uniform(0,1) < 0.5:
+	#raise NotImplmentedError()
 
     # manually casting seems to avoid unicode wierdness
     numcards = int(numcards)
@@ -202,6 +205,7 @@ def impression(request):
     Turns user action into an Impression object.
     """
 
+    # For testing slow/unreliable server...
     #time.sleep(3)
 
     # put this into a database table...

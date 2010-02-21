@@ -34,7 +34,7 @@ to passenger_wsgi.py near top to get it to run correct version of python.
 
 TODO...
 *Most important
-! Fix on Android G1 browser -- dojo debug console??
+! Fix on Android G1 browser -- dojo debug console??  WTF?
 -warn user when the deck is running short of unseen cards and time for more cards
 -Show me how far I've gotten on each lesson.  (# in each state)
 -use static media files
