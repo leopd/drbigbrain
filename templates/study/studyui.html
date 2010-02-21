@@ -290,11 +290,14 @@
 	// with 503.  
 	// If you do set the postdata to something small
 	// like "hack=1" then sometimes it just doesn't run the 
-	// load function.  Go figure.
+	// load function.  Dojo/android bug?
+	// What I've decided to do is send the no-body post,
+	// and disable mod_security for this URL.
+	// See DEPLOYMENT file
 	dojo.xhrPost( {
 	    url: posturl,
 	    handleAs: "json",
-	    postData: "hack=1",
+	    //postData: "hack=1", // see note above
 	    load: function(responseObject, ioArgs) {
 		// When it comes back, just replace the old stack
 		debugPrint("got more");
