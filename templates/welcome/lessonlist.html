@@ -2,7 +2,9 @@
 
 {% block content %}
 {% if lessons %}
-    Pick a lesson:
+    
+Select a lesson to start studying.  If your deck already has cards, the
+new lesson's cards will be added to the back of the deck.
     <ul>
     {% for lesson in lessons %}
 	<li><a href="/study/lesson/{{lesson.id}}/">{{ lesson.name }}</a></li>
@@ -10,7 +12,7 @@
     </ul>
 
 {% else %}
-    <p>No lessons</p>
+    <p>Sorry.  No lessons are available.  (Do you need to run the bulk_importer tool?)</p>
 {% endif %}
 
 {% endblock %}
