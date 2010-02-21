@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from dbbpy.flashcards.models import Concept
-from dbbpy.study.models import Impression
+from dbbpy.deck.models import Impression
 
 
 class Card():

@@ -1,0 +1,10 @@
+MYSQL commands to upgrade database:
+
+./manage.py dbshell
+
+RENAME TABLE study_deckstate TO deck_deckstate;
+RENAME TABLE study_impression TO deck_impression;
+    (need to rename the tables since they moved python modules)
+
+DELETE FROM deck_deckstate;
+    (the pickled models are all invalid since they point to the wrong module.)

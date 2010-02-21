@@ -1,0 +1,27 @@
+** How the code is organized.
+(...still in the process of formalizing this...)
+
+*Directory-level dependencies:
+
+/flashcards/
+(Rename to "content")
+Base model classes.  Just represents the learning content.
+Little to no UI
+
+
+/deck/
+Depends on /flashcards/
+Code for the learning models.
+UI for managing your deck.
+
+
+/study/
+Depends on /flashcards/ and /deck/
+UI for showing flashcards, getting user feedback.
+
+
+
+
+/welcome/
+UI to greet new users and get them into the system.
+Depends on lots of other stuff.

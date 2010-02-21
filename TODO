@@ -2,7 +2,7 @@
 
 TODO...
 *Most important
-! Fix on Android G1 browser -- dojo debug console??  WTF?
+-Create a "review" deck
 -warn user when the deck is running short of unseen cards and time for more cards
 -Show me how far I've gotten on each lesson.  (# in each state)
 -use static media files
@@ -28,6 +28,7 @@ TODO...
 -create CardCache class in studyui
 -better handling of XHR errors on client. retry, but not forever.
 -Use a proper datestamp when the impression was made, rather than committed to db
+-Remove dojo debug console from Android G1 browser
 
 
 *new deck manager
@@ -44,6 +45,8 @@ TODO...
 -split learning (# of cards to wait) and review (# minutes to wait)
 -state machine logic can give hints about how far back
 -Ensure that two cards don't show up right next to each other again.  If they're going back in the deck with similar soonest values, then +/- 1.5 to it to make sure there's something else in between
+-Show the user the counter timer.
+-Stop the timer when it passes 2 minutes.  Post an alert.
 
 
 *optimize

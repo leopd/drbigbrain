@@ -2,8 +2,8 @@ import random
 from django.shortcuts import get_object_or_404
 from dbbpy.flashcards.models import Concept
 from dbbpy.flashcards.models import Lesson
-from dbbpy.study.models import Impression
-from dbbpy.study.card import Card
+from dbbpy.deck.models import Impression
+from dbbpy.deck.card import Card
 
 
 

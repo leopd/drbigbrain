@@ -68,8 +68,14 @@ class DeckState(models.Model):
 
 	else:
 	    #print "get_model: deckstate_id in session is %s" % deckstate_id
-	    deckstate = get_object_or_404(DeckState, pk=deckstate_id)
-
+	    # Try to get the referenced deckstate object.
+	    try:
+		deckstate = DeckState.objects.get(pk=deckstate_id)
+	    except DeckState.DoesNotExist:
+		# DeckState must have been deleted.  Reset the session.
+		request.session['deckstate_id'] = None
+		deckstate = None
+		
 	return deckstate
 
 

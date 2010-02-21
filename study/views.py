@@ -9,12 +9,12 @@ from django.template import loader, Context, RequestContext
 from django.contrib.auth.decorators import login_required
 from dbbpy.flashcards.models import Concept
 from dbbpy.flashcards.models import Lesson
-from dbbpy.study.models import Impression
-from dbbpy.study.models import DeckState
-from dbbpy.study.learning import RandomLearningModel
-from dbbpy.study.learning import SimpleDeckModel
-from dbbpy.study.learning import BetterDeckModel
-from dbbpy.study.learninghistory import HistoryModel
+from dbbpy.deck.models import Impression
+from dbbpy.deck.models import DeckState
+from dbbpy.deck.learning import RandomLearningModel
+from dbbpy.deck.learning import SimpleDeckModel
+from dbbpy.deck.learning import BetterDeckModel
+from dbbpy.deck.learninghistory import HistoryModel
 
 def get_model(request):
     """Returns the learningmodel object which is currently active.
