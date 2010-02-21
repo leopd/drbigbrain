@@ -265,7 +265,10 @@
         posturl = "/study/getqa-" + numQAToFetch;
 
 	// Check for the "revisit" hack
-	if( location.hash ) {
+	//
+	// Note: Android G1 browser will set location.hash to "#"
+	// after you set it to "".
+	if( (location.hash) && (location.hash!="#") ) {
 	    // Remove the hash character
 	    cardnum = location.hash.substring(1);
 	    // This is not terribly robust since if the fragment
