@@ -23,6 +23,11 @@ The code is django/python on the server, with dojo/javascript on the client.
 
 The "learning model" which figures out which card to show the user based on what they've learned so far, is abstracted out of the UI, making it easy to improve.  
 
+* Supported Platforms
+
+It works well on Desktop and good mobile browsers.  (iPhone, Android)
+I test it regularly on Chrome and Android browsers, and sometimes on Firefox and Safari.  IE does not get much attention, but seems to generally work.
+
 
 ** INSTALL NOTES:
 See DEPLOYMENT file
