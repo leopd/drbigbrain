@@ -22,12 +22,10 @@ TODO...
 
 *code cleanup
 -studyui only shows buttons that current model is configured for
--break studyui.js into sections or separate files
 -encapsulation of login/logout from root urls.py
-!!-refractor get/set_model out of study/views.py -- into deckstate?
+-break studyui.js into classes
 -create CardCache class in studyui
--better handling of XHR errors on client. retry, but not forever.
--Use a proper datestamp when the impression was made, rather than committed to db
+-Use a proper datestamp when the impression was made, rather than when it's committed to db
 -Remove dojo debug console from Android G1 browser
 
 

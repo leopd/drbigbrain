@@ -1,3 +1,4 @@
+import cPickle as pickle
 from django.db import models
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
@@ -77,6 +78,45 @@ class DeckState(models.Model):
 		deckstate = None
 		
 	return deckstate
+
+    
+def get_model(request):
+    """Returns the learningmodel object which is currently active.
+    Returns None if there isn't one assicated with this user or session.
+    Tries to find one in the session or for this user.
+    Does not create a new model.
+    """
+
+    deckstate = DeckState.for_request(request,False)
+    if deckstate is None:
+	return None
+
+    # Now we have a deckstate.  pull out the model
+    p = deckstate.pickled_model
+    if (p is None) or (p==""):
+	return None
+
+    # having problems with unicode pickling!
+    # error -- KeyError: '\x00'
+    p=str(p) # this seems to fix it
+    #print "loading model from state %d pickled = %s" % (deckstate.id, p[0:50])
+    model = pickle.loads(p)
+    return model
+    
+
+def save_model(request, model):
+    """Saves the learningmodel object back from whence it came
+    Creates a new model (deckstate) if necessary.
+    """
+
+    deckstate = DeckState.for_request(request,True)
+    deckstate.pickled_model = pickle.dumps(model)
+
+    # copy the model's description up to the deckstate
+    deckstate.description = model.description
+    deckstate.save()
+    
+
 
 
 

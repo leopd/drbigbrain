@@ -1,5 +1,4 @@
 import json
-import cPickle as pickle
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.template import loader, Context, RequestContext
@@ -10,42 +9,8 @@ from dbbpy.deck.learning import RandomLearningModel
 from dbbpy.deck.learning import SimpleDeckModel
 from dbbpy.deck.learning import BetterDeckModel
 from dbbpy.deck.learninghistory import HistoryModel
+from dbbpy.deck.models import get_model, save_model
 # Create your views here.
-
-def get_model(request):
-    """Returns the learningmodel object which is currently active.
-    Returns None if there isn't one assicated with this user or session.
-    """
-
-    deckstate = DeckState.for_request(request,False)
-    if deckstate is None:
-	return None
-
-    # Now we have a deckstate.  pull out the model
-    p = deckstate.pickled_model
-    if (p is None) or (p==""):
-	return None
-
-    # having problems with unicode pickling!
-    # error -- KeyError: '\x00'
-    p=str(p) # this seems to fix it
-    #print "loading model from state %d pickled = %s" % (deckstate.id, p[0:50])
-    model = pickle.loads(p)
-    return model
-    
-
-def save_model(request, model):
-    """Saves the learningmodel object back from whence it came
-    """
-
-    deckstate = DeckState.for_request(request,True)
-    deckstate.pickled_model = pickle.dumps(model)
-
-    # copy the model's description up to the deckstate
-    deckstate.description = model.description
-    deckstate.save()
-    
-
 
 def deckview(request):
     """Shows you a list of recent cards.

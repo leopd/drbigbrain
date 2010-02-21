@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from dbbpy.flashcards.models import Concept
 from dbbpy.flashcards.models import Lesson
 from dbbpy.deck.models import Impression
-from dbbpy.deck.views import get_model, save_model
+from dbbpy.deck.models import get_model, save_model
 from dbbpy.deck.views import resetdeck
 
 @login_required
