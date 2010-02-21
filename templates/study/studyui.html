@@ -277,7 +277,16 @@
 	debugPrint("Fetching QA from "+posturl);
 
 	// Kick off the request
-	dojo.xhrPost( {
+	//
+	// Why GET instead of POST?
+	// Short answer: work around Android G1 browser bugs.
+	// Longer answer: On G1, if you post without specifying
+	// any postdata, it doesn't set the content-length
+	// header, which triggers mod_security to block the request
+	// with 503.  If you do set the postdata to something small
+	// and static, it doesn't seem to run the load: function
+	// at least not here.  Go figure.
+	dojo.xhrGet( {
 	    url: posturl,
 	    handleAs: "json",
 	    load: function(responseObject, ioArgs) {
@@ -288,6 +297,7 @@
 
 		// reset global state.
 		fetchingMore = false;
+		fetchErrorCount = 0;
 
 		// Cycle back to nextQA if the user is waiting
 		if( userWaitingForQuestion ) {
@@ -296,7 +306,6 @@
 		}
 		debugCache();
 
-		fetchErrorCount = 0;
 	    },
 	    error: function(error) {
 		fetchingMore = false;
