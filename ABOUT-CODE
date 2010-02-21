@@ -11,8 +11,10 @@ Little to no UI
 
 /deck/
 Depends on /flashcards/
+Data model for user responses ("Impressions").
 Code for the learning models.
 UI for managing your deck.
+No UI for studying or learning.  Generic for any study UI.
 
 
 /study/

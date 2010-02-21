@@ -22,6 +22,7 @@ If you'd like to help, contact me at http://leodirac.com/contact
 The code is django/python on the server, with dojo/javascript on the client.  
 
 The "learning model" which figures out which card to show the user based on what they've learned so far, is abstracted out of the UI, making it easy to improve.  
+For more on how the code is organized see the file ABOUT-CODE
 
 * Supported Platforms
 
