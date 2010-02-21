@@ -7,7 +7,7 @@ TODO...
 -Show me how far I've gotten on each lesson.  (# in each state)
 -use static media files
 -move get_model, save_model into deckstate class
--black-box tests
+-some integration tests
 
 
 * UX flow
@@ -24,7 +24,7 @@ TODO...
 -studyui only shows buttons that current model is configured for
 -break studyui.js into sections or separate files
 -encapsulation of login/logout from root urls.py
--refactor get/set_model out of study/views.py -- into deckstate?
+!!-refractor get/set_model out of study/views.py -- into deckstate?
 -create CardCache class in studyui
 -better handling of XHR errors on client. retry, but not forever.
 -Use a proper datestamp when the impression was made, rather than committed to db
@@ -79,6 +79,7 @@ TODO...
 
 *Tests
 -Add some tests!
+-move getqa and impression into deck module.  test them with a dummy client.
 -Black box tests of the whole service, including client
 -Test that if I hit "No" over and over again, that I get the same cards back again before too long
 -Test that if I hit "Kinda" on some cards, they come back after a while.

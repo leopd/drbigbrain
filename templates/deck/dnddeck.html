@@ -116,7 +116,7 @@
 	    });
 
 	    dojo.xhrPost( {
-		url: "/study/jsondeck",
+		url: "jsondeck",
 		handleAs: "json",
 		load: function(responseObject, ioArgs) {
 		    load_deck(responseObject);
@@ -185,7 +185,7 @@
     </div> 
 
     <p>
-	<a href="/study/resetdeck">Reset deck</a>
+	<a href="reset">Reset deck</a>
 	<br/>
 	<i>(Note manipulation of deck here currentyl has no effect.)</i>
     </p>

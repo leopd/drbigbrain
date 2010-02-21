@@ -368,7 +368,7 @@
 		//In any case, we need to protect the server from DOS.
 		showStatus("error","Error! Can't get any new cards.");
 		if( confirm("Something went wrong fetching cards.  The server might be behind, or you might need to start over with a new deck. Sorry. Reset your deck?") ) {
-		    location.href="/study/resetdeck";
+		    location.href="/deck/reset";
 		}
 	    }
 	}
@@ -558,7 +558,7 @@ Did you know this one?<br/>
 Hint:
 Try pressing S, N, Y, D, K keys.
 <br/>
-<a href="deck">Manage your deck</a>
+<a href="/deck/">Manage your deck</a>
 </div>
 <div id="statusbar" class="statusbar">
 </div>
