@@ -1,0 +1,36 @@
+** INSTALLATION NOTES **
+Note, your mysql database must have a reasonable character set.
+
+First, open a mysql shell with "./manage.py dbshell"
+Then type "STATUS" command to tell what your character set is.
+if it's latin1, you'll need to drop the database and start over.  Use:
+mysql> drop dbbpy 
+mysql> create database dbbpy character set = ucs2;
+
+Then you'll need to "./manage.py syncdb", etc
+
+To load all BLCU content, run:
+ python flashcards/bulk_loader.py content/vocab-all-blcu.csv
+
+
+** DREAMHOST NOTES:
+The production system is running on Dreamhost.
+Pay attention to settings.py on production.
+dojango in installed_apps in settings.py causes "Premature end of script headers."
+
+need to add line
+	if sys.version < "2.6": os.execl("/home/username/opt/bin/python", "python", *sys.argv)
+to passenger_wsgi.py near top to get it to run correct version of python.
+(Needs at least 2.4 or something)
+
+
+** 503 errors on /study/getqa on Android
+
+This appears to be a bug in the Android browser.  It doesn't set the 
+content-length HTTP request header.  This triggers a rule in mod_security
+causing a 503 error to get served.  To workaround, add the following line to 
+.htaccess:
+
+SetEnvIfNoCase Request_URI ^/study/getqa.*$ MODSEC_ENABLE=Off
+
+
