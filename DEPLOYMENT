@@ -28,9 +28,11 @@ to passenger_wsgi.py near top to get it to run correct version of python.
 
 This appears to be a bug in the Android browser.  It doesn't set the 
 content-length HTTP request header.  This triggers a rule in mod_security
-causing a 503 error to get served.  To workaround, add the following line to 
-.htaccess:
+causing a 503 error to get served.  To workaround, add the following two lines 
+to .htaccess:
 
 SetEnvIfNoCase Request_URI ^/study/getqa.*$ MODSEC_ENABLE=Off
+SetEnvIfNoCase Request_URI ^/study/jsoncard/.*$ MODSEC_ENABLE=Off
+
 
 For more info see http://wiki.dreamhost.com/Mod_security
