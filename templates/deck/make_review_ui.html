@@ -1,0 +1,24 @@
+{% extends "djbase.html" %}
+
+{% block dj_header_extra %}
+<style>
+</style>
+
+<script>
+</script>
+
+{% endblock %}
+{% block content %}
+<h2>Create a review deck</h2>
+
+<p>
+<i>This will reset your current deck.</i>
+</p>
+
+
+<form method=POST action="create_review_deck">
+
+<input type="submit" value="Go for it!">
+</form>
+
+{% endblock %}

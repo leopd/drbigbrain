@@ -85,3 +85,19 @@ def resetdeck(request):
     save_model(request, model)
     return HttpResponseRedirect("/")
 
+
+
+def make_review_ui(request):
+    """Shows UI for the user to create a review deck
+    """
+
+    return render_to_response("deck/make_review_ui.html", context_instance=RequestContext(request))
+
+
+def create_review_deck(request):
+    """
+    Creates a deck forreviewing old material.
+    Wipes out the current deck 
+    """
+
+    return HttpResponseRedirect("/deck/")
