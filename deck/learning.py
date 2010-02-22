@@ -34,27 +34,48 @@ class LearningModelBase():
 	return self.model_seq
 
 
+    def get_default_new_pile(self):
+	"""Which pile do new cards go into?
+	"""
+	return 'Active'
+
+
+    def add_new_cards(self, describe_new_cards, card_id_list, pile=None):
+	"""Add a whole list of cards to the pile.
+	Defaults to the get_default_new_pile() pile.
+	Also requires a string describing the new cards.
+	"""
+
+	# add to the description if there is one
+	if self.description != "":
+	    self.description += ", "
+	    self.description += describe_new_cards
+	else:
+	    self.description = describe_new_cards
+
+	# figure out which pile to put them in
+	if pile is None:
+	    pile = self.get_default_new_pile()
+
+	# put them into the pile
+	for id in card_id_list:
+	    card = self.lookup_card(id)
+	    self.move_card_to_pile(card,pile)
+
+	
     def set_active_lesson(self,lesson_id):
 	"""given a lesson id, it stores the id's of all the concepts in that lesson
-	in the "Active" card pile
+	in the 'default_new' card pile
 	"""
 	lesson = get_object_or_404(Lesson, pk=lesson_id)
 
-	# add to the description
-	if self.description != "":
-	    self.description += ", "
-	self.description += lesson.name
-
-	# reset Active
-	self.piles['Active'] = []
-
-	for concept in lesson.concepts.all():
-	    card = self.new_card(concept)
-	    self.move_card_to_pile(card,'Active')
-	    #self.piles['Active'].append(card)
-
+	id_list=[]
 	#TODO: Replace this with proper sequences from LessonSequence table
-	#self.piles['Active'].reverse()
+	for concept in lesson.concepts.all():
+	    id_list.append(concept.id)
+	
+	self.add_new_cards(lesson.name, id_list)
+
 
     def supported_piles(self):
 	"""returns a list of the kinds of piles this model understands

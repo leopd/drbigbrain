@@ -95,9 +95,64 @@ def make_review_ui(request):
 
 
 def create_review_deck(request):
-    """
-    Creates a deck forreviewing old material.
+    """ Creates a deck forreviewing old material.
     Wipes out the current deck 
     """
 
+    # start over with a new model
+    resetdeck(request)
+    model = get_model(request)
+
+    # Fetch a bunch of impressions
+    all_no = Impression.objects.filter(user=request.user, answer="No")
+    all_kinda = Impression.objects.filter(user=request.user, answer="Kinda")
+
+    # add up the bad impressions
+    bad_total = {}
+    for impression in all_kinda:
+	id = impression.concept_id
+	# TUNE: 1 point per kinda
+	if id not in bad_total:
+	    bad_total[ impression.concept_id ] = 1
+	else:
+	    bad_total[ impression.concept_id ] += 1
+    for impression in all_no:
+	id = impression.concept_id
+	# TUNE: 3 points per no
+	if id not in bad_total:
+	    bad_total[ impression.concept_id ] = 3
+	else:
+	    bad_total[ impression.concept_id ] += 3
+
+    # invert the map so it maps # bad points to concepts.
+    # Note there could be collisions here, so build a list for each num pts
+    inverted_bad_total = {}
+    for id, pts in bad_total.items():
+	# TUNE: Minimum threshhold for something to be reviewable
+	if pts > 2:
+	    if pts not in inverted_bad_total:
+		inverted_bad_total[pts]=[id]
+	    else:
+		inverted_bad_total[pts].append(id)
+    
+    # Prepare results list
+    review_cards = []
+
+    # Now we put together our list of cards, in order of badness
+    print "ibt: %s" % inverted_bad_total
+    pts_order_desc = inverted_bad_total.keys()
+    pts_order_desc.reverse()
+    print "pod: %s" % pts_order_desc
+    for pts in pts_order_desc:
+	for card in inverted_bad_total[pts]:
+	    review_cards.append(card)
+	
+    # Now put them all into the model
+    model.add_new_cards("Review of difficult cards", review_cards)
+
+    # Write the model back
+    save_model(request,model)
+
+    # redirect to a standard deck view
     return HttpResponseRedirect("/deck/")
+

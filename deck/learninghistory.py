@@ -7,7 +7,7 @@ from dbbpy.deck.learning import LearningModelBase
 class HistoryModel(SimpleDeckModel):
     """A sophisticated learning model which considers your history of answers.
     Has multiple piles within the deck: unseen, learning, review, solid.
-    Cards start in unseen (moved from 'Active' where they start from a lesson)
+    Cards start in Unseen.
     Learning is for cards that need frequent reinforcement
     Review is for cards that need infrequent reinforcement, but you don't completely know
     Solid is for cards that don't need to be asked about ever again.
@@ -196,14 +196,11 @@ class HistoryModel(SimpleDeckModel):
 	#print u"Card too soon? %s < %s (%s)" % (self.model_seq, soonest, card)
 	return self.model_seq < soonest
 
-    def set_active_lesson(self,lesson_id):
-	#TODO: make this less hacky
-	LearningModelBase.set_active_lesson(self,lesson_id)
-	for card in self.piles['Active']:
-	    self.piles['Unseen'].append(card)
-	del self.piles['Active']
+    def get_default_new_pile(self):
+	"""We don't have an 'Active' pile in this model.
+	"""
+	return 'Unseen'
 	
-
     def debug_output_for_card(self,card):
 	""" Decorate with soonest
 	"""
