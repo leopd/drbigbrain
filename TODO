@@ -2,7 +2,6 @@
 
 TODO...
 *Most important
--Create a "review" deck
 -warn user when the deck is running short of unseen cards and time for more cards
 -Show me how far I've gotten on each lesson.  (# in each state)
 -use static media files
@@ -33,7 +32,7 @@ TODO...
 -reset option per card (revisit does that?)
 -support multiple decks and switching between them
 -option to load more than 30 recent cards
--create a new kind of deck -- quiz / review
+-create a new kind of deck -- quiz
 
 
 *better model
