@@ -5,6 +5,13 @@ TODO...
 -some integration tests
 
 
+* Data Model
+-Replace "lesson" table with key:value tags on concepts.  (lessonseq??)
+-Add CardType and Card as first-class database objects in flashcards/ module
+-Rename flashcards module to content
+
+
+
 * UX flow
 -guest login
 -add "about" page
@@ -36,7 +43,7 @@ TODO...
 -create a new kind of deck -- quiz
 
 
-*better model
+*better learning model
 -history looks up actual impressions
 -model uses timer
 -limit timer to 5 minutes.  then ask "you still there?"
@@ -45,6 +52,7 @@ TODO...
 -Ensure that two cards don't show up right next to each other again.  If they're going back in the deck with similar soonest values, then +/- 1.5 to it to make sure there's something else in between
 -Show the user the counter timer.
 -Stop the timer when it passes 2 minutes.  Post an alert.
+-use lessonsequence in learningmodel to derive order
 
 
 *optimize
@@ -63,7 +71,6 @@ TODO...
 -custom widget to choose concepts in a lessonseq
 -lesson grouping into topics
 -generalize which assettypes to display
--use lessonsequence in learningmodel to derive order
 -"card" concept for which types of assets
 -hints in studyui
 
