@@ -209,8 +209,8 @@
     //
 
     // configuration parameters
-    var numQAToFetch = 6;
-    var minQABeforeFetch = 3; // the low water mark below which we fetch more
+    var numQAToFetch = 8;
+    var minQABeforeFetch = 4; // the low water mark below which we fetch more
 
     // retry counter
     var fetchErrorCount = 0;
@@ -352,7 +352,6 @@
 	str += "newseq = " + newseq + "<br/>";
 	str += renderDebugCache(newdata);
 	dojo.byId("debugcache2").innerHTML= str;
-	//alert("what now?");
 
 	// Discard items from the newdata until the sequence
 	// numbers line up
@@ -363,12 +362,14 @@
 		//This is an interesting failure mode.
 		//We got more cards but none of them are new.
 		//If this happens, we'll keep requesting more forever.
+		//This sometimes happens just with a slow network. 
+		// (or a fast human)
 		//This probably happens because the server's model_seq
 		//isn't getting incremented for whatever reason.
 		//In any case, we need to protect the server from DOS.
 		showStatus("error","Error! Can't get any new cards.");
-		if( confirm("Something went wrong fetching cards.  The server might be behind, or you might need to start over with a new deck. Sorry. Reset your deck?") ) {
-		    location.href="/deck/reset";
+		if( confirm("Something went wrong fetching cards.  The network might be slow, or something might have gone wrong requiring a new deck.  Examine your deck?") ) {
+		    location.href="/deck/";
 		}
 	    }
 	}
