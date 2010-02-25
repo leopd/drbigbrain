@@ -4,8 +4,8 @@ Note, your mysql database must have a reasonable character set.
 First, open a mysql shell with "./manage.py dbshell"
 Then type "STATUS" command to tell what your character set is.
 if it's latin1, you'll need to drop the database and start over.  Use:
-mysql> drop dbbpy 
-mysql> create database dbbpy character set = ucs2;
+mysql> DROP DATABASE dbbpy 
+mysql> CREATE DATABASE dbbpy character set = ucs2;
 
 Then you'll need to "./manage.py syncdb", etc
 
