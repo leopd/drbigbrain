@@ -1,3 +1,5 @@
+from dbbpy.flashcards.models import Lesson
+
 """
 This file demonstrates two different styles of tests (one doctest and one
 unittest). These will both pass when you run "manage.py test".
@@ -21,3 +23,14 @@ Another way to test that 1 + 1 is equal to 2.
 True
 """}
 
+
+class FixtureTest(TestCase):
+    """
+    Test that the fixtures are reasonable.
+    """
+    fixtures = ['vocab50.json']
+
+    def test_lessons(self):
+	# Test that there are lessons in the db
+	lessons = Lesson.objects.all()
+	self.failUnless(lessons.count() > 0)
