@@ -2,10 +2,6 @@
 
 TODO...
 *Most important
--warn user when the deck is running short of unseen cards and time for more cards
--Show me how far I've gotten on each lesson.  (# in each state)
--use static media files
--move get_model, save_model into deckstate class
 -some integration tests
 
 
@@ -18,6 +14,11 @@ TODO...
 -warn user if they try to leave with unsubmitted data
 -"Submitting..." status bar shouldn't re-arrange other page elements.
 -UI candy to show the new card gradually over 0.3s or so.  too jarring now. 
+-warn user when the deck is running short of unseen cards and time for more cards
+-Show me how far I've gotten on each lesson.  (# in each state)
+-use static media files
+
+
 
 *code cleanup
 -studyui only shows buttons that current model is configured for
