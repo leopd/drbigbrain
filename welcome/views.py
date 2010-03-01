@@ -18,6 +18,10 @@ def chinese(request):
     return render_to_response("welcome/lessonlist.html", {'lessons': lesson_list} )
 
    
+def about(request):
+    return render_to_response("welcome/about.html")
+
+   
 def register(request):
     data = request.POST.copy()
     form = UserCreationForm(data)
