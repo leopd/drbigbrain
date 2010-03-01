@@ -2,7 +2,9 @@
 
 TODO...
 *Most important
--some integration tests
+-Change from lessons to generic key/value tags on concepts
+-More integration tests
+-Allow upload of new lessons
 
 
 * Data Model
@@ -89,4 +91,5 @@ TODO...
 -Test that if I hit "No" over and over again, that I get the same cards back again before too long
 -Test that if I hit "Kinda" on some cards, they come back after a while.
 -Test that the XHR's from the js client work properly.  (rhino?)
+-Continuous build system
 
