@@ -1,8 +1,10 @@
+import cPickle as pickle
 from django.test import TestCase
 from dbbpy.flashcards.models import Lesson
 from dbbpy.deck.models import Impression
 from dbbpy.deck.learninghistory import HistoryModel
 from dbbpy.deck.learning import SimpleDeckModel
+from dbbpy.deck.learning import RandomLearningModel
 
 class SimpleTest(TestCase):
     fixtures = ['vocab50.json']
@@ -139,27 +141,36 @@ class SimpleTest(TestCase):
 
 
 
-    def todotry_prefetch_identical(self,model,numcards):
+    def try_prefetch_identical(self,model,numcards):
 	"""Check that when you prefetch twice you get all the same
 	cards.
 	"""
-        p = pickle(model)
-	m = unpickle(p)
-        prefetch1 = m.get_multipe_cards(numcards)
-	m = unpickle(p)
-        prefetch2 = m.get_multipe_cards(numcards)
-	self.assertEqual(prefetch1,prefetch2)
+        self.setup_model(model)
+        p = pickle.dumps(model)
+	m = pickle.loads(p)
+        prefetch1 = m.choose_many_cards(numcards)
+	m = pickle.loads(p)
+        prefetch2 = m.choose_many_cards(numcards)
+	
+	# Check that the lists are identical
+	for card1 in prefetch1:
+	    card2 = prefetch2[0]
+	    prefetch2 = prefetch2[1:]
+
+	    self.assertEqual(card1.json(), card2.json())
 
 
 
     def test_simpledeck_model(self):
         model = SimpleDeckModel()
+	self.try_prefetch_identical(model,10)
         self.try_all_yes(model)
         self.try_all_no(model,200)
 
 
     def test_history_model(self):
         model = HistoryModel()
+	self.try_prefetch_identical(model,10)
         self.try_all_yes(model)
         self.try_all_no(model,200, 15)
         self.try_all_discard(model)
