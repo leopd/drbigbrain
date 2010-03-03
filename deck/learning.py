@@ -30,6 +30,12 @@ class LearningModelBase():
 	self.model_seq = 0
 
 
+    def clear(self):
+	"""Resets the deck to its initial state.
+	"""
+	self.__init__()
+
+
     def get_sequence(self):
 	return self.model_seq
 

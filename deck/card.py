@@ -83,8 +83,6 @@ class History():
 	# TODO: Look up the actual previous answer
 	self.cachelast= None
 
-	print "TODO: Look up the actual previous answer"
-
 
     def no_count(self):
 	raise NotImplmentedError()

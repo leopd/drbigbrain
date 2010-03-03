@@ -1,5 +1,8 @@
 from django.test import TestCase
 from dbbpy.flashcards.models import Lesson
+from dbbpy.deck.models import Impression
+from dbbpy.deck.learninghistory import HistoryModel
+from dbbpy.deck.learning import SimpleDeckModel
 
 class SimpleTest(TestCase):
     fixtures = ['vocab50.json']
@@ -19,26 +22,21 @@ class SimpleTest(TestCase):
 
 
 
-    def test_model_creation(self):
+    def donttest_model_creation(self):
 	pass
 
 
-    def test_reset_deck(self):
+    def donttest_reset_deck(self):
 	pass
 
 
-    def test_loadsave_model(self):
+    def donttest_loadsave_model(self):
 	"""
 	This should test the get_model and save-model methods.
 	This requires a mock request.
 	"""
 	pass
 
-
-    def test_all_yes_studying(self):
-	"""
-	Test what the model does when given all Yes answers.
-	"""
 
 
 
@@ -52,8 +50,14 @@ class SimpleTest(TestCase):
         """
         model.clear()
         lesson = self.default_lesson()
-        model.set_lesson(lesson)
+        model.set_active_lesson(lesson.id)
 
+
+    def simulate_impression(self,model,card,answer):
+	impression = Impression()
+	impression.concept = card.concept()
+	impression.answer = answer
+	model.log_impression(impression)
 
     def try_all_no(self,model,num=100,max_uniq=20):
         """Test that if we always answer 'no' that the deck does not run out after num answers
@@ -63,14 +67,14 @@ class SimpleTest(TestCase):
         cnt = 0
 	unique_cards = {}
         while( cnt < num ):
-            card = model.next_card()
-            self.fail_if(card is None)
+            card = model.choose_card()
+            self.failIf(card is None)
 	    unique_cards[card] = 1
-            model.impression(card,'No')
+	    self.simulate_impression(model,card,'No')
             cnt +=1
 
 	#check that we got a maximum number of unique cards
-	num_uniq = len( unique_cards.keys() )
+	num_unique = len( unique_cards.keys() )
 	self.assertTrue( num_unique < max_uniq )
 
 
@@ -80,20 +84,20 @@ class SimpleTest(TestCase):
         Model should be loaded with cards when we get it.
         """
 
-        self.assertTrue(cardset.count() < 100)
+        self.assertTrue(len(cardset) < 100)
         cnt=0
 
-        while( cardset.count() > 0 ):
+        while( len(cardset) > 0 ):
             # get a card, and check that we haven't seen it before.
 
-            card = model.next_card()
+            card = model.choose_card()
             try:
                 cardset.remove(card)
             except ValueError:
                 self.fail("Model chose a repeated card, or one that wasn't in the lesson")
 
-            # mark the card as "yes"
-            model.impression(card,'Yes')
+            # mark the card as (answer)
+	    self.simulate_impression(model,card,answer)
 
             # increment a counter to avoid an infinite loop
             cnt+= 1
@@ -101,12 +105,25 @@ class SimpleTest(TestCase):
                 self.fail("Lesson did not clear after 100 cards.")
 
 
+    def get_cards_for_lesson(self,lesson,model):
+	"""This is a mess.  
+	"""
+
+	cards = []
+	for concept in lesson.concepts.all():
+	    card = model.lookup_card(concept.id)
+	    cards.append(card)
+	    
+	return cards
+
+
+
     def try_all_discard(self,model):
         """Test that if we always answer 'yes' that we don't get the same card twice.
         """
 
         self.setup_model(model)
-        expected_cards = self.default_lesson().cards()
+        expected_cards = self.get_cards_for_lesson(self.default_lesson(),model)
 
         self.repeat_same_answer_expect_unique_set(model,expected_cards,'Discard')
 
@@ -116,7 +133,7 @@ class SimpleTest(TestCase):
         """
 
         self.setup_model(model)
-        expected_cards = self.default_lesson().cards()
+        expected_cards = self.get_cards_for_lesson(self.default_lesson(),model)
 
         self.repeat_same_answer_expect_unique_set(model,expected_cards,'Yes')
 
@@ -136,24 +153,18 @@ class SimpleTest(TestCase):
 
     def test_simpledeck_model(self):
         model = SimpleDeckModel()
-        try_all_yes(model)
-        try_all_no(model,200)
+        self.try_all_yes(model)
+        self.try_all_no(model,200)
 
 
     def test_history_model(self):
         model = HistoryModel()
-        try_all_yes(model)
-        try_all_no(model,200)
-        try_all_discard(model)
+        self.try_all_yes(model)
+        self.try_all_no(model,200, 15)
+        self.try_all_discard(model)
 
 
-    def test_default_model(self):
-        """Run tests on the default model
-        """
-        model = get_recommended_model()
-        try_all_yes(model)
-        try_all_no(model,200)
-        try_all_discard(model)
+    #TODO: run tests on the "recommended" model
 
 
     #TODO: refactor how prefetching works.
