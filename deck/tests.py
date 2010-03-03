@@ -22,15 +22,15 @@ class SimpleTest(TestCase):
 
 
 
-    def donttest_model_creation(self):
+    def todotest_model_creation(self):
 	pass
 
 
-    def donttest_reset_deck(self):
+    def todotest_reset_deck(self):
 	pass
 
 
-    def donttest_loadsave_model(self):
+    def todotest_loadsave_model(self):
 	"""
 	This should test the get_model and save-model methods.
 	This requires a mock request.
@@ -138,7 +138,8 @@ class SimpleTest(TestCase):
         self.repeat_same_answer_expect_unique_set(model,expected_cards,'Yes')
 
 
-    def try_prefetch_identical(self,model,numcards):
+
+    def todotry_prefetch_identical(self,model,numcards):
 	"""Check that when you prefetch twice you get all the same
 	cards.
 	"""
