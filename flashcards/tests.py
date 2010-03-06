@@ -1,5 +1,5 @@
 from django.test import TestCase
-from dbbpy.flashcards.models import Lesson
+from flashcards.models import Lesson
 
 class FixtureTest(TestCase):
     """

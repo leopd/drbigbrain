@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import *
 
-urlpatterns = patterns('dbbpy.study.views',
+urlpatterns = patterns('study.views',
     (r'^$', 'studyui'),
     #(r'^deck$', 'deckview'),  # moved to deck module
     #(r'^dnddeck$', 'dnddeckview'),  # moved to deck module

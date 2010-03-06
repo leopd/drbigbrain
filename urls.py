@@ -6,7 +6,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Example:
-    # (r'^dbbpy/', include('dbbpy.foo.urls')),
+    # (r'^dbbpy/', include('foo.urls')),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:
@@ -15,10 +15,10 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
     #(r'^dojango/', include('dojango.urls')),
-    (r'^study/', include('dbbpy.study.urls')),
-    (r'^deck/', include('dbbpy.deck.urls')),
+    (r'^study/', include('study.urls')),
+    (r'^deck/', include('deck.urls')),
     (r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'welcome/login.html'}),
     (r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'template_name': 'welcome/logout.html'}),
-    (r'^accounts/register/$', 'dbbpy.welcome.views.register'), 
-    (r'', include('dbbpy.welcome.urls')),
+    (r'^accounts/register/$', 'welcome.views.register'), 
+    (r'', include('welcome.urls')),
 )

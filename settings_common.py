@@ -38,7 +38,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
-ROOT_URLCONF = 'dbbpy.urls'
+ROOT_URLCONF = 'urls'
 
 
 TEMPLATE_DIRS = (
@@ -54,8 +54,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
-    'dbbpy.flashcards',
-    'dbbpy.deck',
-    'dbbpy.study',
+    'flashcards',
+    'deck',
+    'study',
 )
 

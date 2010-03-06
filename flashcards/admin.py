@@ -1,9 +1,9 @@
 from django.contrib import admin
-from dbbpy.flashcards.models import Asset
-from dbbpy.flashcards.models import AssetType
-from dbbpy.flashcards.models import Concept
-from dbbpy.flashcards.models import Lesson
-from dbbpy.flashcards.models import LessonSequence
+from flashcards.models import Asset
+from flashcards.models import AssetType
+from flashcards.models import Concept
+from flashcards.models import Lesson
+from flashcards.models import LessonSequence
 
 class AssetInline(admin.TabularInline):
     model = Asset
