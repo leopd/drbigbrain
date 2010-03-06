@@ -6,8 +6,8 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib.auth import authenticate
-from dbbpy.flashcards.models import Lesson
-from dbbpy.deck.models import DeckState
+from flashcards.models import Lesson
+from deck.models import DeckState
 
 def homepage(request):
     deckstate = DeckState.for_request(request)

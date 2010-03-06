@@ -1,10 +1,10 @@
 import cPickle as pickle
 from django.test import TestCase
-from dbbpy.flashcards.models import Lesson
-from dbbpy.deck.models import Impression
-from dbbpy.deck.learninghistory import HistoryModel
-from dbbpy.deck.learning import SimpleDeckModel
-from dbbpy.deck.learning import RandomLearningModel
+from flashcards.models import Lesson
+from deck.models import Impression
+from deck.learninghistory import HistoryModel
+from deck.learning import SimpleDeckModel
+from deck.learning import RandomLearningModel
 
 class SimpleTest(TestCase):
     fixtures = ['vocab50.json']

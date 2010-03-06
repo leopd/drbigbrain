@@ -1,12 +1,13 @@
 import sys
 import csv
 from django.core.management import setup_environ
-from dbbpy import settings
-from dbbpy.flashcards.models import Asset
-from dbbpy.flashcards.models import AssetType
-from dbbpy.flashcards.models import Concept
-from dbbpy.flashcards.models import Lesson
-from dbbpy.flashcards.models import LessonSequence
+
+import settings
+from flashcards.models import Asset
+from flashcards.models import AssetType
+from flashcards.models import Concept
+from flashcards.models import Lesson
+from flashcards.models import LessonSequence
 
 # import_csv is the main function here.
 # it imports a .csv file into concepts.

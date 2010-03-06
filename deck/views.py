@@ -3,13 +3,13 @@ from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.template import loader, Context, RequestContext
 from django.shortcuts import render_to_response
-from dbbpy.deck.models import Impression
-from dbbpy.deck.models import DeckState
-from dbbpy.deck.learning import RandomLearningModel
-from dbbpy.deck.learning import SimpleDeckModel
-from dbbpy.deck.learning import BetterDeckModel
-from dbbpy.deck.learninghistory import HistoryModel
-from dbbpy.deck.models import get_model, save_model
+from deck.models import Impression
+from deck.models import DeckState
+from deck.learning import RandomLearningModel
+from deck.learning import SimpleDeckModel
+from deck.learning import BetterDeckModel
+from deck.learninghistory import HistoryModel
+from deck.models import get_model, save_model
 # Create your views here.
 
 def deckview(request):

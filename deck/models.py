@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import AnonymousUser
-from dbbpy.flashcards.models import Concept
+from flashcards.models import Concept
 
 class Impression(models.Model):
     """Records an Impression of a card on a user.

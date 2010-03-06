@@ -1,6 +1,6 @@
 import random
-from dbbpy.deck.learning import SimpleDeckModel
-from dbbpy.deck.learning import LearningModelBase
+from deck.learning import SimpleDeckModel
+from deck.learning import LearningModelBase
 
 
 
