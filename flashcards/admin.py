@@ -21,8 +21,8 @@ class LessonSequenceInline(admin.TabularInline):
     # blocks display of concept, which creates unbearably large inputs
     fieldsets = [
       (None, 
-	{'fields': ['sequence']
-	},
+        {'fields': ['sequence']
+        },
       ),
       ]
     #TODO: use a custom widget for concept selecting.

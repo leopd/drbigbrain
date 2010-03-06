@@ -15,61 +15,61 @@ class Card():
     """
 
     def __init__(self,concept):
-	self.id = concept.id
-	self._history = History(self.id)
+        self.id = concept.id
+        self._history = History(self.id)
 
 
     def summary(self):
-	raise NotImplmentedError()
+        raise NotImplmentedError()
 
 
     def question(self):
-	q = self.concept().asset_set.get(asset_type=2).content
-	return q
+        q = self.concept().asset_set.get(asset_type=2).content
+        return q
 
 
     def answer(self):
-	c = self.concept()
-	a = u"<i>%s</i><br/>%s" % (
-	    c.asset_set.get(asset_type=3).content,
-	    c.asset_set.get(asset_type=4).content
-	    )
-	return a
+        c = self.concept()
+        a = u"<i>%s</i><br/>%s" % (
+            c.asset_set.get(asset_type=3).content,
+            c.asset_set.get(asset_type=4).content
+            )
+        return a
 
 
     def json(self):
-	"""Returns a python object that can be rendered as json
-	"""
+        """Returns a python object that can be rendered as json
+        """
 
-	q = self.question()
-	a = self.answer()
-	data = { 
-	    "question": q, 
-	    "answer": a, 
-	    "id": self.id,
-	    "summary": unicode(self.concept()),
-	    }
-	return data
+        q = self.question()
+        a = self.answer()
+        data = { 
+            "question": q, 
+            "answer": a, 
+            "id": self.id,
+            "summary": unicode(self.concept()),
+            }
+        return data
 
 
     def history(self):
-	return self._history
+        return self._history
 
     def concept(self):
-	return get_object_or_404(Concept, pk=self.id)
+        return get_object_or_404(Concept, pk=self.id)
 
 
     # return a structure that can be rendered to json
     def jsonable(self):
-	raise NotImplmentedError()
+        raise NotImplmentedError()
 
 
     def log_impression(self,impression):
-	self._history.log_impression(impression)
+        self._history.log_impression(impression)
 
 
     def __unicode__(self):
-	return unicode(self.concept())
+        return unicode(self.concept())
 
 class History():
     """Helper for Card that keeps track of a user's history for the card.
@@ -78,20 +78,20 @@ class History():
     """
 
     def __init__(self,id):
-	self.id = id
+        self.id = id
 
-	# TODO: Look up the actual previous answer
-	self.cachelast= None
+        # TODO: Look up the actual previous answer
+        self.cachelast= None
 
 
     def no_count(self):
-	raise NotImplmentedError()
+        raise NotImplmentedError()
 
 
     def previous_answer(self):
-	return self.cachelast
+        return self.cachelast
 
 
     def log_impression(self,impression):
-	self.cachelast = impression.answer
+        self.cachelast = impression.answer
 

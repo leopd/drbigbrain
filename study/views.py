@@ -20,8 +20,8 @@ def studyui(request):
     """
 
     if get_model(request) is None:
-	#TODO: generalize this to send you to a 'pick a lesson' page
-	return HttpResponseRedirect("/chinese/")
+        #TODO: generalize this to send you to a 'pick a lesson' page
+        return HttpResponseRedirect("/chinese/")
 
     return render_to_response("study/studyui.html", context_instance=RequestContext(request))
 
@@ -36,9 +36,9 @@ def jsoncard(request, card_id):
     card = model.lookup_card(card_id)
     data = card.json()
     return HttpResponse(
-		    json.dumps(data),
+                    json.dumps(data),
                     mimetype='text/plain'
-		    )
+                    )
 
 def getqa(request):
     """Returns the next card to display to the user.
@@ -59,9 +59,9 @@ def getqa(request):
 
     data = card.json()
     return HttpResponse(
-		    json.dumps(data),
+                    json.dumps(data),
                     mimetype='text/plain'
-		    )
+                    )
 
 import time
 
@@ -76,7 +76,7 @@ def get_many_qa(request,numcards):
     # For testing slow/unreliable server...
     #time.sleep(3)
     #if random.uniform(0,1) < 0.5:
-	#raise NotImplmentedError()
+        #raise NotImplmentedError()
 
     # manually casting seems to avoid unicode wierdness
     numcards = int(numcards)
@@ -90,12 +90,12 @@ def get_many_qa(request,numcards):
     cards = model.choose_many_cards(numcards)
 
     for card in cards:
-	data.append( card.json() )
+        data.append( card.json() )
 
     return HttpResponse(
-		    json.dumps(data),
+                    json.dumps(data),
                     mimetype='text/plain'
-		    )
+                    )
 
 
 
@@ -149,8 +149,8 @@ def setlesson(request,lesson_id):
     # put this lesson into the model
     model = get_model(request)
     if model is None:
-	resetdeck(request)
-	model = get_model(request)
+        resetdeck(request)
+        model = get_model(request)
     model.set_active_lesson(lesson_id)
     save_model(request, model)
 

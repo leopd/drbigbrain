@@ -13,20 +13,20 @@ class FixtureTest(TestCase):
 
 
     def test_basic_data(self):
-	"""
-	Check that the data loaded in the fixtures is structurally reasonable
-	"""
+        """
+        Check that the data loaded in the fixtures is structurally reasonable
+        """
 
-	# Test that there are multiple lessons in the db
-	lessons = Lesson.objects.all()
-	self.failUnless(lessons.count() >= 1)
-	
-	# Look for a minimum number of concepts
-	lesson = lessons[0]
-	self.failUnless(lesson.concepts.count() > 5)
+        # Test that there are multiple lessons in the db
+        lessons = Lesson.objects.all()
+        self.failUnless(lessons.count() >= 1)
+        
+        # Look for a minimum number of concepts
+        lesson = lessons[0]
+        self.failUnless(lesson.concepts.count() > 5)
 
-	# Look inside the concept
-	concept = lesson.concepts.all()[0]
-	assets = concept.asset_set.all()
-	self.failUnless(assets.count() >= 2)
+        # Look inside the concept
+        concept = lesson.concepts.all()[0]
+        assets = concept.asset_set.all()
+        self.failUnless(assets.count() >= 2)
 

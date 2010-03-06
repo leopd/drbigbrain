@@ -26,27 +26,27 @@ def deckview(request):
     model = get_model(request)
     recent_cards = []
     for impression in recent_impressions:
-	#print "id %s" % impression.concept.id
-	card = model.lookup_card(impression.concept.id)
+        #print "id %s" % impression.concept.id
+        card = model.lookup_card(impression.concept.id)
 
-	pile = model.which_pile(card)
-	recent_cards.append( (card.question(), pile, card) )
+        pile = model.which_pile(card)
+        recent_cards.append( (card.question(), pile, card) )
 
     #
     # fetch counts for each pile
     #
     pilecount = []
     for pile in model.supported_piles():
-	pilecount.append( (pile, len( model.cards_in_pile(pile) ) ) )
+        pilecount.append( (pile, len( model.cards_in_pile(pile) ) ) )
 
     # and the description
     description = model.description
 
     templatevars = {
-	'recent_cards': recent_cards,
-	'pilecount': pilecount,
-	'description': description,
-	}
+        'recent_cards': recent_cards,
+        'pilecount': pilecount,
+        'description': description,
+        }
 
     return render_to_response("deck/deckview.html", templatevars)
     
@@ -64,14 +64,14 @@ def jsondeck(request):
     model = get_model(request)
     data = {}
     for pile in model.supported_piles():
-	data[pile]=[]
-	for card in model.cards_in_pile(pile):
-	    data[pile].append( card.json() )
+        data[pile]=[]
+        for card in model.cards_in_pile(pile):
+            data[pile].append( card.json() )
 
     return HttpResponse(
-		    json.dumps(data),
+                    json.dumps(data),
                     mimetype='text/plain'
-		    )
+                    )
 
 def resetdeck(request):
     """Creates a new model object and saves it.
@@ -110,30 +110,30 @@ def create_review_deck(request):
     # add up the bad impressions
     bad_total = {}
     for impression in all_kinda:
-	id = impression.concept_id
-	# TUNE: 1 point per kinda
-	if id not in bad_total:
-	    bad_total[ impression.concept_id ] = 1
-	else:
-	    bad_total[ impression.concept_id ] += 1
+        id = impression.concept_id
+        # TUNE: 1 point per kinda
+        if id not in bad_total:
+            bad_total[ impression.concept_id ] = 1
+        else:
+            bad_total[ impression.concept_id ] += 1
     for impression in all_no:
-	id = impression.concept_id
-	# TUNE: 3 points per no
-	if id not in bad_total:
-	    bad_total[ impression.concept_id ] = 3
-	else:
-	    bad_total[ impression.concept_id ] += 3
+        id = impression.concept_id
+        # TUNE: 3 points per no
+        if id not in bad_total:
+            bad_total[ impression.concept_id ] = 3
+        else:
+            bad_total[ impression.concept_id ] += 3
 
     # invert the map so it maps # bad points to concepts.
     # Note there could be collisions here, so build a list for each num pts
     inverted_bad_total = {}
     for id, pts in bad_total.items():
-	# TUNE: Minimum threshhold for something to be reviewable
-	if pts > 2:
-	    if pts not in inverted_bad_total:
-		inverted_bad_total[pts]=[id]
-	    else:
-		inverted_bad_total[pts].append(id)
+        # TUNE: Minimum threshhold for something to be reviewable
+        if pts > 2:
+            if pts not in inverted_bad_total:
+                inverted_bad_total[pts]=[id]
+            else:
+                inverted_bad_total[pts].append(id)
     
     # Prepare results list
     review_cards = []
@@ -144,9 +144,9 @@ def create_review_deck(request):
     pts_order_desc.reverse()
     print "pod: %s" % pts_order_desc
     for pts in pts_order_desc:
-	for card in inverted_bad_total[pts]:
-	    review_cards.append(card)
-	
+        for card in inverted_bad_total[pts]:
+            review_cards.append(card)
+        
     # Now put them all into the model
     model.add_new_cards("Review of difficult cards", review_cards)
 

@@ -6,7 +6,7 @@ class Concept(models.Model):
     description = models.CharField(max_length=200)
 
     def __unicode__(self):
-	return unicode(self.description)
+        return unicode(self.description)
 
 # this describes the kind of content in an asset.
 # it could describe the language of the content (i.e. spanish, english)
@@ -16,7 +16,7 @@ class AssetType(models.Model):
     name = models.CharField(max_length=64)
 
     def __unicode__(self):
-	return unicode(self.name)
+        return unicode(self.name)
 
 # this is a way to represent the concept.  it could be a definition in
 # a language.  or anything else described by an assettype
@@ -26,7 +26,7 @@ class Asset(models.Model):
     content = models.CharField(max_length=1000)
 
     def __unicode__(self):
-	return unicode(self.content)
+        return unicode(self.content)
 
 
 # this is a way of grouping concepts together
@@ -38,7 +38,7 @@ class Lesson(models.Model):
     concepts = models.ManyToManyField(Concept, through='LessonSequence')
 
     def __unicode__(self):
-	return unicode(self.name)
+        return unicode(self.name)
     
 # many-many join table, with order
 class LessonSequence(models.Model):
@@ -48,10 +48,10 @@ class LessonSequence(models.Model):
     sequence = models.IntegerField(null = True)
 
     def __unicode__(self):
-	if self.sequence == None:
-	    #return "lessonseq w/o seq"
-	    return u"Lesson(%s) Seq(-) is %s" % (self.lesson, self.concept)
-	else:
-	    #return "lessonseq w/ seq"
-	    return u"Lesson(%s) Seq(%s) is %s" % (self.lesson, self.sequence, self.concept)
+        if self.sequence == None:
+            #return "lessonseq w/o seq"
+            return u"Lesson(%s) Seq(-) is %s" % (self.lesson, self.concept)
+        else:
+            #return "lessonseq w/ seq"
+            return u"Lesson(%s) Seq(%s) is %s" % (self.lesson, self.sequence, self.concept)
 

@@ -27,21 +27,21 @@ def register(request):
     form = UserCreationForm(data)
 
     if request.method == 'POST':
-	if form.is_valid():
-	    # create the new user
+        if form.is_valid():
+            # create the new user
             new_user = form.save(data)
 
-	    # now log them in
-	    user = authenticate(username=data['username'], password=data['password1'] )
-	    if user is not None: 
-		login(request,user)
-	    else:
-		return HttpResponseRedirect("/loginfail")
-		
-	    if request.POST.get('next'):
-		return HttpResponseRedirect(request.POST['next'])
-	    else:
-		return HttpResponseRedirect("/")
+            # now log them in
+            user = authenticate(username=data['username'], password=data['password1'] )
+            if user is not None: 
+                login(request,user)
+            else:
+                return HttpResponseRedirect("/loginfail")
+                
+            if request.POST.get('next'):
+                return HttpResponseRedirect(request.POST['next'])
+            else:
+                return HttpResponseRedirect("/")
 
     return render_to_response("welcome/register.html", {
         'form' : form.as_p(),
@@ -49,7 +49,7 @@ def register(request):
 
 def ajaxloginlink(request):
     return render_to_response("welcome/ajaxloginlink.html", {
-	'is_logged_in': request.user.is_authenticated(),
+        'is_logged_in': request.user.is_authenticated(),
         'user' : request.user,
     })
     

@@ -20,7 +20,7 @@ class Impression(models.Model):
     timer_submit = models.IntegerField(null = True)
 
     def __unicode__(self):
-	return u"Impression on %s '%s'" % (self.concept,self.answer)
+        return u"Impression on %s '%s'" % (self.concept,self.answer)
 
 
 class DeckState(models.Model):
@@ -36,48 +36,48 @@ class DeckState(models.Model):
 
     @staticmethod
     def for_request(request, create_new=True):
-	"""Looks up the current deckstate for a request
-	It tries to load it from the session first.
-	If not there, it looks for one associated with this user.
-	If none for this user, it might or might not create a new one,
-	based on the input flag.
-	If create_new is false, it will return None rather than create a new one 
-	"""
+        """Looks up the current deckstate for a request
+        It tries to load it from the session first.
+        If not there, it looks for one associated with this user.
+        If none for this user, it might or might not create a new one,
+        based on the input flag.
+        If create_new is false, it will return None rather than create a new one 
+        """
 
-	deckstate_id = request.session.get('deckstate_id')
-	if deckstate_id is None:
-	    if request.user.__class__ == AnonymousUser:
-		#TODO: someday we'll be able to just store it in session
-		return None
-	    # Nothing in the session.  See if we can find one for this user.
-	    alldecks = DeckState.objects.filter(user = request.user)
-	    if len(alldecks) == 0:
-		# No deckstates for this user
-		if not create_new:
-		    return None
-		else:
-		    deckstate = DeckState()
-		    deckstate.user = request.user
-		    deckstate.save() # to get the id
-	    else:
-		# Found deckstate(s) for this user from other sessions.
-		# Arbitrarily picking the first one here
-		deckstate = alldecks[0]
+        deckstate_id = request.session.get('deckstate_id')
+        if deckstate_id is None:
+            if request.user.__class__ == AnonymousUser:
+                #TODO: someday we'll be able to just store it in session
+                return None
+            # Nothing in the session.  See if we can find one for this user.
+            alldecks = DeckState.objects.filter(user = request.user)
+            if len(alldecks) == 0:
+                # No deckstates for this user
+                if not create_new:
+                    return None
+                else:
+                    deckstate = DeckState()
+                    deckstate.user = request.user
+                    deckstate.save() # to get the id
+            else:
+                # Found deckstate(s) for this user from other sessions.
+                # Arbitrarily picking the first one here
+                deckstate = alldecks[0]
 
-	    # put the id back in the session.
-	    request.session['deckstate_id'] = deckstate.id
+            # put the id back in the session.
+            request.session['deckstate_id'] = deckstate.id
 
-	else:
-	    #print "get_model: deckstate_id in session is %s" % deckstate_id
-	    # Try to get the referenced deckstate object.
-	    try:
-		deckstate = DeckState.objects.get(pk=deckstate_id)
-	    except DeckState.DoesNotExist:
-		# DeckState must have been deleted.  Reset the session.
-		request.session['deckstate_id'] = None
-		deckstate = None
-		
-	return deckstate
+        else:
+            #print "get_model: deckstate_id in session is %s" % deckstate_id
+            # Try to get the referenced deckstate object.
+            try:
+                deckstate = DeckState.objects.get(pk=deckstate_id)
+            except DeckState.DoesNotExist:
+                # DeckState must have been deleted.  Reset the session.
+                request.session['deckstate_id'] = None
+                deckstate = None
+                
+        return deckstate
 
     
 def get_model(request):
@@ -89,12 +89,12 @@ def get_model(request):
 
     deckstate = DeckState.for_request(request,False)
     if deckstate is None:
-	return None
+        return None
 
     # Now we have a deckstate.  pull out the model
     p = deckstate.pickled_model
     if (p is None) or (p==""):
-	return None
+        return None
 
     # having problems with unicode pickling!
     # error -- KeyError: '\x00'
