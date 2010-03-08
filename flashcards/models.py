@@ -10,6 +10,7 @@ class Concept(models.Model):
     def __unicode__(self):
         return unicode(self.description)
 
+
 class AssetType(models.Model):
     """
     this describes the kind of content in an asset.
@@ -21,6 +22,7 @@ class AssetType(models.Model):
 
     def __unicode__(self):
         return unicode(self.name)
+
 
 class Asset(models.Model):
     """
@@ -47,6 +49,7 @@ class Lesson(models.Model):
     def __unicode__(self):
         return unicode(self.name)
     
+
 class LessonSequence(models.Model):
     """many-many join table between lesson and concept
     Includes order
@@ -65,8 +68,55 @@ class LessonSequence(models.Model):
             #return "lessonseq w/ seq"
             return u"Lesson(%s) Seq(%s) is %s" % (self.lesson, self.sequence, self.concept)
 
+
+class FlashCardType(models.Model):
+    """A way of displaying a concept as a flashcard.
+    Specifies which assettypes for question, answer.
+    Also how to render them in HTML.
+    """
+    name = models.CharField(max_length=30)
+    asset_types = models.ManyToManyField(AssetType, through='AssetUsedInCard')
+    question_template = models.CharField(max_length=500, null=True)
+    answer_template = models.CharField(max_length=500, null=True)
+
+
+
+    def render_html(self,template,card):
+	"""Substitutes the card's assets into the template.
+	"""
+	# Make a dictionary of the assets in the card
+	# by going through the asset_types list.
+
+	# Run it through the django template
+	raise NotImplementedError
+
+
+    def html_question(self,card):
+	"""Returns HTML rendered question for the specified card
+	"""
+	return self.render_html(self.question_template,card)
+
+
+    def html_answer(self,card):
+	"""Returns HTML rendered answer for the specified card
+	"""
+	return self.render_html(self.answer_template,card)
+
+
+class AssetUsedInCard(models.Model):
+    """Many to many join table between FlashCardType and AssetType.
+    Carries an identifying string along with the connection.
+    This string is used in the template formating.
+    """
+
+    flash_card_type = models.ForeignKey(FlashCardType)
+    asset_type = models.ForeignKey(AssetType)
+
+    name = models.CharField(max_length=10)
+
+
 class FlashCard(models.Model):
-    """This represents a canonical question/answer pair for user learning.
+    """A canonical question/answer pair for user learning.
     It is fundamentally a Concept, but specificying a "view" for
     which part of the concept should be the question and which part
     the answer.
@@ -75,5 +125,21 @@ class FlashCard(models.Model):
     There would be two FlashCard objects, one with "house" as question
     and "casa" as answer, and another one with Q & A swapped.
     """
-    #TODO: write
-    pass
+    #This replaces the 'deck.Card' class, which was coupled to a user.
+
+    concept = models.ForeignKey(Concept)
+    cardtype = models.ForeignKey(FlashCardType)
+
+
+    def html_question(self):
+	"""Returns HTML rendered question for this card
+	"""
+	return self.cardtype.html_question(self)
+
+
+    def html_answer(self):
+	"""Returns HTML rendered answer for this card
+	"""
+	return self.cardtype.html_answer(self)
+
+
