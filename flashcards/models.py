@@ -1,4 +1,5 @@
 from django.db import models
+from django.template import Context, Template
 
 class Concept(models.Model):
     """a concept is a unit of learning.
@@ -73,22 +74,36 @@ class FlashCardType(models.Model):
     """A way of displaying a concept as a flashcard.
     Specifies which assettypes for question, answer.
     Also how to render them in HTML.
+    Includes methods for rendering question and answer.
     """
     name = models.CharField(max_length=30)
     asset_types = models.ManyToManyField(AssetType, through='AssetUsedInCard')
     question_template = models.CharField(max_length=500, null=True)
     answer_template = models.CharField(max_length=500, null=True)
 
-
-
-    def render_html(self,template,card):
+    def render_html(self,template_str,card):
 	"""Substitutes the card's assets into the template.
 	"""
+
+	#TODO: test this!
+
 	# Make a dictionary of the assets in the card
 	# by going through the asset_types list.
+	dict = {}
+	assets = card.concept.asset_set
+	# Find all the appropriate AssetUsedInCard objects
+	qs = AssetUsedInCard.objects.filter(flash_card_type = self)
+	for asset_used in qs:
+	    name = asset_used.name
+	    asset = assets.get(asset_type = asset_used.asset_type)
+	    dict[ name ] = asset
 
 	# Run it through the django template
-	raise NotImplementedError
+	# See http://docs.djangoproject.com/en/dev/ref/templates/api/
+	template = Template(template_str)
+	context = Context(dict)
+	html = template.render(context)
+	return html
 
 
     def html_question(self,card):

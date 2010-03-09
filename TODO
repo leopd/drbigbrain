@@ -10,6 +10,9 @@ TODO...
 * Data Model
 -Replace "lesson" table with key:value tags on concepts.  (lessonseq??)
 -Add CardType and Card as first-class database objects in flashcards/ module
+	-in progress
+	-Need to add admin tables.
+	-Need to refactor out deck/card.py with tests
 -Rename flashcards module to content
 
 
