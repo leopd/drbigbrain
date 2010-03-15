@@ -1,0 +1,40 @@
+[
+{"pk": 1, "model": "flashcards.concept", "fields": {"description": "house / casa"}}, 
+{"pk": 2, "model": "flashcards.concept", "fields": {"description": "chicken / pollo"}}, 
+{"pk": 1, "model": "flashcards.assettype", "fields": {"name": "English"}}, 
+{"pk": 2, "model": "flashcards.assettype", "fields": {"name": "Spanish"}}, 
+{"pk": 1, "model": "flashcards.asset", "fields": {"content": "house", "concept": 1, "asset_type": 1}}, 
+{"pk": 2, "model": "flashcards.asset", "fields": {"content": "casa", "concept": 1, "asset_type": 2}}, 
+{"pk": 6, "model": "flashcards.asset", "fields": {"content": "chicken", "concept": 2, "asset_type": 1}}, 
+{"pk": 7, "model": "flashcards.asset", "fields": {"content": "pollo", "concept": 2, "asset_type": 2}}, 
+{"pk": 1, "model": "flashcards.lesson", "fields": {"name": "Trivial Spanish", "description": ""}}, 
+{"pk": 1, "model": "flashcards.lessonsequence", "fields": {"lesson": 1, "concept": 1, "sequence": 1}}, 
+{"pk": 2, "model": "flashcards.lessonsequence", "fields": {"lesson": 1, "concept": 2, "sequence": 2}},
+    {
+        "pk": 1, 
+        "model": "flashcards.flashcardtype", 
+        "fields": {
+            "answer_template": "{{A1}}", 
+            "question_template": "{{Q1}}", 
+            "name": "Spanish reading"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "flashcards.assetusedincardtype", 
+        "fields": {
+            "flash_card_type": 1, 
+            "token": "Q1", 
+            "asset_type": 1
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "flashcards.assetusedincardtype", 
+        "fields": {
+            "flash_card_type": 1, 
+            "token": "A1", 
+            "asset_type": 2
+        }
+    }
+]

@@ -18,4 +18,41 @@
 {"pk": 10, "model": "flashcards.asset", "fields": {"content": "A", "concept": 2, "asset_type": 5}}, 
 {"pk": 1, "model": "flashcards.lesson", "fields": {"name": "BLCU Reader Chapter 1", "description": ""}}, 
 {"pk": 1, "model": "flashcards.lessonsequence", "fields": {"lesson": 1, "concept": 1, "sequence": 1}}, 
-{"pk": 2, "model": "flashcards.lessonsequence", "fields": {"lesson": 1, "concept": 2, "sequence": 2}}]
+{"pk": 2, "model": "flashcards.lessonsequence", "fields": {"lesson": 1, "concept": 2, "sequence": 2}},
+    {
+        "pk": 1, 
+        "model": "flashcards.flashcardtype", 
+        "fields": {
+            "answer_template": "<i>{{A1}}</i><br/>{{A2}}", 
+            "question_template": "{{Q1}}", 
+            "name": "Read Simplified Chinese"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "flashcards.assetusedincardtype", 
+        "fields": {
+            "flash_card_type": 1, 
+            "token": "Q1", 
+            "asset_type": 2
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "flashcards.assetusedincardtype", 
+        "fields": {
+            "flash_card_type": 1, 
+            "token": "A1", 
+            "asset_type": 3
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "flashcards.assetusedincardtype", 
+        "fields": {
+            "flash_card_type": 1, 
+            "token": "A2", 
+            "asset_type": 4
+        }
+    }
+]

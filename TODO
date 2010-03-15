@@ -3,16 +3,21 @@
 TODO...
 *Most important
 -Change from lessons to generic key/value tags on concepts
--More integration tests
--Allow upload of new lessons
+-Allow adding new flashcards of a given type
+-New learning model that uses clock time for review
+	-don't show until this clock time
+	-or if this sequence number is exceeded
+	-(whichever is sooner??)
+
 
 
 * Data Model
 -Replace "lesson" table with key:value tags on concepts.  (lessonseq??)
 -Add CardType and Card as first-class database objects in flashcards/ module
-	-in progress
-	-Need to add admin tables.
 	-Need to refactor out deck/card.py with tests
+	-Need a migration script (South?)
+		-Lessons point to Cards instead of a model
+		-1 card per concept.  same id!
 -Rename flashcards module to content
 
 

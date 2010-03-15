@@ -357,4 +357,41 @@
 {"pk": 47, "model": "flashcards.lessonsequence", "fields": {"lesson": 3, "concept": 47, "sequence": 18}}, 
 {"pk": 48, "model": "flashcards.lessonsequence", "fields": {"lesson": 3, "concept": 48, "sequence": 19}}, 
 {"pk": 49, "model": "flashcards.lessonsequence", "fields": {"lesson": 4, "concept": 49, "sequence": 1}}, 
-{"pk": 50, "model": "flashcards.lessonsequence", "fields": {"lesson": 4, "concept": 50, "sequence": 2}}]
+{"pk": 50, "model": "flashcards.lessonsequence", "fields": {"lesson": 4, "concept": 50, "sequence": 2}},
+    {
+        "pk": 1, 
+        "model": "flashcards.flashcardtype", 
+        "fields": {
+            "answer_template": "<i>{{A1}}</i><br/>{{A2}}", 
+            "question_template": "{{Q1}}", 
+            "name": "Read Simplified Chinese"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "flashcards.assetusedincardtype", 
+        "fields": {
+            "flash_card_type": 1, 
+            "token": "Q1", 
+            "asset_type": 2
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "flashcards.assetusedincardtype", 
+        "fields": {
+            "flash_card_type": 1, 
+            "token": "A1", 
+            "asset_type": 3
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "flashcards.assetusedincardtype", 
+        "fields": {
+            "flash_card_type": 1, 
+            "token": "A2", 
+            "asset_type": 4
+        }
+    }
+]

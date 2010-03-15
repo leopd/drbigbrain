@@ -77,9 +77,12 @@ class FlashCardType(models.Model):
     Includes methods for rendering question and answer.
     """
     name = models.CharField(max_length=30)
-    asset_types = models.ManyToManyField(AssetType, through='AssetUsedInCard')
+    asset_types = models.ManyToManyField(AssetType, through='AssetUsedInCardType')
     question_template = models.CharField(max_length=500, null=True)
     answer_template = models.CharField(max_length=500, null=True)
+
+    def __unicode__(self):
+	return self.name
 
     def render_html(self,template_str,card):
 	"""Substitutes the card's assets into the template.
@@ -91,12 +94,12 @@ class FlashCardType(models.Model):
 	# by going through the asset_types list.
 	dict = {}
 	assets = card.concept.asset_set
-	# Find all the appropriate AssetUsedInCard objects
-	qs = AssetUsedInCard.objects.filter(flash_card_type = self)
+	# Find all the appropriate AssetUsedInCardType objects
+	qs = AssetUsedInCardType.objects.filter(flash_card_type = self)
 	for asset_used in qs:
-	    name = asset_used.name
+	    token = asset_used.token
 	    asset = assets.get(asset_type = asset_used.asset_type)
-	    dict[ name ] = asset
+	    dict[ token ] = asset
 
 	# Run it through the django template
 	# See http://docs.djangoproject.com/en/dev/ref/templates/api/
@@ -118,7 +121,7 @@ class FlashCardType(models.Model):
 	return self.render_html(self.answer_template,card)
 
 
-class AssetUsedInCard(models.Model):
+class AssetUsedInCardType(models.Model):
     """Many to many join table between FlashCardType and AssetType.
     Carries an identifying string along with the connection.
     This string is used in the template formating.
@@ -127,8 +130,10 @@ class AssetUsedInCard(models.Model):
     flash_card_type = models.ForeignKey(FlashCardType)
     asset_type = models.ForeignKey(AssetType)
 
-    name = models.CharField(max_length=10)
+    token = models.CharField(max_length=10)
 
+    def __unicode__(self):
+	return "%s.%s" % (self.flash_card_type, self.token)
 
 class FlashCard(models.Model):
     """A canonical question/answer pair for user learning.
@@ -145,6 +150,8 @@ class FlashCard(models.Model):
     concept = models.ForeignKey(Concept)
     cardtype = models.ForeignKey(FlashCardType)
 
+    def __unicode__(self):
+	return u"%s (%s)" % (self.concept, self.cardtype)
 
     def html_question(self):
 	"""Returns HTML rendered question for this card
