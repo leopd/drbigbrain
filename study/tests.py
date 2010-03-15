@@ -7,20 +7,29 @@ class StudyTest(TestCase):
     """Completely black-box tests the study json / http-POST interfaces
     """
 
-    fixtures = ['vocab50.json']
+    fixtures = ['trivial.json']
     def login_client(self,client):
-	response = c.post('/login/', {'username': 'john', 'password': 'smith'})
+	#response = client.post('/accounts/login/', {'username': 'richard', 'password': 'abcd0123'})
+	#self.assertEqual(response.status_code,200)
+	# above works, but below is faster, cleaner
+	client.login(username='richard', password='abcd0123')
+
+	# Check that login succeeded
+	response = client.post('/ajaxloginlink')
 	self.assertEqual(response.status_code,200)
+	#print response.content
+	self.failUnless(response.content.find('Welcome back') >= 0 )
+
 
     def prepare_lesson(self,client,lessonnum):
-	response = c.post("/deck/reset")
-	self.assertEqual(response.status_code,200)
+	response = client.get("/deck/reset")
+	self.assertEqual(response.status_code,302)
 
-	response = c.post("/study/lesson/%s/" % lessonnum)
-	self.assertEqual(response.status_code,200)
+	response = client.get("/study/lesson/%s/" % lessonnum)
+	self.assertEqual(response.status_code,302)
 	
 
-    def check_qa(self, client, question, answer)
+    def check_qa(self, client, question, answer):
 	"""Checks that /study/getqa returns this q/a pair.
 	returns the parsed json object in full
 	"""
@@ -33,7 +42,7 @@ class StudyTest(TestCase):
 	return qa
 
 
-    def post_impression(self, client, answer, qa)
+    def post_impression(self, client, answer, qa):
 	"""posts an impression response with the specified answer.
 	"""
 	response = client.post('/study/impression', {
@@ -50,9 +59,9 @@ class StudyTest(TestCase):
 	self.prepare_lesson(c,1)
 
 	qa = self.check_qa(c, 'house', 'casa')
-	self.post_impression(c, 'Yes')
+	self.post_impression(c, 'Yes', qa)
 
 	qa = self.check_qa(c, 'chicken', 'pollo')
-	self.post_impression(c, 'Yes')
+	self.post_impression(c, 'Yes', qa)
 
 
