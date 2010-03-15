@@ -135,6 +135,7 @@ class AssetUsedInCardType(models.Model):
     def __unicode__(self):
 	return "%s.%s" % (self.flash_card_type, self.token)
 
+
 class FlashCard(models.Model):
     """A canonical question/answer pair for user learning.
     It is fundamentally a Concept, but specificying a "view" for
