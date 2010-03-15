@@ -7,7 +7,8 @@ class StudyTest(TestCase):
     """Completely black-box tests the study json / http-POST interfaces
     """
 
-    fixtures = ['trivial.json']
+    #fixtures = ['trivial.json']
+    fixtures = ['vocab50.json']
     def login_client(self,client):
 	#response = client.post('/accounts/login/', {'username': 'richard', 'password': 'abcd0123'})
 	#self.assertEqual(response.status_code,200)
@@ -37,8 +38,8 @@ class StudyTest(TestCase):
 	self.assertEqual(response.status_code,200)
 	jsonstr = response.content
 	qa = json.loads(jsonstr)
-	self.assertEqual(qa['question'],'house')
-	self.assertEqual(qa['answer'],'casa')
+	self.assertEqual(qa['question'],question)
+	self.assertEqual(qa['answer'],answer)
 	return qa
 
 
@@ -58,10 +59,14 @@ class StudyTest(TestCase):
 	self.login_client(c)
 	self.prepare_lesson(c,1)
 
-	qa = self.check_qa(c, 'house', 'casa')
+	#qa = self.check_qa(c, 'house', 'casa') # trivial fixture
+	qa = self.check_qa(c, '(unicode)4f60', '<i>n(unicode)01d0</i><br/>You')
 	self.post_impression(c, 'Yes', qa)
 
-	qa = self.check_qa(c, 'chicken', 'pollo')
-	self.post_impression(c, 'Yes', qa)
+	#qa = self.check_qa(c, 'chicken', 'pollo') # trivial fixture
+	qa = self.check_qa(c, '(unicode)597d', '<i>h(unicode)01ceo</i><br/>good; well; fine; O.K.')
+	#{"pk": 2, "model": "flashcards.concept", "fields": {"description": "good; well; fine; O.K. / (unicode)597d / h(unicode)01ceo"}},
+
+	#self.post_impression(c, 'Yes', qa)
 
 
