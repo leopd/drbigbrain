@@ -1,6 +1,7 @@
 import random
 from deck.learning import SimpleDeckModel
 from deck.learning import LearningModelBase
+from deck.card import Card
 
 
 
@@ -114,7 +115,7 @@ class HistoryModel(SimpleDeckModel):
         # updates model_seq - must do this now since this is when the model gets persisted
         #TODO: fix encapsulation of seq_tick.  this is handled in base class.
 
-        card = self.lookup_card(impression.concept_id)
+        card = Card.lookup_card(impression.concept_id)
         next_status = self.get_next_card_status(card,impression.answer)
         self.move_card_to_pile(card,next_status)
         self.calculate_soonest(card)

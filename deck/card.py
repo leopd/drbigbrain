@@ -5,7 +5,6 @@ from deck.models import Impression
 
 class Card():
     """Abstraction between Concept model and what the user actually studies.
-    must be pickleable, which means no django objects
     note this is an instance of a card being studied,
     not a generic data type.  
     the difference is that it's specific to a user.
@@ -13,6 +12,42 @@ class Card():
 
     This should support things like a rosetta-style card.
     """
+
+
+    # methods to create a singleton per id
+    cards_by_id={}
+
+    @staticmethod
+    def by_id(id):
+	"""find the card by its id
+	"""
+        card = Card.cards_by_id.get(id)
+        if card:
+            return card
+
+        # otherwise create a new Card
+        concept = get_object_or_404(Concept, pk=id)
+        return Card.new_card(concept)
+
+    @staticmethod
+    def lookup_card(id):
+	return Card.by_id(id)
+
+    
+    @staticmethod
+    def new_card(concept):
+	"""Creates a card from the concept and makes sure we can
+	find it later."""
+        card = Card(concept)
+
+	#TODO: bake this into the constructor.
+	# Note -- this isn't used anywhere except in this section.
+
+        # make sure we can look it up
+        Card.cards_by_id[card.id] = card
+        return card
+
+
 
     def __init__(self,concept):
         self.id = concept.id

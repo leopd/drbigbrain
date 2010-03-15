@@ -5,6 +5,7 @@ from deck.models import Impression
 from deck.learninghistory import HistoryModel
 from deck.learning import SimpleDeckModel
 from deck.learning import RandomLearningModel
+from deck.card import Card
 
 class SimpleTest(TestCase):
     fixtures = ['vocab50.json']
@@ -113,7 +114,7 @@ class SimpleTest(TestCase):
 
         cards = []
         for concept in lesson.concepts.all():
-            card = model.lookup_card(concept.id)
+            card = Card.lookup_card(concept.id)
             cards.append(card)
             
         return cards
