@@ -27,31 +27,19 @@ class Card():
 
         # otherwise create a new Card
         concept = get_object_or_404(Concept, pk=id)
-        return Card.new_card(concept)
+        return Card(concept)
 
     @staticmethod
     def lookup_card(id):
 	return Card.by_id(id)
-
-    
-    @staticmethod
-    def new_card(concept):
-	"""Creates a card from the concept and makes sure we can
-	find it later."""
-        card = Card(concept)
-
-	#TODO: bake this into the constructor.
-	# Note -- this isn't used anywhere except in this section.
-
-        # make sure we can look it up
-        Card.cards_by_id[card.id] = card
-        return card
 
 
 
     def __init__(self,concept):
         self.id = concept.id
         self._history = History(self.id)
+
+	Card.cards_by_id[concept.id] = self
 
 
     def summary(self):
