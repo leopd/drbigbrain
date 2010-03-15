@@ -161,9 +161,30 @@ class SimpleTest(TestCase):
             self.assertEqual(card1.json(), card2.json())
 
 
+    def try_two_yeses_and_a_pickle(self,model):
+	"""Get a card.  Answer yes.  
+	Pickle the model, unpickle it.
+	Get a card, check that it's different from the first.
+	"""
+
+        self.setup_model(model)
+
+	card1 = model.choose_card()
+	self.simulate_impression(model,card1,'Yes')
+
+	p = pickle.dumps(model)
+	model = pickle.loads(p)
+
+	card2 = model.choose_card()
+	self.failIfEqual(card1,card2)
+
+
+
+
 
     def test_simpledeck_model(self):
         model = SimpleDeckModel()
+        self.try_two_yeses_and_a_pickle(model)
         self.try_prefetch_identical(model,10)
         self.try_all_yes(model)
         self.try_all_no(model,200)
@@ -171,6 +192,7 @@ class SimpleTest(TestCase):
 
     def test_history_model(self):
         model = HistoryModel()
+        self.try_two_yeses_and_a_pickle(model)
         self.try_prefetch_identical(model,10)
         self.try_all_yes(model)
         self.try_all_no(model,200, 15)

@@ -65,7 +65,6 @@ class StudyTest(TestCase):
 
 	#qa = self.check_qa(c, 'chicken', 'pollo') # trivial fixture
 	qa = self.check_qa(c, '(unicode)597d', '<i>h(unicode)01ceo</i><br/>good; well; fine; O.K.')
-	#{"pk": 2, "model": "flashcards.concept", "fields": {"description": "good; well; fine; O.K. / (unicode)597d / h(unicode)01ceo"}},
 
 	#self.post_impression(c, 'Yes', qa)
 
