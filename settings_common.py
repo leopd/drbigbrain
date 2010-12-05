@@ -40,6 +40,8 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'urls'
 
+UPLOAD_DIR_PIX = '/tmp/dbb/pix'
+
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -57,5 +59,6 @@ INSTALLED_APPS = (
     'flashcards',
     'deck',
     'study',
+    'pixset',
 )
 
