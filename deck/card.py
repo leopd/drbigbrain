@@ -19,8 +19,8 @@ class Card():
 
     @staticmethod
     def by_id(id):
-	"""find the card by its id
-	"""
+        """find the card by its id
+        """
         card = Card.cards_by_id.get(id)
         if card:
             return card
@@ -31,7 +31,7 @@ class Card():
 
     @staticmethod
     def lookup_card(id):
-	return Card.by_id(id)
+        return Card.by_id(id)
 
     
 
@@ -40,7 +40,17 @@ class Card():
         self.id = concept.id
         self._history = History(self.id)
 
-	Card.cards_by_id[concept.id] = self
+        # Cache this instance as a singleton
+        Card.cards_by_id[concept.id] = self
+
+    def __eq__(self, other):
+        if type(other) != type(self):
+            return False
+        return other.id == self.id
+
+
+    def __str__(self):
+        return "Card #%s" % self.id
 
 
     def summary(self):

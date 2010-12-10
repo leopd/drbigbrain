@@ -1,3 +1,4 @@
+import logging
 
 from settings import *
 
@@ -9,4 +10,7 @@ DATABASES = {
         'TEST_CHARSET': 'utf8',
     }
 }
+
+root_logger = logging.getLogger('')
+root_logger.setLevel(logging.DEBUG)
 

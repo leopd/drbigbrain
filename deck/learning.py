@@ -1,3 +1,4 @@
+import logging
 import random
 from django.shortcuts import get_object_or_404
 from flashcards.models import Concept

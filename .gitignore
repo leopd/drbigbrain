@@ -3,4 +3,6 @@
 .DS_Store
 *.sql3
 local_*
+.project
+.pydevproject
 
