@@ -169,15 +169,14 @@ class SimpleTest(TestCase):
 
         self.setup_model(model)
 
-	card1 = model.choose_card()
-	self.simulate_impression(model,card1,'Yes')
+        card1 = model.choose_card()
+        self.simulate_impression(model,card1,'Yes')
 
-	p = pickle.dumps(model)
-	model = pickle.loads(p)
+        p = pickle.dumps(model)
+        model = pickle.loads(p)
 
-	card2 = model.choose_card()
-	self.failIfEqual(card1,card2)
-
+        card2 = model.choose_card()
+        self.failIfEqual(card1,card2)
 
 
 
@@ -188,6 +187,7 @@ class SimpleTest(TestCase):
         self.try_prefetch_identical(model,10)
         self.try_all_yes(model)
         self.try_all_no(model,200)
+
 
 
     def test_history_model(self):

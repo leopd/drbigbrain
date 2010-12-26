@@ -12,6 +12,8 @@ from flashcards.models import Lesson
 from deck.models import Impression
 from deck.models import get_model, save_model
 from deck.views import resetdeck
+from deck.card import Card
+
 
 @login_required
 def studyui(request):
@@ -34,7 +36,7 @@ def jsoncard(request, card_id):
     """
 
     model = get_model(request)
-    card = model.lookup_card(card_id)
+    card = Card.lookup_card(card_id)
     data = card.json()
     return HttpResponse(
                     json.dumps(data),

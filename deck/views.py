@@ -11,7 +11,8 @@ from deck.learning import SimpleDeckModel
 from deck.learning import BetterDeckModel
 from deck.learninghistory import HistoryModel
 from deck.models import get_model, save_model
-# Create your views here.
+from deck.card import Card
+
 
 def deckview(request):
     """Shows you a list of recent cards.
@@ -28,7 +29,7 @@ def deckview(request):
     recent_cards = []
     for impression in recent_impressions:
         #print "id %s" % impression.concept.id
-        card = model.lookup_card(impression.concept.id)
+        card = Card.lookup_card(impression.concept.id)
 
         pile = model.which_pile(card)
         recent_cards.append( (card.question(), pile, card) )
