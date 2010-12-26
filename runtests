@@ -1,0 +1,4 @@
+#!/bin/bash
+
+./manage.py test --settings=dbbpy.fast_test_settings $@
+

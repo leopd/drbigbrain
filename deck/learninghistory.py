@@ -1,6 +1,8 @@
+import logging
 import random
 from deck.learning import SimpleDeckModel
 from deck.learning import LearningModelBase
+from deck.card import Card
 
 
 
@@ -54,38 +56,38 @@ class HistoryModel(SimpleDeckModel):
         # update the "clock" so we can pick cards that are destined for later.
         self.seq_tick()
 
-        #print "model seq up to %s" % self.
+        logging.debug("Choosing card.  model seq up to %s" % self.model_seq)
 
         card = self.front_of_pile('Learning')
         if (card != None ) and (not self.too_soon(card)):
-            #print "from learning pile"
+            logging.debug("from learning pile")
             return card
-        #print "Nothing good in learning pile"
+        logging.debug("Nothing good in learning pile")
         
         card = self.front_of_pile('Review')
         if (card != None ) and (not self.too_soon(card)):
-            #print "from review pile"
+            logging.debug("from review pile")
             return card
-        #print "Nothing good in review pile"
+        logging.debug("Nothing good in review pile")
         
         card = self.front_of_pile('Unseen')
         if (card != None ):
-            #print "from new pile"
+            logging.debug("from new pile: %s", card)
             return card
-        #print "Nothing at all in unseen pile"
+        logging.debug("Nothing at all in unseen pile")
 
         
         card = self.front_of_pile('Learning')
         if (card != None ):
-            #print "backup from learning pile"
+            logging.debug("backup from learning pile")
             return card
-        #print "Nothing at all in learning pile"
+        logging.debug("Nothing at all in learning pile")
         
         card = self.front_of_pile('Review')
         if (card != None ):
-            #print "backup from review pile"
+            logging.debug("backup from review pile")
             return card
-        #print "Nothing at all in review pile"
+        logging.debug("Nothing at all in review pile")
         
         raise NotImplementedError("can't find any more to do in deck")
 
@@ -110,12 +112,15 @@ class HistoryModel(SimpleDeckModel):
 
 
     def log_impression(self,impression):
+        logging.debug("Logging impression %s" % impression)
+
         self.seq_tick()
         # updates model_seq - must do this now since this is when the model gets persisted
         #TODO: fix encapsulation of seq_tick.  this is handled in base class.
 
-        card = self.lookup_card(impression.concept_id)
+        card = Card.lookup_card(impression.concept_id)
         next_status = self.get_next_card_status(card,impression.answer)
+        logging.debug("Moving card to %s", next_status)
         self.move_card_to_pile(card,next_status)
         self.calculate_soonest(card)
     
@@ -123,9 +128,13 @@ class HistoryModel(SimpleDeckModel):
 
 
     def get_next_card_status(self,card,answer):
+        """This is state-machine logic for what pile to put the card into
+        based on the answer and where it was
+        """
         history = card.history()
         previous_answer = history.previous_answer()
-        previous_status = self.which_pile(card)
+        previous_status = self.which_pile(card) or "Unseen"
+        logging.debug("Card was in %s", previous_status)
 
         if answer == "Discard":
             return 'Discard'
@@ -157,6 +166,7 @@ class HistoryModel(SimpleDeckModel):
             return 'Learning'
 
         # shouldn't get here.
+        logging.warning("State machine fall-through")
         return None
 
 
@@ -173,7 +183,7 @@ class HistoryModel(SimpleDeckModel):
             delay = 100
         self.soonest[card.id] = self.model_seq + delay
 
-        # resort this list if it matters
+        # re-sort this list if it matters
         if (status == 'Learning') or (status == 'Review'):
             self.sort_pile_by_soonest(status)
 

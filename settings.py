@@ -1,5 +1,34 @@
 # Common Django settings that are not machine specific
 import os.path
+import traceback
+
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+
+ADMINS = (
+    # ('Your Name', 'your_email@domain.com'),
+)
+
+MANAGERS = ADMINS
+
+DATABASE_ENGINE = 'mysql'
+DATABASE_NAME = 'dbbpy'
+DATABASE_USER = 'root'
+DATABASE_PASSWORD = ''
+DATABASE_HOST = ''
+DATABASE_PORT = ''
+
+# Local time zone for this installation. Choices can be found here:
+# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
+# although not all choices may be available on all operating systems.
+# If running in a Windows environment this must be set to the same as your
+# system time zone.
+TIME_ZONE = 'America/Los Angeles'
+
+# Language code for this installation. All choices can be found here:
+# http://www.i18nguy.com/unicode/language-identifiers.html
+LANGUAGE_CODE = 'en-us'
+
 
 SITE_ID = 1
 
@@ -40,6 +69,8 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'urls'
 
+UPLOAD_DIR_PIX = '/tmp/dbb/pix'
+
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -57,5 +88,16 @@ INSTALLED_APPS = (
     'flashcards',
     'deck',
     'study',
+    'pixset',
 )
+
+
+try:
+    from local_settings import *
+except:
+    traceback.print_exc()
+    print
+    print "Failed to load local_settings.py.  Try"
+    print "       touch local_settings.py"
+    raise
 

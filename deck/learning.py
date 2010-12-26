@@ -1,3 +1,4 @@
+import logging
 import random
 from django.shortcuts import get_object_or_404
 from flashcards.models import Concept
@@ -19,9 +20,6 @@ class LearningModelBase():
         for pile in self.supported_piles():
             #print "creating pile %s" % pile
             self.piles[pile] = []
-
-        # this provides a way to look up the card objects 
-        self.cards_by_id={}
 
         # a string to describe the lessons contained
         self.description=""
@@ -65,7 +63,7 @@ class LearningModelBase():
 
         # put them into the pile
         for id in card_id_list:
-            card = self.lookup_card(id)
+            card = Card.lookup_card(id)
             self.move_card_to_pile(card,pile)
 
         
@@ -196,26 +194,6 @@ class LearningModelBase():
             self.piles[pile].insert(where,card)
 
 
-    #TODO: this logic and the cards_by_id lookup is a mess.
-    # encapsulate this better somewhere else!
-    def new_card(self,concept):
-        card = Card(concept)
-
-        # make sure we can look it up
-        self.cards_by_id[card.id] = card
-        return card
-
-
-    # find a card object by its id
-    def lookup_card(self,id):
-        card = self.cards_by_id.get(id)
-        if card:
-            return card
-
-        # otherwise create a new Card
-        concept = get_object_or_404(Concept, pk=id)
-        return self.new_card(concept)
-
 
     def front_of_pile(self,pile):
         if len(self.piles[pile]) == 0:
@@ -266,7 +244,7 @@ class SimpleDeckModel(LearningModelBase):
         LearningModelBase.log_impression(self,impression)
 
         # here we need to actually rotate the card to the back.
-        card = self.lookup_card(impression.concept_id)
+        card = Card.lookup_card(impression.concept_id)
         self.move_card_to_pile(card,'Active')
 
         
@@ -291,7 +269,7 @@ class BetterDeckModel(SimpleDeckModel):
         LearningModelBase.log_impression(self,impression)
 
         #print u"better decklogging %s" % impression
-        card = self.lookup_card(impression.concept_id)
+        card = Card.lookup_card(impression.concept_id)
 
         # if they got it right, do nothing
         if impression.answer == "Yes":

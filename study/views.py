@@ -15,7 +15,7 @@ from deck.views import resetdeck
 
 @login_required
 def studyui(request):
-    """SHows the UI which presents cards and solicits the responses.
+    """Shows the UI which presents cards and solicits the responses.
     This UI is all ajaxy and doesn't need any server-side data.
     #TODO: move this to static media
     """
@@ -30,7 +30,7 @@ def studyui(request):
 def jsoncard(request, card_id):
     """Renders JSON for a single card
     TODO: HTTP-cache these, since they're immutable
-    (THis is not actually used...)
+    (This is not actually used...)
     """
 
     model = get_model(request)

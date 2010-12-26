@@ -27,33 +27,33 @@
     }
 
     .qacard {
-	font-size: 30px;
+        font-size: 30px;
         border: 1px solid #BABABA;
-	margin: 10px;
-	padding: 5px;
+        margin: 10px;
+        padding: 5px;
     }
 
     .uihints {
-	margin-top: 20px;
-	font-size: 8px;
+        margin-top: 20px;
+        font-size: 8px;
     }
 
     .statusbar {
-	margin-top: 20px;
-	background-color: #eed;
+        margin-top: 20px;
+        background-color: #eed;
     }
 
     .debugbar {
-	margin-top: 20px;
-	background-color: #edd;
-	font-size: 9px;
-	display:none;
+        margin-top: 20px;
+        background-color: #edd;
+        font-size: 9px;
+        display:none;
     }
 
     .answerbutton {
-	width: 100px;
-	height: 25px;
-	margin: 9px;
+        width: 100px;
+        height: 25px;
+        margin: 9px;
     }
 </style>
 
@@ -66,19 +66,19 @@
     /////////////////////////////////////////////////////////
 
     function debugPrint(msg) {
-	// console.dir(msg);
+        console.dir(msg);
     }
 
 
     var start_time_ms;
     function start_timer() {
-	var d = new Date();
-	start_time_ms = d.getTime(); // ms since 1970
+        var d = new Date();
+        start_time_ms = d.getTime(); // ms since 1970
     }
 
     function time_elapsed_ms() {
-	var d = new Date();
-	return d.getTime() - start_time_ms;
+        var d = new Date();
+        return d.getTime() - start_time_ms;
     }
 
 
@@ -87,16 +87,16 @@
 
     function showAnswer()
     {
-	showtimer_ms= time_elapsed_ms();
-	dojo.byId("answerDiv").style.display="block";
-	dojo.byId("showButton").blur();
-	dojo.byId("showButton").style.display="none";
+        showtimer_ms= time_elapsed_ms();
+        dojo.byId("answerDiv").style.display="block";
+        dojo.byId("showButton").blur();
+        dojo.byId("showButton").style.display="none";
     }
 
     function hideAnswer()
     {
-	dojo.byId("answerDiv").style.display="none";
-	dojo.byId("showButton").style.display="block";
+        dojo.byId("answerDiv").style.display="none";
+        dojo.byId("showButton").style.display="block";
     }
 
 
@@ -106,22 +106,22 @@
     // just updates the q and a divs in the display.
     // nothing else.
     function showQA(q,a) {
-	dojo.byId("questionContents").innerHTML= q;
-	dojo.byId("answerContents").innerHTML= a;
+        dojo.byId("questionContents").innerHTML= q;
+        dojo.byId("answerContents").innerHTML= a;
     }
 
     // Shows the question, and resets the UI
     function startQuestion(qaobj) {
-	// Unpack the JSON object from the server
-	q = qaobj.question;
-	a = qaobj.answer;
-	id = qaobj.id;
+        // Unpack the JSON object from the server
+        q = qaobj.question;
+        a = qaobj.answer;
+        id = qaobj.id;
 
-	// Use it.
-	showQA(q, a);
-	cardId = id;
-	dojo.byId("showButton").focus();
-	start_timer();
+        // Use it.
+        showQA(q, a);
+        cardId = id;
+        dojo.byId("showButton").focus();
+        start_timer();
     }
 
 
@@ -130,17 +130,17 @@
     // and for a caller to clear one message without clearing the
     // whole thing
     function showStatus(type,msg) {
-	statusMsgs[type]=msg;
-	debugPrint("status of "+type+":"+msg);
-	var str="";
-	for(var i in statusMsgs) {
-	    submsg = statusMsgs[i];
-	    if( submsg ) {
-		str += statusMsgs[i];
-		str += "<br/>";
-	    }
-	}
-	dojo.byId("statusbar").innerHTML = str;
+        statusMsgs[type]=msg;
+        debugPrint("status of "+type+":"+msg);
+        var str="";
+        for(var i in statusMsgs) {
+            submsg = statusMsgs[i];
+            if( submsg ) {
+                str += statusMsgs[i];
+                str += "<br/>";
+            }
+        }
+        dojo.byId("statusbar").innerHTML = str;
     }
 
     /////////////////////////////////////////////////////////
@@ -176,31 +176,31 @@
     // It takes care of making that happen.  
     // It will happen synchronously if possible, else async.
     function nextQA() {
-	debugPrint("nextQA");
-	// See if we can handle the request from local cache
-	if( QACache.length > 0 ) {
-	    // Handle locally
-	    debugPrint("Using local");
-	    var qa = QACache.shift();
-	    QACacheSeq += 1;
-	    startQuestion(qa);
-	    displayUpdated=true;
-	    userWaitingForQuestion=false;
-	} else {
-	    // Not enough locally.  Show waiting status.
-	    // Don't need to kick off a request here.
-	    // That happens below.
-	    showQA("...","...");
-	    userWaitingForQuestion=true;
-	}
+        debugPrint("nextQA");
+        // See if we can handle the request from local cache
+        if( QACache.length > 0 ) {
+            // Handle locally
+            debugPrint("Using local");
+            var qa = QACache.shift();
+            QACacheSeq += 1;
+            startQuestion(qa);
+            displayUpdated=true;
+            userWaitingForQuestion=false;
+        } else {
+            // Not enough locally.  Show waiting status.
+            // Don't need to kick off a request here.
+            // That happens below.
+            showQA("...","...");
+            userWaitingForQuestion=true;
+        }
 
-	if( QACache.length < minQABeforeFetch) {
-	    // Stack is below threshhold so we need to trigger a fetch.
-	    fetchMoreQA();
-	    // dont worry about de-duping requests.  
-	    // fetchmoreqa will do that.
-	}
-	debugCache();
+        if( QACache.length < minQABeforeFetch) {
+            // Stack is below threshhold so we need to trigger a fetch.
+            fetchMoreQA();
+            // dont worry about de-duping requests.  
+            // fetchmoreqa will do that.
+        }
+        debugCache();
     }
 
     //
@@ -227,108 +227,108 @@
 
     // Renders a cache object for debugging as HTML
     function renderDebugCache(cache) {
-	var str = "<B>Cache State:</B><br/>";
-	str += "Seq = " + QACacheSeq + "<br/>"
-	str += "<ul>"
-	for(var i=0; i<cache.length; i++) {
-	    obj = cache[i];
-	    str += "<li>";
-	    str += obj.question+" ("+obj.id+")";
-	    str += "</li>";
-	}
-	str += "</ul>";
-	if( userWaitingForQuestion ) {
-	    str += "<B>USER WAITING</B><br/>";
-	}
-	if( fetchingMore ) {
-	    str += "<i>FETCHING...</i><br/>";
-	}
-	return str;
+        var str = "<B>Cache State:</B><br/>";
+        str += "Seq = " + QACacheSeq + "<br/>"
+        str += "<ul>"
+        for(var i=0; i<cache.length; i++) {
+            obj = cache[i];
+            str += "<li>";
+            str += obj.question+" ("+obj.id+")";
+            str += "</li>";
+        }
+        str += "</ul>";
+        if( userWaitingForQuestion ) {
+            str += "<B>USER WAITING</B><br/>";
+        }
+        if( fetchingMore ) {
+            str += "<i>FETCHING...</i><br/>";
+        }
+        return str;
     }
 
     function debugCache() {
-	//Comment out for better performance on slow browsers
-	//var cache = QACache;
-	//var str = renderDebugCache(cache);
-	//dojo.byId("debugcache").innerHTML = str;
+        //Comment out for better performance on slow browsers
+        //var cache = QACache;
+        //var str = renderDebugCache(cache);
+        //dojo.byId("debugcache").innerHTML = str;
     }
 
     // Asks the server for more QA data.
     // if needToUpdateUI is true then it will push the results
     // on the screen as soon as they're back.
     function fetchMoreQA() {
-	// Check global state variable to de-dupe these requests
-	if( fetchingMore ) {
-	    // Just wait for the last one to finish.
-	    return;
-	}
-	fetchingMore = true;
+        // Check global state variable to de-dupe these requests
+        if( fetchingMore ) {
+            // Just wait for the last one to finish.
+            return;
+        }
+        fetchingMore = true;
         posturl = "/study/getqa-" + numQAToFetch;
 
-	// Check for the "revisit" hack
-	//
-	// Note: Android G1 browser will set location.hash to "#"
-	// after you set it to "".
-	if( (location.hash) && (location.hash!="#") ) {
-	    // Remove the hash character
-	    cardnum = location.hash.substring(1);
-	    // This is not terribly robust since if the fragment
-	    // is not a number, this will fail to return
-	    posturl = "/study/jsoncard/"+cardnum;
-	    location.hash="";
-	}
+        // Check for the "revisit" hack
+        //
+        // Note: Android G1 browser will set location.hash to "#"
+        // after you set it to "".
+        if( (location.hash) && (location.hash!="#") ) {
+            // Remove the hash character
+            cardnum = location.hash.substring(1);
+            // This is not terribly robust since if the fragment
+            // is not a number, this will fail to return
+            posturl = "/study/jsoncard/"+cardnum;
+            location.hash="";
+        }
 
-	debugPrint("Fetching QA from "+posturl);
+        debugPrint("Fetching QA from "+posturl);
 
-	// Kick off the request
-	//
-	// Note: This is a problem for Android G1 browser.
-	// If you use GET, it will cache this too aggressively,
-	// and never call for new data.
-	// On G1, if you post without specifying
-	// any postdata, it doesn't set the content-length
-	// header, which triggers mod_security to block the request
-	// with 503.  
-	// If you do set the postdata to something small
-	// like "hack=1" then sometimes it just doesn't run the 
-	// load function.  Dojo/android bug?
-	// What I've decided to do is send the no-body post,
-	// and disable mod_security for this URL.
-	// See DEPLOYMENT file
-	dojo.xhrPost( {
-	    url: posturl,
-	    handleAs: "json",
-	    //postData: "hack=1", // see note above
-	    load: function(responseObject, ioArgs) {
-		// When it comes back, just replace the old stack
-		debugPrint("got more");
-		showStatus("fetch","");
-		mergeMoreQAIntoCache(responseObject)
+        // Kick off the request
+        //
+        // Note: This is a problem for Android G1 browser.
+        // If you use GET, it will cache this too aggressively,
+        // and never call for new data.
+        // On G1, if you post without specifying
+        // any postdata, it doesn't set the content-length
+        // header, which triggers mod_security to block the request
+        // with 503.  
+        // If you do set the postdata to something small
+        // like "hack=1" then sometimes it just doesn't run the 
+        // load function.  Dojo/android bug?
+        // What I've decided to do is send the no-body post,
+        // and disable mod_security for this URL.
+        // See DEPLOYMENT file
+        dojo.xhrPost( {
+            url: posturl,
+            handleAs: "json",
+            //postData: "hack=1", // see note above
+            load: function(responseObject, ioArgs) {
+                // When it comes back, just replace the old stack
+                debugPrint("got more");
+                showStatus("fetch","");
+                mergeMoreQAIntoCache(responseObject)
 
-		// reset global state.
-		fetchingMore = false;
-		fetchErrorCount = 0;
+                // reset global state.
+                fetchingMore = false;
+                fetchErrorCount = 0;
 
-		// Cycle back to nextQA if the user is waiting
-		if( userWaitingForQuestion ) {
-		    nextQA();
-		    // That will clear the userWaiting flag
-		}
-		debugCache();
+                // Cycle back to nextQA if the user is waiting
+                if( userWaitingForQuestion ) {
+                    nextQA();
+                    // That will clear the userWaiting flag
+                }
+                debugCache();
 
-	    },
-	    error: function(error) {
-		fetchingMore = false;
-		debugPrint("error fetching cards: "+error);
-		fetchErrorCount += 1;
-		if( fetchErrorCount < 3 ) {
-		    showStatus("fetch","Error fetching cards. Retrying.");
-		    fetchMoreQA();
-		} else {
-		    showStatus("fetch","Error fetching cards. Giving up.");
-		}
-	    }
-	});
+            },
+            error: function(error) {
+                fetchingMore = false;
+                debugPrint("error fetching cards: "+error);
+                fetchErrorCount += 1;
+                if( fetchErrorCount < 3 ) {
+                    showStatus("fetch","Error fetching cards. Retrying.");
+                    fetchMoreQA();
+                } else {
+                    showStatus("fetch","Error fetching cards. Giving up.");
+                }
+            }
+        });
     }
 
 
@@ -336,47 +336,47 @@
     // the cache's sequence number to avoid showing the
     // user the same card repeatedly.
     function mergeMoreQAIntoCache(newdata) {
-	debugPrint("merging...");
+        debugPrint("merging...");
 
-	if( typeof(newdata.length) == "undefined" ) {
-	    // A single object came back.  
-	    // hash-hack
-	    newseq=-1;
-	    newdata = [newdata];
-	} else {
-	    newseq = newdata.shift();
-	}
+        if( typeof(newdata.length) == "undefined" ) {
+            // A single object came back.  
+            // hash-hack
+            newseq=-1;
+            newdata = [newdata];
+        } else {
+            newseq = newdata.shift();
+        }
 
-	// Render debug output
-	var str = "<b>Incoming...</b><br/>";
-	str += "newseq = " + newseq + "<br/>";
-	str += renderDebugCache(newdata);
-	dojo.byId("debugcache2").innerHTML= str;
+        // Render debug output
+        var str = "<b>Incoming...</b><br/>";
+        str += "newseq = " + newseq + "<br/>";
+        str += renderDebugCache(newdata);
+        dojo.byId("debugcache2").innerHTML= str;
 
-	// Discard items from the newdata until the sequence
-	// numbers line up
-	while( newseq < QACacheSeq ) {
-	    newdata.shift();
-	    newseq++;
-	    if( newdata.length == 0 ) {
-		//This is an interesting failure mode.
-		//We got more cards but none of them are new.
-		//If this happens, we'll keep requesting more forever.
-		//This sometimes happens just with a slow network. 
-		// (or a fast human)
-		//This probably happens because the server's model_seq
-		//isn't getting incremented for whatever reason.
-		//In any case, we need to protect the server from DOS.
-		showStatus("error","Error! Can't get any new cards.");
-		if( confirm("Something went wrong fetching cards.  The network might be slow, or something might have gone wrong requiring a new deck.  Examine your deck?") ) {
-		    location.href="/deck/";
-		}
-	    }
-	}
+        // Discard items from the newdata until the sequence
+        // numbers line up
+        while( newseq < QACacheSeq ) {
+            newdata.shift();
+            newseq++;
+            if( newdata.length == 0 ) {
+                //This is an interesting failure mode.
+                //We got more cards but none of them are new.
+                //If this happens, we'll keep requesting more forever.
+                //This sometimes happens just with a slow network. 
+                // (or a fast human)
+                //This probably happens because the server's model_seq
+                //isn't getting incremented for whatever reason.
+                //In any case, we need to protect the server from DOS.
+                showStatus("error","Error! Can't get any new cards.");
+                if( confirm("Something went wrong fetching cards.  The network might be slow, or something might have gone wrong requiring a new deck.  Examine your deck?") ) {
+                    location.href="/deck/";
+                }
+            }
+        }
 
-	// Now we can merge them
-	QACache = newdata;
-	QACacheSeq = newseq; // This has an effect on first load
+        // Now we can merge them
+        QACache = newdata;
+        QACacheSeq = newseq; // This has an effect on first load
     }
 
     /////////////////////////////////////////////////////////
@@ -407,20 +407,20 @@
     // Sends it up if possible, or else queues it up to go later.
     function submitAnswer(yesno)
     {
-	var submittimer_ms = time_elapsed_ms() - showtimer_ms;
+        var submittimer_ms = time_elapsed_ms() - showtimer_ms;
 
-	//Should find a cleaner way to assemble the postdata
-	data = "";
-	data += "answer=" + yesno;
-	data += "&id=" + cardId;
-	data += "&showtimer=" + showtimer_ms;
-	data += "&submittimer=" + submittimer_ms;
+        //Should find a cleaner way to assemble the postdata
+        data = "";
+        data += "answer=" + yesno;
+        data += "&id=" + cardId;
+        data += "&showtimer=" + showtimer_ms;
+        data += "&submittimer=" + submittimer_ms;
 
-	postOrQueueImpression(data);
+        postOrQueueImpression(data);
 
-	// Deal with the rest of the UI
-	hideAnswer();
-	nextQA();
+        // Deal with the rest of the UI
+        hideAnswer();
+        nextQA();
     }
 
 
@@ -435,50 +435,50 @@
 
     function postOrQueueImpression(data)
     {
-	postQueue.push(data);
-	debugPrint("Pushed post.  queue="+ postQueue.length);
-	launchPostIfAppropriate();
+        postQueue.push(data);
+        debugPrint("Pushed post.  queue="+ postQueue.length);
+        launchPostIfAppropriate();
     }
 
     // If we have data queued to go, and there isn't an XHR already
     // outstanding, then we launch a new XHR
     function launchPostIfAppropriate() {
-	debugPrint("launch post? queue="+ postQueue.length);
-	if( waitingForImpressionPost ) {
-	    // Already a post outstanding.
-	    return;
-	}
+        debugPrint("launch post? queue="+ postQueue.length);
+        if( waitingForImpressionPost ) {
+            // Already a post outstanding.
+            return;
+        }
 
-	if( postQueue.length < 1 ) {
-	    debugPrint("Nothing to post");
-	    // Nothing to post
-	    return;
-	}
-	debugPrint("yes! launch post!");
+        if( postQueue.length < 1 ) {
+            debugPrint("Nothing to post");
+            // Nothing to post
+            return;
+        }
+        debugPrint("yes! launch post!");
 
-	// Set up the XHR
-	data = postQueue.shift();
+        // Set up the XHR
+        data = postQueue.shift();
 
-	var xhrArgs = {
-	    url: "/study/impression",
-	    postData: data,
-	    handleAs: "text",
-	    load: function(result) {
-		waitingForImpressionPost = false;
-		debugPrint("impression posted: "+data);
-		showStatus("post","");
-		launchPostIfAppropriate();
-	    },
-	    error: function(error) {
-		waitingForImpressionPost = false;
-		debugPrint("Error submitting impression: "+error);
-		showStatus("post","Error posting answer");
-		// TODO: retry to submit this impression
-	    }
-	};
-	waitingForImpressionPost = true;
-	dojo.xhrPost(xhrArgs);
-	showStatus("post","Submitting answer...");
+        var xhrArgs = {
+            url: "/study/impression",
+            postData: data,
+            handleAs: "text",
+            load: function(result) {
+                waitingForImpressionPost = false;
+                debugPrint("impression posted: "+data);
+                showStatus("post","");
+                launchPostIfAppropriate();
+            },
+            error: function(error) {
+                waitingForImpressionPost = false;
+                debugPrint("Error submitting impression: "+error);
+                showStatus("post","Error posting answer");
+                // TODO: retry to submit this impression
+            }
+        };
+        waitingForImpressionPost = true;
+        dojo.xhrPost(xhrArgs);
+        showStatus("post","Submitting answer...");
     }
     
     /////////////////////////////////////////////////////////
@@ -491,43 +491,43 @@
     dojo.require("dojo.parser");
 
     dojo.addOnLoad(function(){
-	wireKeyboardEvents();
-		
-	startUI();
+        wireKeyboardEvents();
+                
+        startUI();
     });
 
     function wireKeyboardEvents() {
-	var node = dojo.byId("bodytag");
-	dojo.connect(node, "onkeypress", function(e){
-	    switch(e.charOrCode){
-		case 's':
-		case 'S':
-		    showAnswer();
-		    break;
-		case 'n':
-		case 'N':
-		    submitAnswer('No');
-		    break;
-		case 'y':
-		case 'Y':
-		    submitAnswer('Yes');
-		    break;
-		case 'd':
-		case 'D':
-		    submitAnswer('Discard');
-		    break;
-		case 'k':
-		case 'K':
-		    submitAnswer('Kinda');
-		    break;
-	    }
-	    // if you want to cancel default processing...
-	    // dojo.stopEvent(e);
-	});
+        var node = dojo.byId("bodytag");
+        dojo.connect(node, "onkeypress", function(e){
+            switch(e.charOrCode){
+                case 's':
+                case 'S':
+                    showAnswer();
+                    break;
+                case 'n':
+                case 'N':
+                    submitAnswer('No');
+                    break;
+                case 'y':
+                case 'Y':
+                    submitAnswer('Yes');
+                    break;
+                case 'd':
+                case 'D':
+                    submitAnswer('Discard');
+                    break;
+                case 'k':
+                case 'K':
+                    submitAnswer('Kinda');
+                    break;
+            }
+            // if you want to cancel default processing...
+            // dojo.stopEvent(e);
+        });
     }
-		    
+                    
     function startUI() {
-	nextQA();
+        nextQA();
     }
 
 
