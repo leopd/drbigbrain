@@ -1,4 +1,5 @@
-import json
+try: import simplejson as json
+except ImportError: import json
 from django.test import TestCase
 from django.test.client import Client
 

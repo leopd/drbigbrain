@@ -1,4 +1,5 @@
-import json
+try: import simplejson as json
+except ImportError: import json
 import random
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
