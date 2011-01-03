@@ -170,6 +170,7 @@ class TimeModel(SimpleDeckModel):
 
         card = Card.lookup_card(impression.concept_id)
         card.log_impression(impression)
+        self.seq_tick()
 
         history = card.history()
         previous_impression = history.lookup_earlier_impression(1)

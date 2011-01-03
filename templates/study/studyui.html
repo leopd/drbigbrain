@@ -369,7 +369,7 @@
                 //This probably happens because the server's model_seq
                 //isn't getting incremented for whatever reason.
                 //In any case, we need to protect the server from DOS.
-                showStatus("error","Error! Can't get any new cards.");
+                showStatus("error","Error! Server didn't return any new cards.");
                 if( confirm("Something went wrong fetching cards.  The network might be slow, or something might have gone wrong requiring a new deck.  Examine your deck?") ) {
                     location.href="/deck/";
                 }
