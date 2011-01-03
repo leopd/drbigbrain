@@ -3,8 +3,10 @@ from django.test import TestCase
 from flashcards.models import Lesson
 from deck.models import Impression
 from deck.learninghistory import HistoryModel
+from deck.learningtime import TimeModel
 from deck.learning import SimpleDeckModel
 from deck.learning import RandomLearningModel
+from deck.learning import OutOfCards
 from deck.card import Card
 
 class SimpleTest(TestCase):
@@ -61,6 +63,7 @@ class SimpleTest(TestCase):
         impression.concept = card.concept()
         impression.answer = answer
         model.log_impression(impression)
+
 
     def try_all_no(self,model,num=100,max_uniq=20):
         """Test that if we always answer 'no' that the deck does not run out after num answers
@@ -196,6 +199,18 @@ class SimpleTest(TestCase):
         self.try_prefetch_identical(model,10)
         self.try_all_yes(model)
         self.try_all_no(model,200, 15)
+        self.try_all_discard(model)
+        
+
+    def test_time_model(self):
+        model = TimeModel()
+        self.try_two_yeses_and_a_pickle(model)
+        self.try_prefetch_identical(model,10)
+        self.try_all_yes(model)
+        # We only have 10 in our fixture lesson, so we can only do No 10 times.
+        # self.assertEqual(10,self.somehow_get_the_number_of_cards_in_the_lesson())
+        self.try_all_no(model,10, 15)
+        self.assertRaises(OutOfCards,self.try_all_no,model,20,15)  # This will fail if the number of concepts in the lesson fixture changes.
         self.try_all_discard(model)
 
 

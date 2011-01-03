@@ -7,6 +7,9 @@ from deck.models import Impression
 from deck.card import Card
 
 
+class OutOfCards(Exception):
+    pass
+
 
 class LearningModelBase():
     """base class for learning models
@@ -105,7 +108,7 @@ class LearningModelBase():
         just pretend to discard each of the cards that it presents to the
         user to be able to pick the next one.
         """
-        raise NotImplementedError()
+        raise NotImplementedError("Incomplete base class")
     
 
     def choose_many_cards(self,num):
@@ -285,4 +288,5 @@ class BetterDeckModel(SimpleDeckModel):
             self.move_card_to_pile(card,'Active', self.how_far_back_when_wrong())
 
         #print u"now list is %s" % self.piles['Active']
+
 

@@ -1,4 +1,5 @@
 import cPickle as pickle
+import base64
 from django.db import models
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
@@ -20,7 +21,7 @@ class Impression(models.Model):
     timer_submit = models.IntegerField(null = True)
 
     def __unicode__(self):
-        return u"Impression on %s '%s'" % (self.concept,self.answer)
+        return u"Impression of %s on %s" % (self.answer,self.concept)
 
 
 class DeckState(models.Model):
@@ -98,7 +99,10 @@ def get_model(request):
 
     # having problems with unicode pickling!
     # error -- KeyError: '\x00'
-    p=str(p) # this seems to fix it
+    #p=str(p) # this seems to fix it
+
+    # Now it's saying "incorrect string value"
+    p = base64.b64decode(p)
     #print "loading model from state %d pickled = %s" % (deckstate.id, p[0:50])
     model = pickle.loads(p)
     return model
@@ -110,7 +114,9 @@ def save_model(request, model):
     """
 
     deckstate = DeckState.for_request(request,True)
-    deckstate.pickled_model = pickle.dumps(model)
+    p = pickle.dumps(model)
+    deckstate.pickled_model = base64.b64encode(p)
+
 
     # copy the model's description up to the deckstate
     deckstate.description = model.description

@@ -89,7 +89,7 @@ class HistoryModel(SimpleDeckModel):
             return card
         logging.debug("Nothing at all in review pile")
         
-        raise NotImplementedError("can't find any more to do in deck")
+        raise OutOfCards("can't find any more to do in deck")
 
 
     def choose_many_cards(self,num):

@@ -6,10 +6,14 @@ from django.template import loader, Context, RequestContext
 from django.shortcuts import render_to_response
 from deck.models import Impression
 from deck.models import DeckState
-from deck.learning import RandomLearningModel
-from deck.learning import SimpleDeckModel
-from deck.learning import BetterDeckModel
-from deck.learninghistory import HistoryModel
+
+#from deck.learning import RandomLearningModel
+#from deck.learning import SimpleDeckModel
+#from deck.learning import BetterDeckModel
+#from deck.learninghistory import HistoryModel as ActiveModel
+from deck.learningtime import TimeModel as ActiveModel
+
+
 from deck.models import get_model, save_model
 from deck.card import Card
 
@@ -79,11 +83,13 @@ def resetdeck(request):
     """Creates a new model object and saves it.
     This wipes out anything in the previous model.
     """
+    # This is the single method which determines what kind of model will be used.
 
     #TODO: make this configurable
     #model = RandomLearningModel()
     #model = BetterDeckModel()
-    model = HistoryModel()
+    #model = HistoryModel()
+    model = ActiveModel()
     save_model(request, model)
     return HttpResponseRedirect("/")
 

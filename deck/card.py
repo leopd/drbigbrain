@@ -112,14 +112,26 @@ class Card():
 class History():
     """Helper for Card that keeps track of a user's history for the card.
     represents the study history for a card
-    must be pickleable, which means no django objects
+    must be pickleable.
     """
 
-    def __init__(self,id):
-        self.id = id
+    def __init__(self,concept_id):
+        self._concept_id = concept_id
 
-        # TODO: Look up the actual previous answer
-        self.cachelast= None
+        # Used to get away with not actually looking up the previous impression
+        #self.__last_impression= None
+        self.__last_impression = self.lookup_last_impression()
+
+    def lookup_last_impression(self):
+        return self.lookup_earlier_impression(0)
+
+    def lookup_earlier_impression(self,howfar_back):
+        concept = Concept.objects.get(pk=self._concept_id)
+        all_impressions = Impression.objects.filter(concept = concept).order_by('-answered_date')
+        if len(all_impressions) > howfar_back:
+            return all_impressions[howfar_back]
+        else:
+            return None
 
 
     def no_count(self):
@@ -127,9 +139,11 @@ class History():
 
 
     def previous_answer(self):
-        return self.cachelast
+        if self.__last_impression:
+            return self.__last_impression.answer
+        return None
 
 
     def log_impression(self,impression):
-        self.cachelast = impression.answer
+        self.__last_impression = impression
 
