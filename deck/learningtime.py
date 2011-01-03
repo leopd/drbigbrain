@@ -192,28 +192,33 @@ class TimeModel(SimpleDeckModel):
     def evaluate_card(self,card,current_delay,current_answer):
         """Adjusts the internal metrics (ERT) to the last response.
         """
-        ert = None
+        new_ert = None
+        old_ert = self._get_card_metadata(card,'ert')
         if current_delay is None:
             # i.e. first time
             if current_answer == 'Yes':
-                ert = DEFAULT_ERT_YES
+                new_ert = DEFAULT_ERT_YES
             elif current_answer == 'No':
-                ert = DEFAULT_ERT_NO
+                new_ert = DEFAULT_ERT_NO
             elif current_answer == 'Kinda':
-                ert = DEFAULT_ERT_KINDA
+                new_ert = DEFAULT_ERT_KINDA
             else:
                 raise NotImplementedError("Unknown answer %s" % current_answer)
         else:
             if current_answer == 'Yes':
-                ert = current_delay * ERT_EXTENSION_YES
+                new_ert = current_delay * ERT_EXTENSION_YES
             elif current_answer == 'No':
-                ert = current_delay * ERT_EXTENSION_NO
+                # They got it wrong.
+                new_ert = current_delay * ERT_EXTENSION_NO
+                if old_ert and current_delay > old_ert:
+                    # We waited too long.
+                    new_ert = old_ert * ERT_EXTENSION_NO
             elif current_answer == 'Kinda':
-                ert = current_delay * ERT_EXTENSION_KINDA
+                new_ert = current_delay * ERT_EXTENSION_KINDA
             else:
                 raise NotImplementedError("Unknown answer %s" % current_answer)
-        if ert:
-            self._set_card_metadata(card,'ert',ert)
+        if new_ert:
+            self._set_card_metadata(card,'ert',new_ert)
         else:
             logging.error("Somehow we didn't set an ERT in evaluate_card")
 
