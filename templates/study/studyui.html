@@ -2,6 +2,8 @@
 
 {% block dj_header_extra %}
 
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+
 <style type="text/css">
     .box {
         margin-top: 10px;
@@ -457,27 +459,27 @@
         debugPrint("yes! launch post!");
 
         // Set up the XHR
-        data = postQueue.shift();
-
-        var xhrArgs = {
+        post_data = postQueue.shift();
+        console.log(post_data);
+        waitingForImpressionPost = true;
+        jQuery.ajax( {
             url: "/study/impression",
-            postData: data,
-            handleAs: "text",
-            load: function(result) {
+            data: post_data,
+            type: 'POST',
+            dataType: "text",
+            success: function(result, textStatus, xhr) {
                 waitingForImpressionPost = false;
                 debugPrint("impression posted: "+data);
                 showStatus("post","");
                 launchPostIfAppropriate();
             },
-            error: function(error) {
+            error: function(xhr,textStatus,errorThrown) {
                 waitingForImpressionPost = false;
-                debugPrint("Error submitting impression: "+error);
+                debugPrint("Error submitting impression: "+errorThrown);
                 showStatus("post","Error posting answer");
-                // TODO: retry to submit this impression
+                jQuery("#debugxhr").html(xhr.responseText);
             }
-        };
-        waitingForImpressionPost = true;
-        dojo.xhrPost(xhrArgs);
+        });
         showStatus("post","Submitting answer...");
     }
     
@@ -566,7 +568,7 @@ Try pressing S, N, Y, D, K keys.
 <div id="debugcache" class="debugbar">
 emtpy cache
 </dIV>
-<div id="debugcache2" class="debugbar">
-</dIV>
+<div id="debugcache2" class="debugbar"> </div>
+<div id="debugxhr"></div>
 {% endblock %}
 
