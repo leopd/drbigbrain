@@ -442,6 +442,8 @@
         launchPostIfAppropriate();
     }
 
+    var SHOW_IMPRESSION_POST_FAILS = false;
+
     // If we have data queued to go, and there isn't an XHR already
     // outstanding, then we launch a new XHR
     function launchPostIfAppropriate() {
@@ -477,7 +479,9 @@
                 waitingForImpressionPost = false;
                 debugPrint("Error submitting impression: "+errorThrown);
                 showStatus("post","Error posting answer");
-                jQuery("#debugxhr").html(xhr.responseText);
+                if( SHOW_IMPRESSION_POST_FAILS ) {
+                    jQuery("#debugxhr").html(xhr.responseText);
+                }
             }
         });
         showStatus("post","Submitting answer...");
