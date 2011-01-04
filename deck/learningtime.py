@@ -62,7 +62,8 @@ class TimeModel(SimpleDeckModel):
         """We don't have an 'Active' pile in this model.
         """
         return 'Unseen'
-        
+
+
 
     def choose_card(self):
         logging.debug("Choosing a card")
@@ -77,7 +78,59 @@ class TimeModel(SimpleDeckModel):
             logging.debug("Choosing from Unseen pile: %s", card)
             return card
 
+        logging.error("We gotta do something better than just throw an exception when we're out of cards.")
         raise OutOfCards("None ready")
+
+
+    def _add_new_card(self,card,pile):
+        history = card.history()
+        impr = history.lookup_last_impression()
+        if impr:
+            ert = self._estimate_ert(card)
+            self._set_card_metadata(card,'ert',ert)
+            howold = td_to_seconds(datetime.datetime.now() - impr.answered_date)
+            if howold > ert * MAXIMUM_ERT_RATIO:
+                LearningModelBase._add_new_card(self,card,'Triaged')
+            else:
+                LearningModelBase._add_new_card(self,card,'Learning')
+        else:
+            # base class to put it in the default (Unseen) pile
+            LearningModelBase._add_new_card(self,card,pile)
+
+
+
+    def _estimate_ert(self,card):
+        """This new card is being added to the deck.
+        Let's go through its history and figure out what its ERT should be.
+        """
+        # First pull the list of impressions for this card.
+        history = card.history()
+        (td_delay, howfarback_last_yes) = history.delay_on_most_recent_yes()
+        if td_delay is not None:
+            yes_delay = td_to_seconds(td_delay)
+        else:
+            yes_delay = None
+        if howfarback_last_yes is None:
+            # They've never gotten this right.
+            # TODO: Make this more sophisticated for Kinda
+            return DEFAULT_ERT_NO 
+
+        if howfarback_last_yes == 0:
+            # their last answer was Yes.
+            if yes_delay is None:
+                # Their first and only answer was Yes
+                return DEFAULT_ERT_YES
+            else:
+                return yes_delay * ERT_EXTENSION_YES
+
+        # They had a yes in the past, but have screwed up since then.
+        # TODO: Make this better
+        if yes_delay is None:
+            # Their first answer was Yes, and that was their only yes
+            return DEFAULT_ERT_YES * (ERT_EXTENSION_NO ** howfarback_last_yes)
+        else:
+            return yes_delay * (ERT_EXTENSION_NO ** howfarback_last_yes)
+
 
 
     def next_ready_card(self,pile):
@@ -125,7 +178,7 @@ class TimeModel(SimpleDeckModel):
         if m:
             return m
         self._metadata[card]={}
-        return {}
+        return self._metadata[card]
 
 
     def _get_card_metadata(self,card,field):
@@ -153,8 +206,12 @@ class TimeModel(SimpleDeckModel):
 
         cards = []
         for i in range(num):
-            newcard = self.choose_card()
-            cards.append(newcard)
+            try:
+                newcard = self.choose_card()
+                cards.append(newcard)
+            except OutOfCards:
+                logging.info("Couldn't fetch %s cards. Stopping at %s" % (num,i))
+                break
 
             # Simulate discarding it so that we are sure to 
             # pick a different card the next time around in the loop

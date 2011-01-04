@@ -133,6 +133,39 @@ class History():
         else:
             return None
 
+    def delay_on_most_recent_yes(self):
+        """Specialized method for ERT estimation.
+        It goes back to the most recent "yes" answer
+        and figures out how long the exposure delay was for that answer.
+        Returns a tuple of (delay_as_timedelta,howfarback).
+        If there are no Yes answers, then it returns (None,None)
+        If there is only one Yes and it's the first then you get (None, howfarback)
+        howfarback is 0-based.  If the most recent is a yes you get a 0.
+        """
+        concept = Concept.objects.get(pk=self._concept_id)
+        all_impressions = Impression.objects.filter(concept = concept).order_by('-answered_date')
+        last_yes = None
+        howfarback = -1
+        for impr in all_impressions.all():
+            if last_yes:
+                td = last_yes.answered_date - impr.answered_date
+                return (td, howfarback)
+            else:
+                if impr.answer == 'Yes':
+                    last_yes = impr
+            howfarback += 1
+
+        if last_yes:
+            # The only yes is the first answer
+            return (None, howfarback)
+
+        # No yes's
+        return (None, None)
+
+    
+            
+
+
 
     def no_count(self):
         raise NotImplmentedError()

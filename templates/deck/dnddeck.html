@@ -130,18 +130,18 @@
 	    console.debug(cards);
 	    for(i=0; i< cards.length; i++) {
 		card = cards[i];
-		container.insertNodes( null,[ card.summary ] );
+                var s = card.card.summary
+                s += " <br> " + card.next
+		container.insertNodes( null,[ s ] );
 	    }
 	}
 
 	function load_deck(deck){
 	    console.debug("loaddeck");
 
-	    load_cardset(containerDiscard, deck.Discard);
-	    load_cardset(containerUnseen, deck.Unseen);
-	    load_cardset(containerSolid, deck.Solid);
-	    load_cardset(containerLearning, deck.Learning);
-	    load_cardset(containerReview, deck.Review);
+            {% for pile in piles %}
+	        load_cardset(container{{pile}}, deck.{{pile}});
+            {% endfor %}
 	}
  
 	dojo.addOnLoad(init);
@@ -156,31 +156,13 @@
 
 
     <div id="dragLists"> 
-	<div style="float: left; margin: 5px;"> 
-	    <h3>Unseen cards</h3> 
-	    <div dojoType="dojo.dnd.Source" jsId="containerUnseen" class="container"> 
-	    </div> 
-	</div> 
-	<div style="float: left; margin: 5px;"> 
-	    <h3>Discards</h3> 
-	    <div dojoType="dojo.dnd.Source" jsId="containerDiscard" class="container"> 
-	    </div> 
-	</div> 
-	<div style="float: left; margin: 5px;"> 
-	    <h3>Learning</h3> 
-	    <div dojoType="dojo.dnd.Source" jsId="containerLearning" class="container"> 
-	    </div> 
-	</div> 
-	<div style="float: left; margin: 5px;"> 
-	    <h3>Review</h3> 
-	    <div dojoType="dojo.dnd.Source" jsId="containerReview" class="container"> 
-	    </div> 
-	</div> 
-	<div style="float: left; margin: 5px;"> 
-	    <h3>Solid</h3> 
-	    <div dojoType="dojo.dnd.Source" jsId="containerSolid" class="container"> 
-	    </div> 
-	</div> 
+        {% for pile in piles %}
+            <div style="float: left; margin: 5px;"> 
+                <h3>{{pile}} cards</h3> 
+                <div dojoType="dojo.dnd.Source" jsId="container{{pile}}" class="container"> 
+                </div> 
+            </div> 
+        {% endfor %}
 	<div class="clear"></div> 
     </div> 
 

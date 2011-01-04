@@ -46,6 +46,10 @@ class LearningModelBase():
         """
         return 'Active'
 
+    def _add_new_card(self,card,pile):
+        """Deals with a new card being added to the model.
+        """
+        self.move_card_to_pile(card,pile)
 
     def add_new_cards(self, describe_new_cards, card_id_list, pile=None):
         """Add a whole list of cards to the pile.
@@ -67,7 +71,7 @@ class LearningModelBase():
         # put them into the pile
         for id in card_id_list:
             card = Card.lookup_card(id)
-            self.move_card_to_pile(card,pile)
+            self._add_new_card(card,pile)
 
         
     def set_active_lesson(self,lesson_id):
