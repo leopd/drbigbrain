@@ -1,0 +1,88 @@
+{% extends "djbase.html" %}
+
+{% block dj_header_extra %}
+<style>
+    .toggleanswer {
+	display:none;
+    }
+</style>
+
+<script>
+    function show_answers() {
+	dojo.query(".toggleanswer").forEach(function(node,index,arr){
+	    node.style['display']='block';
+	});
+    }
+</script>
+
+{% endblock %}
+{% block content %}
+<h2>Your active deck: {{description}}</h2>
+
+
+<p>
+    <b>Your deck contains:</b>
+    <ul>
+    {% for pile in pilecount %}
+	<li>{{pile.1}} cards in {{pile.0}} pile</li>
+    {% endfor %}
+    </ul>
+</p>
+
+<p>
+    <b><a href="/study/">Back to studying</a></b>
+</p>
+ 
+<b>Recently seen cards:</b>
+<table border=1>
+<tr>
+    <th>Q</th>
+    <th>A<br/>(<a href="javascript:show_answers()">unhide</a>)</th>
+    <th>Pile</th>
+    <th>ERT</th>
+    <th>Next</th>
+    <th> </th>
+</tr>
+{% for cardpile in recent_cards %}
+    <tr>
+    <td><font size=+1>{{cardpile.0}}</font></td>
+    <td>
+        <span class="toggleanswer">{{cardpile.2.answer}}</span>
+    </td>
+    <td>
+        {# no idea why it's insisting on escaping the html #}
+        {% autoescape off %} 
+        {{cardpile.1|safe}}
+        {% endautoescape %}
+    </td>
+    <td>
+        {{cardpile.3|floatformat:1}}
+    </td>
+    <td>
+        {{cardpile.4|timeuntil}}
+    </td>
+    <td><a href="/study/#{{cardpile.2.id}}">Revisit</a>
+    </td>
+    </tr>
+{% endfor %}
+<tr>
+<td class="toggleanswer"></td>
+<td class="toggleanswer"><i>Sorry I don't know why that HTML is showing up like that.</i></td>
+</tr>
+</table>
+
+
+<p>
+<a href="dnddeck">See detaield view of deck</a>
+</p>
+    
+<br/>
+<br/>
+<br/>
+
+<p>
+    <a href="reset">Start over with a new deck</a>
+</p>
+ 
+
+{% endblock %}
