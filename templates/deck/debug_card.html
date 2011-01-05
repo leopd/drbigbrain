@@ -1,0 +1,14 @@
+
+<div>
+    Pile: {{pile}}<br>
+    ert: {{ert}}<br>
+    Fresh new ert estimate: {{estimated_ert}}<br>
+    Next exposure: {{next_exposure}}<br>
+    Last exposure: {{last_exposure}}<br>
+    <hr/>
+    <ol>
+    {%for impr in answer_history%}
+        <li>{{impr}}</li>
+    {% endfor %}
+    </ol>
+</div>
