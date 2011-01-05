@@ -1,6 +1,7 @@
 import datetime
 import logging
 import random
+import math
 from deck.learning import SimpleDeckModel
 from deck.learning import LearningModelBase
 from deck.learning import OutOfCards
