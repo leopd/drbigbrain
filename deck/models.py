@@ -21,7 +21,7 @@ class Impression(models.Model):
     timer_submit = models.IntegerField(null = True)
 
     def __unicode__(self):
-        return u"Impression of %s on %s" % (self.answer,self.concept)
+        return u"Impression at %s: %s on %s" % (self.answered_date, self.answer,self.concept)
 
 
 class DeckState(models.Model):

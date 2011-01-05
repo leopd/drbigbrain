@@ -9,5 +9,6 @@ urlpatterns = patterns('deck.views',
     (r'^review$', 'make_review_ui'),
     (r'^create_review_deck$', 'create_review_deck'),
     (r'^show_meta$', 'show_meta'),
+    (r'^debug_card/(?P<card_id>\d+)$', 'debug_card'),
 )
 

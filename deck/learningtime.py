@@ -73,6 +73,11 @@ class TimeModel(SimpleDeckModel):
             logging.debug("Choosing from Learning pile: %s" % learning)
             return learning
 
+        card = self.front_of_pile('Triaged')
+        if (card != None ):
+            logging.debug("Choosing from Triaged pile: %s", card)
+            return card
+
         card = self.front_of_pile('Unseen')
         if (card != None ):
             logging.debug("Choosing from Unseen pile: %s", card)
@@ -104,8 +109,10 @@ class TimeModel(SimpleDeckModel):
         Let's go through its history and figure out what its ERT should be.
         """
         # First pull the list of impressions for this card.
+        logging.debug(u"Estimating ERT for %s - %s" % (card,card.concept()))
         history = card.history()
         (td_delay, howfarback_last_yes) = history.delay_on_most_recent_yes()
+        logging.debug("   Last yes was %s impressions back with a delay of %s" % (howfarback_last_yes,td_delay))
         if td_delay is not None:
             yes_delay = td_to_seconds(td_delay)
         else:
@@ -113,23 +120,37 @@ class TimeModel(SimpleDeckModel):
         if howfarback_last_yes is None:
             # They've never gotten this right.
             # TODO: Make this more sophisticated for Kinda
+            logging.debug("   Setting to default_ert_no")
             return DEFAULT_ERT_NO 
 
         if howfarback_last_yes == 0:
             # their last answer was Yes.
+            logging.debug("   Last impression was yes")
             if yes_delay is None:
                 # Their first and only answer was Yes
+                logging.debug("   Setting to default_ert_yes")
                 return DEFAULT_ERT_YES
             else:
-                return yes_delay * ERT_EXTENSION_YES
+                logging.debug("   Last answer was YES.  Searching for longest success.")
+                longest_delay = history.delay_on_longest_yes()
+                logging.debug("   Longest Yes delay was %s" % longest_delay)
+                logging.debug("   This Yes delay was %s" % td_delay)
+                ert = td_to_seconds(longest_delay) * ERT_EXTENSION_YES
+                logging.debug("   Extending longest to %s" % ert)
+                return ert
 
         # They had a yes in the past, but have screwed up since then.
+        logging.debug("   Had a yes, but not most recent.")
         # TODO: Make this better
         if yes_delay is None:
             # Their first answer was Yes, and that was their only yes
-            return DEFAULT_ERT_YES * (ERT_EXTENSION_NO ** howfarback_last_yes)
+            ert = DEFAULT_ERT_YES * (ERT_EXTENSION_NO ** howfarback_last_yes)
+            logging.debug("   Only yes was first. Setting ert to %s" % ert)
+            return ert
         else:
-            return yes_delay * (ERT_EXTENSION_NO ** howfarback_last_yes)
+            ert = yes_delay * (ERT_EXTENSION_NO ** howfarback_last_yes)
+            logging.debug("   Mixed yes and no. Setting ert to %s" % ert)
+            return ert
 
 
 
@@ -173,7 +194,26 @@ class TimeModel(SimpleDeckModel):
         else:
             return None
 
+    def get_ert(self,card):
+        return self._get_card_metadata(card,'ert')
+
+
+    def next_exposure_date(self,card):
+        history = card.history()
+        last_impr = history.lookup_last_impression()
+        if not last_impr:
+            return None
+        last = last_impr.answered_date
+        ert = self.get_ert(card)
+        if ert is None:
+            return None
+        next = last + datetime.timedelta(seconds = ert)
+        return next
+        
+
     def _metadata_for_card(self,card):
+        """Returns all meta-data as a dict
+        """
         m = self._metadata.get(card)
         if m:
             return m

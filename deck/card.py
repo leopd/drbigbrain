@@ -1,3 +1,4 @@
+import datetime
 from django.shortcuts import get_object_or_404
 from flashcards.models import Concept
 from deck.models import Impression
@@ -122,12 +123,19 @@ class History():
         #self.__last_impression= None
         self.__last_impression = self.lookup_last_impression()
 
+    def full_impression_history(self,limit = None):
+        all_impressions = Impression.objects.filter(concept = self._concept_id).order_by('-answered_date')
+        if limit:
+            return all_impressions[:limit]
+        else:
+            return all_impressions
+
     def lookup_last_impression(self):
         return self.lookup_earlier_impression(0)
 
     def lookup_earlier_impression(self,howfar_back):
         concept = Concept.objects.get(pk=self._concept_id)
-        all_impressions = Impression.objects.filter(concept = concept).order_by('-answered_date')
+        all_impressions = self.full_impression_history()
         if len(all_impressions) > howfar_back:
             return all_impressions[howfar_back]
         else:
@@ -143,7 +151,7 @@ class History():
         howfarback is 0-based.  If the most recent is a yes you get a 0.
         """
         concept = Concept.objects.get(pk=self._concept_id)
-        all_impressions = Impression.objects.filter(concept = concept).order_by('-answered_date')
+        all_impressions = self.full_impression_history()
         last_yes = None
         howfarback = -1
         for impr in all_impressions.all():
@@ -162,7 +170,25 @@ class History():
         # No yes's
         return (None, None)
 
-    
+
+    def delay_on_longest_yes(self):
+        """Specialized method for ERT estimation.
+        Looks through the answer history for the longest delay that had a yes.
+        """
+        concept = Concept.objects.get(pk=self._concept_id)
+        all_impressions = self.full_impression_history()
+        last_yes = None
+        longest_yes_delay = datetime.timedelta(0)
+        for impr in all_impressions.all():
+            if last_yes:
+                td = last_yes.answered_date - impr.answered_date
+                if td > longest_yes_delay:
+                    longest_yes_delay = td
+            if impr.answer == 'Yes':
+                last_yes = impr
+
+        return longest_yes_delay
+
             
 
 

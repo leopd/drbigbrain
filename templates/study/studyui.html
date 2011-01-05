@@ -124,6 +124,14 @@
         cardId = id;
         dojo.byId("showButton").focus();
         start_timer();
+
+        debugQuestion(id);
+    }
+
+
+    function debugQuestion(id) {
+        url = '/deck/debug_card/'+id;
+        jQuery("#debug_card").load(url);
     }
 
 
@@ -574,5 +582,6 @@ emtpy cache
 </dIV>
 <div id="debugcache2" class="debugbar"> </div>
 <div id="debugxhr"></div>
+<div id="debug_card"></div>
 {% endblock %}
 

@@ -19,6 +19,12 @@ from deck.learningtime import TimeModel as ActiveModel
 from deck.models import get_model, save_model
 from deck.card import Card
 
+def safe_timedelta(seconds):
+    if seconds:
+        return datetime.timedelta(seconds=seconds)
+    else:
+        return None
+
 
 def deckview(request):
     """Shows you a list of recent cards.
@@ -227,3 +233,19 @@ def create_review_deck(request):
 
 
     
+def debug_card(request,card_id):
+    card = Card.lookup_card(card_id)
+    model = get_model(request)
+    history = card.history()
+    params = {}
+    params['pile'] = model.which_pile(card)
+    params['ert'] = safe_timedelta(seconds = model.get_ert(card))
+    params['estimated_ert'] = safe_timedelta(model._estimate_ert(card))
+    params['next_exposure'] = model.next_exposure_date(card)
+    params['last_exposure'] = history.lookup_last_impression()
+    params['answer_history'] = history.full_impression_history(20)
+
+    return render_to_response("deck/debug_card.html", params, 
+            context_instance=RequestContext(request))
+
+
