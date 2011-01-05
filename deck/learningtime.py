@@ -113,6 +113,7 @@ class TimeModel(SimpleDeckModel):
         history = card.history()
         (td_delay, howfarback_last_yes) = history.delay_on_most_recent_yes()
         logging.debug("   Last yes was %s impressions back with a delay of %s" % (howfarback_last_yes,td_delay))
+        last_impression = history.lookup_last_impression()
         if td_delay is not None:
             yes_delay = td_to_seconds(td_delay)
         else:
@@ -148,8 +149,15 @@ class TimeModel(SimpleDeckModel):
             logging.debug("   Only yes was first. Setting ert to %s" % ert)
             return ert
         else:
-            ert = yes_delay * (ERT_EXTENSION_NO ** howfarback_last_yes)
-            logging.debug("   Mixed yes and no. Setting ert to %s" % ert)
+            if last_impression.answer == 'Kinda':
+                # Consider both the longest delay and the most recent.
+                longest_delay = td_to_seconds(history.delay_on_longest_yes())
+                # geometric mean.
+                ert = math.sqrt(yes_delay*longest_delay) * (ERT_EXTENSION_NO ** howfarback_last_yes)
+                logging.debug("   Mixed yes and no with recent Kinda. Setting ert to %s" % ert)
+            else:
+                ert = yes_delay * (ERT_EXTENSION_NO ** howfarback_last_yes)
+                logging.debug("   Mixed yes and no. Setting ert to %s" % ert)
             return ert
 
 
