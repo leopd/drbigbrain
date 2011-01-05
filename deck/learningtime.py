@@ -1,6 +1,7 @@
 import datetime
 import logging
 import random
+import math
 from deck.learning import SimpleDeckModel
 from deck.learning import LearningModelBase
 from deck.learning import OutOfCards
@@ -136,6 +137,7 @@ class TimeModel(SimpleDeckModel):
                 longest_delay = history.delay_on_longest_yes()
                 logging.debug("   Longest Yes delay was %s" % longest_delay)
                 logging.debug("   This Yes delay was %s" % td_delay)
+                #TODO: Gotta incorporate how many NOs there are since then!
                 ert = td_to_seconds(longest_delay) * ERT_EXTENSION_YES
                 logging.debug("   Extending longest to %s" % ert)
                 return ert
