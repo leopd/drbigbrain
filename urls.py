@@ -1,3 +1,4 @@
+from django.views.generic.simple import direct_to_template
 from django.conf.urls.defaults import *
 
 # Uncomment the next two lines to enable the admin:
@@ -5,20 +6,15 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Example:
-    # (r'^dbbpy/', include('foo.urls')),
-
-    # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
-    # to INSTALLED_APPS to enable admin documentation:
-    # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
-    #(r'^dojango/', include('dojango.urls')),
     (r'^study/', include('study.urls')),
     (r'^deck/', include('deck.urls')),
     (r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'welcome/login.html'}),
     (r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'template_name': 'welcome/logout.html'}),
     (r'^accounts/register/$', 'welcome.views.register'), 
     (r'', include('welcome.urls')),
+
+    (r'^robots.txt$', direct_to_template, {'template': 'robots.txt', 'mimetype': 'text/plain'}),
 )
+
+

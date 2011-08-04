@@ -2,7 +2,7 @@
 import os.path
 import traceback
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
