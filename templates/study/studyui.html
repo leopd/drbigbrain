@@ -305,15 +305,17 @@
         // with 503.  
         // If you do set the postdata to something small
         // like "hack=1" then sometimes it just doesn't run the 
-        // load function.  Dojo/android bug?
+        // load function.  Dojo/android bug?  
+        // Still happens with jquery??
         // What I've decided to do is send the no-body post,
         // and disable mod_security for this URL.
         // See DEPLOYMENT file
-        dojo.xhrPost( {
+        $.ajax( {
             url: posturl,
-            handleAs: "json",
-            //postData: "hack=1", // see note above
-            load: function(responseObject, ioArgs) {
+            dataType: "json",
+            type: "POST",
+            //data: "hack=1", // see note above
+            success: function(responseObject, status, xhr) {
                 // When it comes back merge it into the cache.
                 clog("got more");
                 showStatus("fetch","");
@@ -331,7 +333,7 @@
                 debugCache();
 
             },
-            error: function(error) {
+            error: function(xhr, status, error) {
                 fetchingMore = false;
                 clog("error fetching cards: "+error);
                 fetchErrorCount += 1;
@@ -476,7 +478,7 @@
         post_data = postQueue.shift();
         console.log(post_data);
         waitingForImpressionPost = true;
-        jQuery.ajax( {
+        $.ajax( {
             url: "/study/impression",
             data: post_data,
             type: 'POST',
