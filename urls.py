@@ -1,4 +1,4 @@
-from django.views.generic.simple import direct_to_template
+from django.views.generic.simple import direct_to_template, redirect_to
 from django.conf.urls.defaults import *
 
 # Uncomment the next two lines to enable the admin:
@@ -15,6 +15,10 @@ urlpatterns = patterns('',
     (r'', include('welcome.urls')),
 
     (r'^robots.txt$', direct_to_template, {'template': 'robots.txt', 'mimetype': 'text/plain'}),
+
+    # dev hack
+    (r'^static/jquery.hotkeys.js$', redirect_to, {'url': 'https://github.com/jeresig/jquery.hotkeys/raw/master/jquery.hotkeys.js'}),
+
 )
 
 

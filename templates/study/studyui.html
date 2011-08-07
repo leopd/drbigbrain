@@ -2,7 +2,8 @@
 
 {% block dj_header_extra %}
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+<script type="text/javascript" src="/static/jquery.hotkeys.js"></script>
 
 <style type="text/css">
     .box {
@@ -67,7 +68,7 @@
     //
     /////////////////////////////////////////////////////////
 
-    function debugPrint(msg) {
+    function clog(msg) {
         console.dir(msg);
     }
 
@@ -78,6 +79,7 @@
         start_time_ms = d.getTime(); // ms since 1970
     }
 
+    // Returns how long since the timer was started in ms.
     function time_elapsed_ms() {
         var d = new Date();
         return d.getTime() - start_time_ms;
@@ -90,15 +92,15 @@
     function showAnswer()
     {
         showtimer_ms= time_elapsed_ms();
-        dojo.byId("answerDiv").style.display="block";
-        dojo.byId("showButton").blur();
-        dojo.byId("showButton").style.display="none";
+        $("#answerDiv").show();
+        $("#showButton").blur();
+        $("#showButton").hide();
     }
 
     function hideAnswer()
     {
-        dojo.byId("answerDiv").style.display="none";
-        dojo.byId("showButton").style.display="block";
+        $("#answerDiv").hide();
+        $("#showButton").show();
     }
 
 
@@ -108,8 +110,8 @@
     // just updates the q and a divs in the display.
     // nothing else.
     function showQA(q,a) {
-        dojo.byId("questionContents").innerHTML= q;
-        dojo.byId("answerContents").innerHTML= a;
+        $("#questionContents").html(q);
+        $("#answerContents").html(a);
     }
 
     // Shows the question, and resets the UI
@@ -122,7 +124,7 @@
         // Use it.
         showQA(q, a);
         cardId = id;
-        dojo.byId("showButton").focus();
+        $("#showButton").focus();
         start_timer();
 
         debugQuestion(id);
@@ -141,7 +143,7 @@
     // whole thing
     function showStatus(type,msg) {
         statusMsgs[type]=msg;
-        debugPrint("status of "+type+":"+msg);
+        clog("status of "+type+":"+msg);
         var str="";
         for(var i in statusMsgs) {
             submsg = statusMsgs[i];
@@ -150,7 +152,7 @@
                 str += "<br/>";
             }
         }
-        dojo.byId("statusbar").innerHTML = str;
+        $("#statusbar").html(str);
     }
 
     /////////////////////////////////////////////////////////
@@ -186,11 +188,11 @@
     // It takes care of making that happen.  
     // It will happen synchronously if possible, else async.
     function nextQA() {
-        debugPrint("nextQA");
+        clog("nextQA");
         // See if we can handle the request from local cache
         if( QACache.length > 0 ) {
             // Handle locally
-            debugPrint("Using local");
+            clog("Using local");
             var qa = QACache.shift();
             QACacheSeq += 1;
             startQuestion(qa);
@@ -230,7 +232,7 @@
     var fetchingMore=false; // True if there's an outstanding request.
     var userWaitingForQuestion=true; // so we can show it
 
-    // the local cache of QA objects.  It's an array of json objects
+    // the local cache of QA objects.  It's an array of js objects
     var QACache = []; 
     // The sequence number of the first object in the cache
     var QACacheSeq = -1;
@@ -260,7 +262,7 @@
         //Comment out for better performance on slow browsers
         //var cache = QACache;
         //var str = renderDebugCache(cache);
-        //dojo.byId("debugcache").innerHTML = str;
+        //$("#debugcache").html(str);
     }
 
     // Asks the server for more QA data.
@@ -276,6 +278,8 @@
         posturl = "/study/getqa-" + numQAToFetch;
 
         // Check for the "revisit" hack
+        // This allows the card exam UI to specify exactly which 
+        // card to look at next in the hash.
         //
         // Note: Android G1 browser will set location.hash to "#"
         // after you set it to "".
@@ -288,7 +292,7 @@
             location.hash="";
         }
 
-        debugPrint("Fetching QA from "+posturl);
+        clog("Fetching QA from "+posturl);
 
         // Kick off the request
         //
@@ -310,8 +314,8 @@
             handleAs: "json",
             //postData: "hack=1", // see note above
             load: function(responseObject, ioArgs) {
-                // When it comes back, just replace the old stack
-                debugPrint("got more");
+                // When it comes back merge it into the cache.
+                clog("got more");
                 showStatus("fetch","");
                 mergeMoreQAIntoCache(responseObject)
 
@@ -329,7 +333,7 @@
             },
             error: function(error) {
                 fetchingMore = false;
-                debugPrint("error fetching cards: "+error);
+                clog("error fetching cards: "+error);
                 fetchErrorCount += 1;
                 if( fetchErrorCount < 3 ) {
                     showStatus("fetch","Error fetching cards. Retrying.");
@@ -346,7 +350,7 @@
     // the cache's sequence number to avoid showing the
     // user the same card repeatedly.
     function mergeMoreQAIntoCache(newdata) {
-        debugPrint("merging...");
+        clog("merging...");
 
         if( typeof(newdata.length) == "undefined" ) {
             // A single object came back.  
@@ -361,7 +365,7 @@
         var str = "<b>Incoming...</b><br/>";
         str += "newseq = " + newseq + "<br/>";
         str += renderDebugCache(newdata);
-        dojo.byId("debugcache2").innerHTML= str;
+        $("#debugcache2").html(str);
 
         // Discard items from the newdata until the sequence
         // numbers line up
@@ -446,7 +450,7 @@
     function postOrQueueImpression(data)
     {
         postQueue.push(data);
-        debugPrint("Pushed post.  queue="+ postQueue.length);
+        clog("Pushed post.  queue="+ postQueue.length);
         launchPostIfAppropriate();
     }
 
@@ -455,18 +459,18 @@
     // If we have data queued to go, and there isn't an XHR already
     // outstanding, then we launch a new XHR
     function launchPostIfAppropriate() {
-        debugPrint("launch post? queue="+ postQueue.length);
+        clog("launch post? queue="+ postQueue.length);
         if( waitingForImpressionPost ) {
             // Already a post outstanding.
             return;
         }
 
         if( postQueue.length < 1 ) {
-            debugPrint("Nothing to post");
+            clog("Nothing to post");
             // Nothing to post
             return;
         }
-        debugPrint("yes! launch post!");
+        clog("yes! launch post!");
 
         // Set up the XHR
         post_data = postQueue.shift();
@@ -479,13 +483,13 @@
             dataType: "text",
             success: function(result, textStatus, xhr) {
                 waitingForImpressionPost = false;
-                debugPrint("impression posted: "+data);
+                clog("impression posted: "+data);
                 showStatus("post","");
                 launchPostIfAppropriate();
             },
             error: function(xhr,textStatus,errorThrown) {
                 waitingForImpressionPost = false;
-                debugPrint("Error submitting impression: "+errorThrown);
+                clog("Error submitting impression: "+errorThrown);
                 showStatus("post","Error posting answer");
                 if( SHOW_IMPRESSION_POST_FAILS ) {
                     jQuery("#debugxhr").html(xhr.responseText);
@@ -497,46 +501,31 @@
     
     /////////////////////////////////////////////////////////
     //
-    // Dojo startup stuff
+    // Startup stuff
     //
     /////////////////////////////////////////////////////////
 
-    // load required modules
-    dojo.require("dojo.parser");
-
-    dojo.addOnLoad(function(){
+    $(function(){
         wireKeyboardEvents();
-                
         startUI();
     });
 
     function wireKeyboardEvents() {
-        var node = dojo.byId("bodytag");
-        dojo.connect(node, "onkeypress", function(e){
-            switch(e.charOrCode){
-                case 's':
-                case 'S':
-                    showAnswer();
-                    break;
-                case 'n':
-                case 'N':
-                    submitAnswer('No');
-                    break;
-                case 'y':
-                case 'Y':
-                    submitAnswer('Yes');
-                    break;
-                case 'd':
-                case 'D':
-                    submitAnswer('Discard');
-                    break;
-                case 'k':
-                case 'K':
-                    submitAnswer('Kinda');
-                    break;
-            }
-            // if you want to cancel default processing...
-            // dojo.stopEvent(e);
+        // relies on jquery hotkeys plugin to work properly
+        $(document).bind('keypress','s', function() {
+            showAnswer();
+        });
+        $(document).bind('keypress','n', function() {
+            submitAnswer('No');
+        });
+        $(document).bind('keypress','y', function() {
+            submitAnswer('Yes');
+        });
+        $(document).bind('keypress','d', function() {
+            submitAnswer('Discard');
+        });
+        $(document).bind('keypress','k', function() {
+            submitAnswer('Kinda');
         });
     }
                     
