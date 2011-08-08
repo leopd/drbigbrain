@@ -208,9 +208,9 @@
 
         if( QACache.length < minQABeforeFetch) {
             // Stack is below threshhold so we need to trigger a fetch.
-            fetchMoreQA();
+            CardFetcher.fetchMore();
             // dont worry about de-duping requests.  
-            // fetchmoreqa will do that.
+            // fetchMore will do that.
         }
         debugCache();
     }
@@ -223,9 +223,6 @@
     // configuration parameters
     var numQAToFetch = 8;
     var minQABeforeFetch = 4; // the low water mark below which we fetch more
-
-    // retry counter
-    var fetchErrorCount = 0;
 
 
     // Global state about the QA Cache and the display
@@ -265,87 +262,25 @@
         //$("#debugcache").html(str);
     }
 
-    // Asks the server for more QA data.
-    // if needToUpdateUI is true then it will push the results
-    // on the screen as soon as they're back.
-    function fetchMoreQA() {
-        // Check global state variable to de-dupe these requests
-        if( fetchingMore ) {
-            // Just wait for the last one to finish.
-            return;
-        }
-        fetchingMore = true;
-        posturl = "/study/getqa-" + numQAToFetch;
 
-        // Check for the "revisit" hack
-        // This allows the card exam UI to specify exactly which 
-        // card to look at next in the hash.
-        //
-        // Note: Android G1 browser will set location.hash to "#"
-        // after you set it to "".
-        if( (location.hash) && (location.hash!="#") ) {
-            // Remove the hash character
-            cardnum = location.hash.substring(1);
-            // This is not terribly robust since if the fragment
-            // is not a number, this will fail to return
-            posturl = "/study/jsoncard/"+cardnum;
-            location.hash="";
-        }
 
-        clog("Fetching QA from "+posturl);
+var CardFetcher = function() {
 
-        // Kick off the request
-        //
-        // Note: This is a problem for Android G1 browser.
-        // If you use GET, it will cache this too aggressively,
-        // and never call for new data.
-        // On G1, if you post without specifying
-        // any postdata, it doesn't set the content-length
-        // header, which triggers mod_security to block the request
-        // with 503.  
-        // If you do set the postdata to something small
-        // like "hack=1" then sometimes it just doesn't run the 
-        // load function.  Dojo/android bug?  
-        // Still happens with jquery??
-        // What I've decided to do is send the no-body post,
-        // and disable mod_security for this URL.
-        // See DEPLOYMENT file
-        $.ajax( {
-            url: posturl,
-            dataType: "json",
-            type: "POST",
-            //data: "hack=1", // see note above
-            success: function(responseObject, status, xhr) {
-                // When it comes back merge it into the cache.
-                clog("got more");
-                showStatus("fetch","");
-                mergeMoreQAIntoCache(responseObject)
+    var fetchDelay = function() {
+        // ms to wait between fetches if 
+        // they're not giving anything good.
+        var currentBackoff=250;
 
-                // reset global state.
-                fetchingMore = false;
-                fetchErrorCount = 0;
+        return {
+            howlong: function() { return currentBackoff; },
+            reset: function() { currentBackoff = 500; },
+            backoff: function() { currentBackoff *= 2; },
+        };
+    }();
 
-                // Cycle back to nextQA if the user is waiting
-                if( userWaitingForQuestion ) {
-                    nextQA();
-                    // That will clear the userWaiting flag
-                }
-                debugCache();
 
-            },
-            error: function(xhr, status, error) {
-                fetchingMore = false;
-                clog("error fetching cards: "+error);
-                fetchErrorCount += 1;
-                if( fetchErrorCount < 3 ) {
-                    showStatus("fetch","Error fetching cards. Retrying.");
-                    fetchMoreQA();
-                } else {
-                    showStatus("fetch","Error fetching cards. Giving up.");
-                }
-            }
-        });
-    }
+    // retry counter
+    var fetchErrorCount = 0;
 
 
     // Line up sequence number on the response with
@@ -383,17 +318,113 @@
                 //This probably happens because the server's model_seq
                 //isn't getting incremented for whatever reason.
                 //In any case, we need to protect the server from DOS.
-                showStatus("error","Error! Server didn't return any new cards.");
-                if( confirm("Something went wrong fetching cards.  The network might be slow, or something might have gone wrong requiring a new deck.  Examine your deck?") ) {
-                    location.href="/deck/";
-                }
+
+                clog("No new cards!!!!!!  Delaying and trying fetch again.");
+                setTimeout( CardFetcher.fetchMore, fetchDelay.howlong() );
+                fetchDelay.backoff();
+
+                // old method -- get me out of here!
+                //showStatus("error","Error! Server didn't return any new cards.");
+                //if( confirm("Something went wrong fetching cards.  The network might be slow, or something might have gone wrong requiring a new deck.  Examine your deck?") ) {
+                    //location.href="/deck/";
+                //}
+            } else {
+                fetchDelay.reset();
             }
         }
 
         // Now we can merge them
         QACache = newdata;
         QACacheSeq = newseq; // This has an effect on first load
-    }
+    };
+
+    // public members below
+    return {
+        // Asks the server for more QA data.
+        // if needToUpdateUI is true then it will push the results
+        // on the screen as soon as they're back.
+        fetchMore: function() {
+            // Check global state variable to de-dupe these requests
+            if( fetchingMore ) {
+                // Just wait for the last one to finish.
+                return;
+            }
+            fetchingMore = true;
+            posturl = "/study/getqa-" + numQAToFetch;
+
+            // Check for the "revisit" hack
+            // This allows the card exam UI to specify exactly which 
+            // card to look at next in the hash.
+            //
+            // Note: Android G1 browser will set location.hash to "#"
+            // after you set it to "".
+            if( (location.hash) && (location.hash!="#") ) {
+                // Remove the hash character
+                cardnum = location.hash.substring(1);
+                // This is not terribly robust since if the fragment
+                // is not a number, this will fail to return
+                posturl = "/study/jsoncard/"+cardnum;
+                location.hash="";
+            }
+
+            clog("Fetching QA from "+posturl);
+
+            // Kick off the request
+            //
+            // Note: This is a problem for Android G1 browser.
+            // If you use GET, it will cache this too aggressively,
+            // and never call for new data.
+            // On G1, if you post without specifying
+            // any postdata, it doesn't set the content-length
+            // header, which triggers mod_security to block the request
+            // with 503.  
+            // If you do set the postdata to something small
+            // like "hack=1" then sometimes it just doesn't run the 
+            // load function.  Dojo/android bug?  
+            // Still happens with jquery??
+            // What I've decided to do is send the no-body post,
+            // and disable mod_security for this URL.
+            // See DEPLOYMENT file
+            $.ajax( {
+                url: posturl,
+                dataType: "json",
+                type: "POST",
+                //data: "hack=1", // see note above
+                success: function(responseObject, status, xhr) {
+                    // When it comes back merge it into the cache.
+                    clog("got more");
+                    showStatus("fetch","");
+                    mergeMoreQAIntoCache(responseObject)
+
+                    // reset global state.
+                    fetchingMore = false;
+                    fetchErrorCount = 0;
+
+                    // Cycle back to nextQA if the user is waiting
+                    if( userWaitingForQuestion ) {
+                        nextQA();
+                        // That will clear the userWaiting flag
+                    }
+                    debugCache();
+
+                },
+                error: function(xhr, status, error) {
+                    fetchingMore = false;
+                    clog("error fetching cards: "+error);
+                    fetchErrorCount += 1;
+                    if( fetchErrorCount < 3 ) {
+                        showStatus("fetch","Error fetching cards. Retrying.");
+                        fetchMore();
+                    } else {
+                        showStatus("fetch","Error fetching cards. Giving up.");
+                    }
+                }
+            });
+        }
+    };
+
+
+}(); // end CardFetcher object
 
     /////////////////////////////////////////////////////////
     //
